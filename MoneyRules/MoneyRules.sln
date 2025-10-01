@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyRules.UI", "MoneyRules
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyRules.Application", "MoneyRules.Application\MoneyRules.Application.csproj", "{C9CB124F-41EC-4F8B-A806-601994198ACB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyRules.Domain", "MoneyRules.Domain\MoneyRules.Domain.csproj", "{CD3B3AB9-E325-4391-9E72-FEAE8697B3FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C9CB124F-41EC-4F8B-A806-601994198ACB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9CB124F-41EC-4F8B-A806-601994198ACB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9CB124F-41EC-4F8B-A806-601994198ACB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD3B3AB9-E325-4391-9E72-FEAE8697B3FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD3B3AB9-E325-4391-9E72-FEAE8697B3FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD3B3AB9-E325-4391-9E72-FEAE8697B3FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD3B3AB9-E325-4391-9E72-FEAE8697B3FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
