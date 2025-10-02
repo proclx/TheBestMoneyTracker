@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Serilog;
 
 namespace MoneyRules.UI
 {
@@ -18,6 +19,7 @@ namespace MoneyRules.UI
     {
         public MainWindow()
         {
+            Log.Information("Головне вікно ініціалізовано");
             InitializeComponent();
         }
     }
