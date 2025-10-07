@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 using MoneyRules.Domain.Entities;
 
 namespace MoneyRules.Infrastructure.Persistence
 {
+    // Використовується під час runtime
     public class AppDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
@@ -31,6 +33,21 @@ namespace MoneyRules.Infrastructure.Persistence
                 .HasForeignKey(c => c.UserId);
 
             base.OnModelCreating(modelBuilder);
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                var connectionString = ConfigurationManager
+                    .ConnectionStrings["DefaultConnection"]
+                    ?.ConnectionString;
+
+                if (string.IsNullOrEmpty(connectionString))
+                    throw new InvalidOperationException("Connection string 'DefaultConnection' not found in App.config.");
+
+                optionsBuilder.UseNpgsql(connectionString);
+            }
         }
     }
 }
