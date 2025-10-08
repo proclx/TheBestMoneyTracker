@@ -8,19 +8,36 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MoneyRules.Application.Services;
 using Serilog;
 
 namespace MoneyRules.UI
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private readonly IAuthService _authService;
+
+        public MainWindow(IAuthService authService)
         {
-            Log.Information("Головне вікно ініціалізовано");
             InitializeComponent();
+            _authService = authService;
+        }
+
+        private async void LoginButton_Click(object sender, RoutedEventArgs e)
+        {
+            string email = EmailTextBox.Text;
+            string password = PasswordBox.Password;
+
+            var user = await _authService.LoginAsync(email, password);
+            if (user != null)
+            {
+                MessageBox.Show($"Welcome, {user.Name}!");
+                // Тут можна відкривати головну сторінку
+            }
+            else
+            {
+                MessageBox.Show("Invalid email or password.");
+            }
         }
     }
 }

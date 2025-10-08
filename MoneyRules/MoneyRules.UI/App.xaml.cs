@@ -1,64 +1,68 @@
 ﻿using System;
-using System.Data;
-using System.IO;
 using System.Windows;
-using MoneyRules.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using MoneyRules.Infrastructure.Persistence;
+using MoneyRules.Application.Services;
 
 namespace MoneyRules.UI
 {
-    public partial class App : Application
+    public partial class App : System.Windows.Application
     {
+        public IServiceProvider ServiceProvider { get; private set; }
+        public IConfiguration Configuration { get; private set; }
+
         protected override void OnStartup(StartupEventArgs e)
         {
-            // 1️⃣ Налаштування Serilog
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.Console()
-                .WriteTo.Seq("http://localhost:5341")
+                .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
-
-            Log.Information("Додаток стартує");
 
             try
             {
-                // 2️⃣ Зчитуємо рядок підключення з appsettings.json
                 var configuration = new ConfigurationBuilder()
                     .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                     .Build();
 
-                var connectionString = configuration.GetConnectionString("DefaultConnection");
+                var services = new ServiceCollection();
 
-                if (string.IsNullOrEmpty(connectionString))
-                    throw new InvalidOperationException("Connection string 'DefaultConnection' не знайдено в appsettings.json.");
+                // DbContext
+                services.AddDbContext<AppDbContext>(options =>
+                    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-                // 3️⃣ Створюємо DbContext
-                var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-                optionsBuilder.UseNpgsql(connectionString);
+                // Сервіси
+                services.AddScoped<IAuthService, AuthService>();
 
-                using var context = new AppDbContext(optionsBuilder.Options);
+                // Вікна
+                services.AddTransient<MainWindow>();
 
-                // 4️⃣ Для тесту — створюємо базу, якщо її ще немає
-                context.Database.EnsureCreated();
+                ServiceProvider = services.BuildServiceProvider();
 
-                Log.Information("Підключення до бази даних успішне!");
+                // Перевіримо БД
+                using (var scope = ServiceProvider.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                    db.Database.EnsureCreated();
+                }
+
+                // 🎯 ТУТ ми самі створюємо MainWindow:
+                var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
+                mainWindow.Show();
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Сталася помилка під час запуску програми");
+                Log.Fatal(ex, "Помилка під час запуску програми");
+                MessageBox.Show(ex.Message, "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             base.OnStartup(e);
         }
 
-        protected override void OnExit(ExitEventArgs e)
-        {
-            Log.Information("Додаток завершує роботу");
-            Log.CloseAndFlush();
-            base.OnExit(e);
-        }
     }
 }
+
