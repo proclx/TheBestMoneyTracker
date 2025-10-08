@@ -22,6 +22,8 @@ namespace MoneyRules.UI.Windows
 
         private void Register_Click(object sender, RoutedEventArgs e)
         {
+            var registerWindow = new RegisterWindow();
+            registerWindow.Show();
             Close();
         }
     }
