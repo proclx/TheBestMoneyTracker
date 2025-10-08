@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyRules.UI", "MoneyRules.UI\MoneyRules.UI.csproj", "{91AFBB7E-D85C-4182-B9FE-5B5C29EC1B35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyRules.UI", "MoneyRules.UI\MoneyRules.UI.csproj", "{91AFBB7E-D85C-4182-B9FE-5B5C29EC1B35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyRules.Application", "MoneyRules.Application\MoneyRules.Application.csproj", "{C9CB124F-41EC-4F8B-A806-601994198ACB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyRules.Application", "MoneyRules.Application\MoneyRules.Application.csproj", "{C9CB124F-41EC-4F8B-A806-601994198ACB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyRules.Domain", "MoneyRules.Domain\MoneyRules.Domain.csproj", "{CD3B3AB9-E325-4391-9E72-FEAE8697B3FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyRules.Domain", "MoneyRules.Domain\MoneyRules.Domain.csproj", "{CD3B3AB9-E325-4391-9E72-FEAE8697B3FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyRules.Infrastructure", "MoneyRules.Infrastructure\MoneyRules.Infrastructure.csproj", "{CC0776CC-408B-4AA2-84CA-3F9E5CA7BB67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyRules.Infrastructure", "MoneyRules.Infrastructure\MoneyRules.Infrastructure.csproj", "{CC0776CC-408B-4AA2-84CA-3F9E5CA7BB67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyRules.Tests", "MoneyRules.Tests\MoneyRules.Tests.csproj", "{5CB4CA24-6EC5-4454-ACE1-A39FCBCA07BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{CC0776CC-408B-4AA2-84CA-3F9E5CA7BB67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC0776CC-408B-4AA2-84CA-3F9E5CA7BB67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC0776CC-408B-4AA2-84CA-3F9E5CA7BB67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CB4CA24-6EC5-4454-ACE1-A39FCBCA07BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CB4CA24-6EC5-4454-ACE1-A39FCBCA07BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CB4CA24-6EC5-4454-ACE1-A39FCBCA07BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CB4CA24-6EC5-4454-ACE1-A39FCBCA07BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
