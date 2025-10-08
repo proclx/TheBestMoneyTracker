@@ -27,9 +27,10 @@ namespace MoneyRules.UI.Windows
                 {
                     MessageBox.Show($"Вітаємо, {user.Name}!", "Успішний вхід", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    // var app = (App)System.Windows.Application.Current;
-                    // var dashboard = app.ServiceProvider.GetRequiredService<DashboardWindow>();
-                    // dashboard.Show();
+                    var app = (App)System.Windows.Application.Current;
+                    var dashboard = app.ServiceProvider.GetRequiredService<MainWindow>();
+                    dashboard.Show();
+
                     this.Close();
                 }
                 else
