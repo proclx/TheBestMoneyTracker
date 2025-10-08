@@ -42,7 +42,8 @@ namespace MoneyRules.UI
                 // Вікна
                 services.AddTransient<WelcomeWindow>();
                 services.AddTransient<LoginWindow>();
-                //services.AddTransient<RegisterWindow>();
+                services.AddTransient<MainWindow>();
+                services.AddTransient<RegisterWindow>();
 
                 ServiceProvider = services.BuildServiceProvider();
 
