@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using MoneyRules.Infrastructure.Persistence;
 using MoneyRules.Application.Services;
+using MoneyRules.UI.Windows;
 
 namespace MoneyRules.UI
 {
@@ -39,7 +40,9 @@ namespace MoneyRules.UI
                 services.AddScoped<IAuthService, AuthService>();
 
                 // Вікна
-                services.AddTransient<MainWindow>();
+                services.AddTransient<WelcomeWindow>();
+                services.AddTransient<LoginWindow>();
+                //services.AddTransient<RegisterWindow>();
 
                 ServiceProvider = services.BuildServiceProvider();
 
@@ -50,9 +53,8 @@ namespace MoneyRules.UI
                     db.Database.EnsureCreated();
                 }
 
-                // 🎯 ТУТ ми самі створюємо MainWindow:
-                var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
-                mainWindow.Show();
+                var welcomeWindow = ServiceProvider.GetRequiredService<WelcomeWindow>();
+                welcomeWindow.Show();
             }
             catch (Exception ex)
             {

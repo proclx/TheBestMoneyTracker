@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Цштвщці\**" />
+    <EmbeddedResource Remove="Цштвщці\**" />
+    <None Remove="Цштвщці\**" />
+    <Page Remove="Цштвщці\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MoneyRules.Application\MoneyRules.Application.csproj" />
     <ProjectReference Include="..\MoneyRules.Infrastructure\MoneyRules.Infrastructure.csproj" />
   </ItemGroup>
