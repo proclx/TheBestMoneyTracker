@@ -21,6 +21,7 @@ namespace MoneyRules.UI
                 .MinimumLevel.Debug()
                 .WriteTo.Console()
                 .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.Seq("http://localhost:5341")
                 .CreateLogger();
 
             try
@@ -42,6 +43,7 @@ namespace MoneyRules.UI
                 // Вікна
                 services.AddTransient<WelcomeWindow>();
                 services.AddTransient<LoginWindow>();
+                services.AddTransient<MainWindow>();
                 //services.AddTransient<RegisterWindow>();
 
                 ServiceProvider = services.BuildServiceProvider();
