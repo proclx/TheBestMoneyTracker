@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Windows;
 using MoneyRules.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 
 namespace MoneyRules.UI
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            // Логер Serilog
+            // 1️⃣ Налаштування Serilog
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.Console()
@@ -23,28 +21,37 @@ namespace MoneyRules.UI
                 .CreateLogger();
 
             Log.Information("Додаток стартує");
+
             try
             {
-                // Код, який може викликати помилку
+                // 2️⃣ Зчитуємо рядок підключення з appsettings.json
+                var configuration = new ConfigurationBuilder()
+                    .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .Build();
+
+                var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+                if (string.IsNullOrEmpty(connectionString))
+                    throw new InvalidOperationException("Connection string 'DefaultConnection' не знайдено в appsettings.json.");
+
+                // 3️⃣ Створюємо DbContext
+                var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+                optionsBuilder.UseNpgsql(connectionString);
+
+                using var context = new AppDbContext(optionsBuilder.Options);
+
+                // 4️⃣ Для тесту — створюємо базу, якщо її ще немає
+                context.Database.EnsureCreated();
+
+                Log.Information("Підключення до бази даних успішне!");
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Сталася помилка під час виконання операції");
+                Log.Error(ex, "Сталася помилка під час запуску програми");
             }
 
             base.OnStartup(e);
-
-            // Зчитуємо рядок підключення з App.config
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-
-            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            optionsBuilder.UseNpgsql(connectionString);
-
-            // Створюємо екземпляр контексту
-            using var context = new AppDbContext(optionsBuilder.Options);
-
-            // Можна зробити EnsureCreated для тесту
-            context.Database.EnsureCreated();
         }
 
         protected override void OnExit(ExitEventArgs e)
@@ -53,7 +60,5 @@ namespace MoneyRules.UI
             Log.CloseAndFlush();
             base.OnExit(e);
         }
-
     }
-
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 using MoneyRules.Domain.Entities;
+using Microsoft.Extensions.Configuration;
 
 namespace MoneyRules.Infrastructure.Persistence
 {
@@ -39,12 +40,16 @@ namespace MoneyRules.Infrastructure.Persistence
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var connectionString = ConfigurationManager
-                    .ConnectionStrings["DefaultConnection"]
-                    ?.ConnectionString;
+                // Читаємо appsettings.json
+                var configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory()) // поточна директорія при runtime
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .Build();
+
+                var connectionString = configuration.GetConnectionString("DefaultConnection");
 
                 if (string.IsNullOrEmpty(connectionString))
-                    throw new InvalidOperationException("Connection string 'DefaultConnection' not found in App.config.");
+                    throw new InvalidOperationException("Connection string 'DefaultConnection' not found in appsettings.json.");
 
                 optionsBuilder.UseNpgsql(connectionString);
             }

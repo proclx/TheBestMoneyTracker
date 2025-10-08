@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using System.Configuration;
+using Microsoft.Extensions.Configuration;
 
 
 namespace MoneyRules.Infrastructure.Persistence
@@ -10,12 +10,22 @@ namespace MoneyRules.Infrastructure.Persistence
     {
         public AppDbContext CreateDbContext(string[] args)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"]?.ConnectionString;
+            // Створюємо конфігурацію з appsettings.json
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory()) // поточна директорія при design-time
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            // Зчитуємо рядок підключення
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+
             if (string.IsNullOrEmpty(connectionString))
                 throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
+            // Налаштовуємо DbContext
+            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
             optionsBuilder.UseNpgsql(connectionString);
+
             return new AppDbContext(optionsBuilder.Options);
         }
     }
