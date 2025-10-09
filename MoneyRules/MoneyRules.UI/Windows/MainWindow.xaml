@@ -1,16 +1,15 @@
 ﻿<Window x:Class="MoneyRules.UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:MoneyRules.UI"
         Title="MoneyRules" Height="500" Width="700">
     <Grid>
         <TabControl x:Name="MainTabControl">
             <!-- Завантаження файлу -->
             <TabItem Header="Завантаження файлу">
-                <StackPanel Margin="10">
-                    <Button Content="Завантажити файл" Width="150" Height="30"/>
-                    <TextBlock Text="Тут буде статус завантаження" Margin="5"/>
-                </StackPanel>
+                <local:FileUploadPage />
             </TabItem>
+
 
             <!-- Редагування даних -->
             <TabItem Header="Редагування даних">
