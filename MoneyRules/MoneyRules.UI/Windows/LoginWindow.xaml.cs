@@ -25,9 +25,13 @@ namespace MoneyRules.UI.Windows
                 var user = await _authService.LoginAsync(email, password);
                 if (user != null)
                 {
+                    // Save current user to application for other pages to access
+                    var app = (App)System.Windows.Application.Current;
+                    // Store the logged-in user in Application Properties so other controls can access it
+                    System.Windows.Application.Current.Properties["CurrentUser"] = user;
+
                     MessageBox.Show($"Вітаємо, {user.Name}!", "Успішний вхід", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    var app = (App)System.Windows.Application.Current;
                     var dashboard = app.ServiceProvider.GetRequiredService<MainWindow>();
                     dashboard.Show();
 
