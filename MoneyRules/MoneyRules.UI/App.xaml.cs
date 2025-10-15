@@ -44,6 +44,7 @@ namespace MoneyRules.UI
                 services.AddTransient<LoginWindow>();
                 services.AddTransient<MainWindow>();
                 services.AddTransient<RegisterWindow>();
+                services.AddTransient<AddTransactionWindow>();
 
                 ServiceProvider = services.BuildServiceProvider();
 
