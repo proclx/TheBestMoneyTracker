@@ -45,8 +45,9 @@ namespace MoneyRules.UI.Windows
             catch (Exception ex)
             {
                 Log.Error(ex, "Помилка під час входу користувача");
-                MessageBox.Show("Сталася помилка при вході. Спробуйте пізніше.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Помилка: {ex.Message}\n\n{ex.StackTrace}", "Помилка при вході", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
         }
     }
 }

@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MoneyRules.Application\MoneyRules.Application.csproj" />
+    <ProjectReference Include="..\MoneyRules.Domain\MoneyRules.Domain.csproj" />
     <ProjectReference Include="..\MoneyRules.Infrastructure\MoneyRules.Infrastructure.csproj" />
   </ItemGroup>
 
