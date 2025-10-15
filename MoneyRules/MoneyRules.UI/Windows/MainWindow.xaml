@@ -38,6 +38,19 @@
                     <TextBlock Text="Тут буде статус підписки" Margin="5"/>
                 </StackPanel>
             </TabItem>
+
+            <!-- Поради -->
+            <TabItem Header="Поради">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Персональні поради на основі ваших транзакцій" FontStyle="Italic"/>
+                    <GroupBox Header="Поради щодо економії" Margin="0,10,0,0">
+                        <StackPanel>
+                            <ItemsControl x:Name="AdviceList" />
+                            <Button x:Name="RefreshAdviceButton" Content="Оновити поради" Width="150" Margin="0,8,0,0" Click="RefreshAdviceButton_Click" />
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>
