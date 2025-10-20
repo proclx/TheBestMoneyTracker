@@ -13,7 +13,7 @@
 
             <!-- Редагування даних -->
             <TabItem Header="Редагування даних">
-                <StackPanel Margin="10">
+                <StackPanel Margin="-12,10,32,10">
                     <TextBlock Text="Тут будуть транзакції та кнопки для редагування" Margin="5"/>
                     <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                         <Button Content="Додати транзакцію" Width="150" Margin="0,0,5,0"/>
