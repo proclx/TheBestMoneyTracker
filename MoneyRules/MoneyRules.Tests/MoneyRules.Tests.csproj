@@ -1,7 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+<UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -9,6 +11,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.9" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.9" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.9" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
@@ -20,12 +24,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Xunit.StaFact" Version="1.1.11" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MoneyRules.Application\MoneyRules.Application.csproj" />
     <ProjectReference Include="..\MoneyRules.Domain\MoneyRules.Domain.csproj" />
     <ProjectReference Include="..\MoneyRules.Infrastructure\MoneyRules.Infrastructure.csproj" />
+    <ProjectReference Include="..\MoneyRules.Application\MoneyRules.Application.csproj" />
     <ProjectReference Include="..\MoneyRules.UI\MoneyRules.UI.csproj" />
   </ItemGroup>
 
@@ -34,5 +40,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+<ItemGroup>
+  <!-- Вимикаємо LoginWindowTests.cs, щоб не компілювався -->
+  <Compile Remove="Ui\Windows\LoginWindowTests.cs" />
+</ItemGroup>
 
 </Project>

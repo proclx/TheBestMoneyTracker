@@ -16,7 +16,7 @@
                 <StackPanel Margin="-12,10,32,10">
                     <TextBlock Text="Тут будуть транзакції та кнопки для редагування" Margin="5"/>
                     <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                        <Button Content="Додати транзакцію" Width="150" Margin="0,0,5,0"/>
+                        <Button Content="Додати транзакцію" Width="150" Margin="0,0,5,0" Click="AddTransactionButton_Click"/>
                         <Button Content="Редагувати" Width="100" Margin="0,0,5,0"/>
                         <Button Content="Видалити" Width="100" Margin="0,0,5,0"/>
                         <Button Content="Переглянути історію" Width="200" Click="OpenHistory_Click"/>
@@ -37,6 +37,19 @@
                     <TextBlock Text="Активація преміум-підписки" Margin="0,0,0,5"/>
                     <Button Content="Активувати підписку" Width="200"/>
                     <TextBlock Text="Тут буде статус підписки" Margin="5"/>
+                </StackPanel>
+            </TabItem>
+
+            <!-- Поради -->
+            <TabItem Header="Поради">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Персональні поради на основі ваших транзакцій" FontStyle="Italic"/>
+                    <GroupBox Header="Поради щодо економії" Margin="0,10,0,0">
+                        <StackPanel>
+                            <ItemsControl x:Name="AdviceList" />
+                            <Button x:Name="RefreshAdviceButton" Content="Оновити поради" Width="150" Margin="0,8,0,0" Click="RefreshAdviceButton_Click" />
+                        </StackPanel>
+                    </GroupBox>
                 </StackPanel>
             </TabItem>
         </TabControl>
