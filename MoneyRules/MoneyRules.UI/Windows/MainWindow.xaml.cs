@@ -34,6 +34,7 @@ namespace MoneyRules.UI
             // Створюємо вікно історії і передаємо сервіс + ідентифікатор користувача
             var historyWindow = new TransactionHistoryWindow(_transactionService, currentUser.UserId);
             historyWindow.ShowDialog();
+        }
         private readonly IAdviceService _adviceService;
 
         public MainWindow()
