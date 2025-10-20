@@ -16,6 +16,8 @@ namespace MoneyRules.Infrastructure.Persistence
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         public AppDbContext() : base(new DbContextOptions<AppDbContext>()) { }
 
+        public AppDbContext() { }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Fluent API для зв'язків

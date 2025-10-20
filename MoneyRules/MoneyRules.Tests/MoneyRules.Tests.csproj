@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.9" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.9" />
@@ -26,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MoneyRules.Application\MoneyRules.Application.csproj" />
     <ProjectReference Include="..\MoneyRules.Domain\MoneyRules.Domain.csproj" />
     <ProjectReference Include="..\MoneyRules.Infrastructure\MoneyRules.Infrastructure.csproj" />
     <ProjectReference Include="..\MoneyRules.Application\MoneyRules.Application.csproj" />
