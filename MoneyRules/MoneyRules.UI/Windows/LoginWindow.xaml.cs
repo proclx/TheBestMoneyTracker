@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
-using MoneyRules.Application.Services;
+using MoneyRules.Application.Interfaces;
 using Serilog;
 
 namespace MoneyRules.UI.Windows

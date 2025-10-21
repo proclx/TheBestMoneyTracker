@@ -1,3 +1,4 @@
+using MoneyRules.Application.Interfaces;
 using MoneyRules.Domain.Entities;
 using MoneyRules.Domain.Enums;
 

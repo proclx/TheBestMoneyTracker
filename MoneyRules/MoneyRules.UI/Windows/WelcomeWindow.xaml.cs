@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using MoneyRules.Application.Services;
+using MoneyRules.Application.Interfaces;
 
 namespace MoneyRules.UI.Windows
 {

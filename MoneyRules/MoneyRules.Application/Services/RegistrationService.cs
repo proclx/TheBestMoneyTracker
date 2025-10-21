@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using MoneyRules.Application.Interfaces;
 using MoneyRules.Domain.Entities;
 using MoneyRules.Domain.Enums;
 using MoneyRules.Infrastructure.Persistence;

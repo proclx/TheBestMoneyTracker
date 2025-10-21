@@ -3,6 +3,7 @@ using MoneyRules.Application.Services;
 using MoneyRules.UI.Windows;
 using MoneyRules.Infrastructure.Persistence;
 using System.Windows.Controls;
+using MoneyRules.Application.Interfaces;
 
 namespace MoneyRules.UI
 {

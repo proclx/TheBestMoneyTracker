@@ -1,6 +1,7 @@
 ﻿using MoneyRules.Domain.Entities;
 using MoneyRules.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using MoneyRules.Application.Interfaces;
 
 namespace MoneyRules.Application.Services
 {

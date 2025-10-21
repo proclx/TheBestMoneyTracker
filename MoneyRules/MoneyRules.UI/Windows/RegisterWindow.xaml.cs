@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using MoneyRules.Application.Interfaces;
 using MoneyRules.Application.Services;
 using MoneyRules.Infrastructure.Persistence;
 

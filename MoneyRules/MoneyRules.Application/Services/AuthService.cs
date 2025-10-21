@@ -3,6 +3,7 @@ using MoneyRules.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
+using MoneyRules.Application.Interfaces;
 
 namespace MoneyRules.Application.Services
 {

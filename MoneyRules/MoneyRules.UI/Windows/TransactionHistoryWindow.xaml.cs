@@ -1,4 +1,4 @@
-﻿using MoneyRules.Application.Services;
+﻿using MoneyRules.Application.Interfaces;
 using MoneyRules.Domain.Entities;
 using MoneyRules.Domain.Enums;
 using System.Windows;
