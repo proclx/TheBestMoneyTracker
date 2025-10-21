@@ -12,7 +12,7 @@ namespace MoneyRules.Infrastructure.Persistence
         {
             // Створюємо конфігурацію з appsettings.json
             var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory()) // поточна директорія при design-time
+                .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 

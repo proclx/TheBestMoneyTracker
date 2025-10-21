@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +6,7 @@ using Serilog;
 using MoneyRules.Infrastructure.Persistence;
 using MoneyRules.Application.Services;
 using MoneyRules.UI.Windows;
+using MoneyRules.Application.Interfaces;
 
 namespace MoneyRules.UI
 {
@@ -49,7 +49,6 @@ namespace MoneyRules.UI
 
                 ServiceProvider = services.BuildServiceProvider();
 
-                // Перевіримо БД
                 using (var scope = ServiceProvider.CreateScope())
                 {
                     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();

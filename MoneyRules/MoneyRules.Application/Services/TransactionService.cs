@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MoneyRules.Domain.Entities;
+﻿using MoneyRules.Domain.Entities;
 using MoneyRules.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using System;
+using MoneyRules.Application.Interfaces;
 
 namespace MoneyRules.Application.Services
 {

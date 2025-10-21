@@ -1,7 +1,6 @@
 using MoneyRules.Domain.Entities;
-using System.Collections.Generic;
 
-namespace MoneyRules.Application.Services
+namespace MoneyRules.Application.Interfaces
 {
     public interface IAdviceService
     {

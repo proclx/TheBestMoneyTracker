@@ -2,10 +2,11 @@
 {
     public class Settings
     {
-        public int SettingsId { get; set; }
+        public int UserId { get; set; } // PK and FK
         public string Currency { get; set; }
         public bool NotificationEnabled { get; set; }
-        public int UserId { get; set; }
+
+        // Navigation
         public User User { get; set; }
     }
 }

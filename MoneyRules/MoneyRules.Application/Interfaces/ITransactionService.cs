@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using MoneyRules.Domain.Entities;
+﻿using MoneyRules.Domain.Entities;
 
-namespace MoneyRules.Application.Services
+namespace MoneyRules.Application.Interfaces
 {
     public interface ITransactionService
     {

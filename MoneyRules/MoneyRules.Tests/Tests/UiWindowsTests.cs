@@ -3,10 +3,10 @@ using Moq;
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using MoneyRules.Application.Services;
 using MoneyRules.Domain.Entities;
 using MoneyRules.UI;
 using MoneyRules.UI.Windows;
+using MoneyRules.Application.Interfaces;
 
 namespace MoneyRules.Tests.Tests
 {
