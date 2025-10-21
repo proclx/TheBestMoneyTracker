@@ -1,11 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Configuration;
 using MoneyRules.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 
 namespace MoneyRules.Infrastructure.Persistence
 {
-    // Використовується під час runtime
     public class AppDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
@@ -14,24 +12,35 @@ namespace MoneyRules.Infrastructure.Persistence
         public DbSet<Category> Categories { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        public AppDbContext() : base() { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Fluent API для зв'язків
+            modelBuilder.Entity<Settings>()
+                .HasKey(s => s.UserId); // PK = FK
+
             modelBuilder.Entity<User>()
                 .HasOne(u => u.Settings)
                 .WithOne(s => s.User)
                 .HasForeignKey<Settings>(s => s.UserId);
 
             modelBuilder.Entity<User>()
-                .HasMany<Transaction>()
+                .HasMany(u => u.Transactions)
                 .WithOne(t => t.User)
-                .HasForeignKey(t => t.UserId);
+                .HasForeignKey(t => t.UserId)
+                .IsRequired();
 
             modelBuilder.Entity<User>()
-                .HasMany<Category>()
+                .HasMany(u => u.Categories)
                 .WithOne(c => c.User)
-                .HasForeignKey(c => c.UserId);
+                .HasForeignKey(c => c.UserId)
+                .IsRequired();
+
+            modelBuilder.Entity<Category>()
+                .HasMany(c => c.Transactions)
+                .WithOne(t => t.Category)
+                .HasForeignKey(t => t.CategoryId)
+                .IsRequired();
 
             base.OnModelCreating(modelBuilder);
         }
@@ -40,9 +49,8 @@ namespace MoneyRules.Infrastructure.Persistence
         {
             if (!optionsBuilder.IsConfigured)
             {
-                // Читаємо appsettings.json
                 var configuration = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory()) // поточна директорія при runtime
+                    .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                     .Build();
 
