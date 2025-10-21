@@ -9,6 +9,7 @@ namespace MoneyRules.Domain.Entities
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         public UserRole Role { get; set; }
+        public byte[] ProfilePhoto { get; set; }
 
         // One-to-One
         public Settings Settings { get; set; }
