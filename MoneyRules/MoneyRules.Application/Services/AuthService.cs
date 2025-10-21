@@ -1,7 +1,6 @@
 ﻿using MoneyRules.Domain.Entities;
 using MoneyRules.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Text;
 

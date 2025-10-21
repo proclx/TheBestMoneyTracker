@@ -1,14 +1,8 @@
 ﻿using System.Windows;
 using MoneyRules.Application.Services;
 using MoneyRules.UI.Windows;
-using WpfApp = System.Windows.Application;
-﻿using MoneyRules.Infrastructure.Persistence;
-using MoneyRules.UI.Windows;
-using MoneyRules.Application.Services;
-using System.Linq;
-using System.Windows;
+using MoneyRules.Infrastructure.Persistence;
 using System.Windows.Controls;
-
 
 namespace MoneyRules.UI
 {
@@ -25,7 +19,7 @@ namespace MoneyRules.UI
         private void OpenHistory_Click(object sender, RoutedEventArgs e)
         {
             // Отримуємо поточного користувача, який залогінився
-            if (WpfApp.Current.Properties["CurrentUser"] is not Domain.Entities.User currentUser)
+            if (System.Windows.Application.Current.Properties["CurrentUser"] is not Domain.Entities.User currentUser)
             {
                 MessageBox.Show("Користувач не знайдений. Увійдіть знову.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;

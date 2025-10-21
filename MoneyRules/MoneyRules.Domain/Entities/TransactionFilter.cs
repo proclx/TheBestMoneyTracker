@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MoneyRules.Domain.Enums;
+﻿using MoneyRules.Domain.Enums;
 
 namespace MoneyRules.Domain.Entities
 {

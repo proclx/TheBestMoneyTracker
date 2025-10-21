@@ -1,5 +1,4 @@
 using MoneyRules.Domain.Entities;
-using System.Collections.Generic;
 
 namespace MoneyRules.Application.Services
 {

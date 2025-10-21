@@ -30,12 +30,10 @@ namespace MoneyRules.UI.Windows
                     // Store the logged-in user in Application Properties so other controls can access it
                     System.Windows.Application.Current.Properties["CurrentUser"] = user;
 
-                    MessageBox.Show($"Вітаємо, {user.Name}!", "Успішний вхід", MessageBoxButton.OK, MessageBoxImage.Information);
+                    var mainWindow = app.ServiceProvider.GetRequiredService<MainWindow>();
+                    mainWindow.Show();
 
-                    var dashboard = app.ServiceProvider.GetRequiredService<MainWindow>();
-                    dashboard.Show();
-
-                    this.Close();
+                    Close();
                 }
                 else
                 {

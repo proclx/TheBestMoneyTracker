@@ -1,9 +1,6 @@
 ﻿using MoneyRules.Application.Services;
 using MoneyRules.Domain.Entities;
 using MoneyRules.Domain.Enums;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace MoneyRules.UI.Windows
