@@ -22,7 +22,7 @@ namespace MoneyRules.UI.Windows
 
         private void Register_Click(object sender, RoutedEventArgs e)
         {
-            var registerWindow = new RegisterWindow();
+            var registerWindow = new RegisterWindow(_authService);
             registerWindow.Show();
             Close();
         }

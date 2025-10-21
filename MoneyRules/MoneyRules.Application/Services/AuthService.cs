@@ -2,8 +2,9 @@
 using MoneyRules.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
-using System.Text;
+using System.Text.RegularExpressions;
 using MoneyRules.Application.Interfaces;
+using MoneyRules.Domain.Enums;
 
 namespace MoneyRules.Application.Services
 {
@@ -16,27 +17,90 @@ namespace MoneyRules.Application.Services
             _context = context;
         }
 
-        public async Task<User> LoginAsync(string email, string password)
+        public async Task<User?> LoginAsync(string email, string password)
         {
-            var user = await _context.Users
-                .Include(u => u.Settings)
-                .FirstOrDefaultAsync(u => u.Email == email);
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                throw new ArgumentException("Email та пароль не можуть бути порожніми.");
 
+            var normalizedEmail = email.Trim().ToLower();
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail);
             if (user == null)
                 return null;
 
-            if (VerifyPassword(password, user.PasswordHash))
-                return user;
-
-            return null;
+            return VerifyPassword(password, user.PasswordHash) ? user : null;
         }
 
-        private bool VerifyPassword(string password, string passwordHash)
+        public async Task<User> RegisterAsync(string name, string email, string password)
         {
-            using var sha256 = SHA256.Create();
-            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            var hash = Convert.ToBase64String(hashedBytes);
-            return hash == passwordHash;
+            if (!IsValidEmail(email))
+                throw new ArgumentException("Невірний формат email.");
+
+            if (password.Length < 6)
+                throw new ArgumentException("Пароль має містити щонайменше 6 символів.");
+
+            var normalizedEmail = email.Trim().ToLower();
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail);
+            if (existingUser != null)
+                throw new InvalidOperationException("Користувач з таким email вже існує.");
+
+            var passwordHash = HashPassword(password);
+
+            var user = new User
+            {
+                Name = name.Trim(),
+                Email = normalizedEmail,
+                PasswordHash = passwordHash,
+                Role = UserRole.User,
+                ProfilePhoto = Array.Empty<byte>(),
+                Settings = new Settings
+                {
+                    Currency = "USD",
+                    NotificationEnabled = true
+                }
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return user;
+        }
+
+        private string HashPassword(string password)
+        {
+            byte[] salt = RandomNumberGenerator.GetBytes(16);
+            byte[] hash = Rfc2898DeriveBytes.Pbkdf2(
+                password,
+                salt,
+                100_000,
+                HashAlgorithmName.SHA256,
+                32);
+
+            return $"{Convert.ToBase64String(salt)}:{Convert.ToBase64String(hash)}";
+        }
+
+        private bool VerifyPassword(string password, string storedHash)
+        {
+            var parts = storedHash.Split(':');
+            if (parts.Length != 2)
+                return false;
+
+            byte[] salt = Convert.FromBase64String(parts[0]);
+            byte[] stored = Convert.FromBase64String(parts[1]);
+
+            byte[] computed = Rfc2898DeriveBytes.Pbkdf2(
+                password,
+                salt,
+                100_000,
+                HashAlgorithmName.SHA256,
+                32);
+
+            return CryptographicOperations.FixedTimeEquals(stored, computed);
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            var pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            return Regex.IsMatch(email, pattern, RegexOptions.IgnoreCase);
         }
     }
 }

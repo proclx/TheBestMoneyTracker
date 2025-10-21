@@ -49,7 +49,6 @@ namespace MoneyRules.UI
 
                 ServiceProvider = services.BuildServiceProvider();
 
-                // Перевіримо БД
                 using (var scope = ServiceProvider.CreateScope())
                 {
                     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
