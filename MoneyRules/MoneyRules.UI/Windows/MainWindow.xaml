@@ -52,6 +52,58 @@
                     </GroupBox>
                 </StackPanel>
             </TabItem>
+            <TabItem Header="Профіль">
+                <Grid Margin="20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Profile Photo -->
+                    <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top">
+                        <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="10" Padding="5">
+                            <Image x:Name="ProfileImage" Width="150" Height="150" Stretch="UniformToFill"/>
+                        </Border>
+                        <Button x:Name="BtnChangePhoto" Content="Змінити фото" Margin="0,10,0,0" Click="BtnChangePhoto_Click"/>
+                    </StackPanel>
+
+                    <!-- User Info + Settings -->
+                    <StackPanel Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Top">
+                        <TextBlock Text="Інформація про користувача" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,5">
+                            <TextBlock Text="Ім'я:" Width="120" VerticalAlignment="Center"/>
+                            <TextBox x:Name="TxtName" Width="250"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,5">
+                            <TextBlock Text="Email:" Width="120" VerticalAlignment="Center"/>
+                            <TextBox x:Name="TxtEmail" Width="250"/>
+                        </StackPanel>
+
+                        <Separator Margin="0,15,0,15"/>
+
+                        <TextBlock Text="Налаштування" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,5">
+                            <TextBlock Text="Валюта:" Width="120" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="CmbCurrency" Width="150">
+                                <ComboBoxItem Content="USD"/>
+                                <ComboBoxItem Content="EUR"/>
+                                <ComboBoxItem Content="UAH"/>
+                                <ComboBoxItem Content="GBP"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,5">
+                            <TextBlock Text="Сповіщення:" Width="120" VerticalAlignment="Center"/>
+                            <CheckBox x:Name="ChkNotifications" Content="Enabled"/>
+                        </StackPanel>
+
+                        <Button x:Name="BtnSaveProfile" Content="Зберегти зміни" Width="150" Margin="0,20,0,0" Click="BtnSaveProfile_Click"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>
