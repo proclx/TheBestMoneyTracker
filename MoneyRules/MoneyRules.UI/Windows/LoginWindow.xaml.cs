@@ -1,18 +1,19 @@
 ﻿using System.Windows;
-using Microsoft.Extensions.DependencyInjection;
 using MoneyRules.Application.Interfaces;
-using Serilog;
+using MoneyRules.Domain.Entities;
 
 namespace MoneyRules.UI.Windows
 {
     public partial class LoginWindow : Window
     {
         private readonly IAuthService _authService;
+        private readonly ITransactionService _transactionService;
 
-        public LoginWindow(IAuthService authService)
+        public LoginWindow(IAuthService authService, ITransactionService transactionService)
         {
             InitializeComponent();
             _authService = authService;
+            _transactionService = transactionService;
         }
 
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -23,29 +24,37 @@ namespace MoneyRules.UI.Windows
             try
             {
                 var user = await _authService.LoginAsync(email, password);
+
                 if (user != null)
                 {
-                    // Save current user to application for other pages to access
-                    var app = (App)System.Windows.Application.Current;
-                    // Store the logged-in user in Application Properties so other controls can access it
+                    // Зберігаємо поточного користувача
                     System.Windows.Application.Current.Properties["CurrentUser"] = user;
 
-                    var mainWindow = app.ServiceProvider.GetRequiredService<MainWindow>();
+                    // Відкриваємо MainWindow із сервісами
+                    var mainWindow = new MainWindow(_transactionService, _authService);
                     mainWindow.Show();
 
-                    Close();
+                    this.Close();
                 }
                 else
                 {
                     MessageBox.Show("Невірний email або пароль.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
-                Log.Error(ex, "Помилка під час входу користувача");
-                MessageBox.Show($"Помилка: {ex.Message}\n\n{ex.StackTrace}", "Помилка при вході", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Помилка: {ex.Message}", "Помилка при вході", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
 
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Повертаємо користувача на WelcomeWindow
+            var welcomeWindow = new WelcomeWindow(_authService, _transactionService);
+            welcomeWindow.Show();
+            this.Close();
         }
     }
 }
+
+
