@@ -17,6 +17,7 @@ namespace MoneyRules.UI
 
         protected override void OnStartup(StartupEventArgs e)
         {
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.Console()

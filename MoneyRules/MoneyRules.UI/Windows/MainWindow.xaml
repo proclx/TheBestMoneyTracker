@@ -20,13 +20,34 @@
                         <Button Content="Видалити" Width="100" Margin="0,0,5,0"/>
                         <Button Content="Переглянути історію" Width="200" Click="OpenHistory_Click"/>
                     </StackPanel>
+                    <!-- Export PDF button moved below for better layout -->
+                    <StackPanel HorizontalAlignment="Center" Margin="0,12,0,0">
+                        <Button x:Name="BtnExportPdf" Content="Експорт PDF" Width="180" Height="36" Background="#1976D2" Foreground="White" FontWeight="SemiBold" Click="BtnExportPdf_Click"/>
+                    </StackPanel>
                 </StackPanel>
             </TabItem>
 
             <!-- Візуалізація -->
             <TabItem Header="Візуалізація">
                 <StackPanel Margin="10">
-                    <TextBlock Text="Тут будуть графіки доходів/витрат" FontStyle="Italic"/>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="Рік:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <ComboBox x:Name="CmbChartYear" Width="120" SelectionChanged="CmbChartYear_SelectionChanged" />
+                        <Button Content="Оновити" Margin="8,0,0,0" Click="BtnRefreshChart_Click" />
+                    </StackPanel>
+
+                    <Border BorderBrush="Gray" BorderThickness="1" Margin="0,10,0,0" Padding="8">
+                        <StackPanel>
+                            <Canvas x:Name="ChartCanvas" Height="260" Background="WhiteSmoke" />
+                            <TextBlock x:Name="TxtChartStatus" Margin="0,8,0,0" FontStyle="Italic"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <Rectangle Width="16" Height="12" Fill="Green" Stroke="Black" />
+                                <TextBlock Text=" Income" Margin="6,0,10,0" VerticalAlignment="Center" />
+                                <Rectangle Width="16" Height="12" Fill="Red" Stroke="Black" />
+                                <TextBlock Text=" Expense" Margin="6,0,0,0" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
             </TabItem>
 
