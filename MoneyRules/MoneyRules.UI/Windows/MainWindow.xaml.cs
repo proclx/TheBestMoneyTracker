@@ -17,6 +17,7 @@ namespace MoneyRules.UI
         private readonly IAdviceService _adviceService;
         private readonly AppDbContext _context = new AppDbContext();
         private User _currentUser;
+        
 
         public MainWindow(ITransactionService transactionService)
         {
@@ -181,5 +182,6 @@ namespace MoneyRules.UI
 
             MessageBox.Show("Profile updated successfully.");
         }
+       
     }
 }
