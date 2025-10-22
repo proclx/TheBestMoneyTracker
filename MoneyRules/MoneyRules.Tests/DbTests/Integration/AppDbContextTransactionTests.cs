@@ -34,13 +34,13 @@ namespace MoneyRules.Tests
             // Починаємо транзакцію
             // using var dbTransaction = _context.Database.BeginTransaction();
 
-            // 1️⃣ User + Settings
             var user = new User
             {
                 Name = "TestUser",
                 Email = "test@example.com",
                 PasswordHash = "123456",
                 Role = UserRole.Guest,
+                ProfilePhoto = Array.Empty<byte>(), // <-- обов'язково
                 Settings = new Settings
                 {
                     Currency = "USD",

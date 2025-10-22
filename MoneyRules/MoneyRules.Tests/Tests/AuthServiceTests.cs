@@ -1,12 +1,10 @@
+using System;
 using System.Threading.Tasks;
 using Xunit;
 using Microsoft.EntityFrameworkCore;
 using MoneyRules.Infrastructure.Persistence;
 using MoneyRules.Application.Services;
 using MoneyRules.Domain.Entities;
-using System.Security.Cryptography;
-using System.Text;
-using System;
 
 namespace MoneyRules.Tests.Services
 {
@@ -20,11 +18,21 @@ namespace MoneyRules.Tests.Services
             return new AppDbContext(options);
         }
 
-        private string HashPassword(string password)
+        [Fact]
+        public async Task RegisterAsync_NewUser_SavesAndReturnsUser()
         {
-            using var sha256 = SHA256.Create();
-            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(hashedBytes);
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var service = new AuthService(context);
+
+            // Act
+            var user = await service.RegisterAsync("John Doe", "john@example.com", "123456");
+
+            // Assert
+            Assert.NotNull(user);
+            Assert.Equal("john@example.com", user.Email);
+            Assert.NotNull(user.Settings);
+            Assert.Equal("USD", user.Settings.Currency);
         }
 
         [Fact]
@@ -32,23 +40,16 @@ namespace MoneyRules.Tests.Services
         {
             // Arrange
             var context = GetInMemoryDbContext();
-            var user = new User
-            {
-                Email = "test@example.com",
-                PasswordHash = HashPassword("password123"),
-                Name = "TestUser"
-            };
-            context.Users.Add(user);
-            await context.SaveChangesAsync();
-
             var service = new AuthService(context);
 
+            var registeredUser = await service.RegisterAsync("Mary", "mary@example.com", "123456");
+
             // Act
-            var result = await service.LoginAsync("test@example.com", "password123");
+            var result = await service.LoginAsync("mary@example.com", "123456");
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("test@example.com", result.Email);
+            Assert.Equal("mary@example.com", result.Email);
         }
 
         [Fact]
@@ -56,35 +57,49 @@ namespace MoneyRules.Tests.Services
         {
             // Arrange
             var context = GetInMemoryDbContext();
-            var user = new User
-            {
-               Name = "TestUser",
-               Email = "test@example.com",
-               PasswordHash = HashPassword("password123"),
-               Settings = new Settings { Currency = "USD", NotificationEnabled = true }
-            };
-
-            context.Users.Add(user);
-            await context.SaveChangesAsync();
-
             var service = new AuthService(context);
 
+            await service.RegisterAsync("Tom", "tom@example.com", "correctpass");
+
             // Act
-            var result = await service.LoginAsync("test@example.com", "wrongpass");
+            var result = await service.LoginAsync("tom@example.com", "wrongpass");
 
             // Assert
             Assert.Null(result);
         }
 
         [Fact]
-        public async Task LoginAsync_UserNotFound_ReturnsNull()
+        public async Task LoginAsync_UserNotExists_ReturnsNull()
+        {
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var service = new AuthService(context);
+
+            // Act
+            var result = await service.LoginAsync("unknown@example.com", "123456");
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task RegisterAsync_InvalidEmail_ThrowsException()
         {
             var context = GetInMemoryDbContext();
             var service = new AuthService(context);
 
-            var result = await service.LoginAsync("notfound@example.com", "pass");
+            await Assert.ThrowsAsync<ArgumentException>(async () =>
+                await service.RegisterAsync("Invalid Email", "invalid-email", "123456"));
+        }
 
-            Assert.Null(result);
+        [Fact]
+        public async Task RegisterAsync_ShortPassword_ThrowsException()
+        {
+            var context = GetInMemoryDbContext();
+            var service = new AuthService(context);
+
+            await Assert.ThrowsAsync<ArgumentException>(async () =>
+                await service.RegisterAsync("User", "user@example.com", "123"));
         }
     }
 }
