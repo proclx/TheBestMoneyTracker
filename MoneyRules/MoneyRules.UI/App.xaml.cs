@@ -1,19 +1,20 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using MoneyRules.Infrastructure.Persistence;
+using MoneyRules.Application.Interfaces;
 using MoneyRules.Application.Services;
 using MoneyRules.UI.Windows;
-using MoneyRules.Application.Interfaces;
 
 namespace MoneyRules.UI
 {
     public partial class App : System.Windows.Application
     {
-        public IServiceProvider ServiceProvider { get; private set; }
-        public IConfiguration Configuration { get; private set; }
+        public IServiceProvider ServiceProvider { get; private set; } = null!;
+        public IConfiguration Configuration { get; private set; } = null!;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -67,7 +68,5 @@ namespace MoneyRules.UI
 
             base.OnStartup(e);
         }
-
     }
 }
-

@@ -1,10 +1,12 @@
-﻿using MoneyRules.Domain.Entities;
-using MoneyRules.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+﻿using System;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using MoneyRules.Application.Interfaces;
+using MoneyRules.Domain.Entities;
 using MoneyRules.Domain.Enums;
+using MoneyRules.Infrastructure.Persistence;
 
 namespace MoneyRules.Application.Services
 {
@@ -17,6 +19,9 @@ namespace MoneyRules.Application.Services
             _context = context;
         }
 
+        /// <summary>
+        /// Вхід користувача — перевірка email і пароля.
+        /// </summary>
         public async Task<User?> LoginAsync(string email, string password)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
@@ -24,12 +29,16 @@ namespace MoneyRules.Application.Services
 
             var normalizedEmail = email.Trim().ToLower();
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail);
+
             if (user == null)
                 return null;
 
             return VerifyPassword(password, user.PasswordHash) ? user : null;
         }
 
+        /// <summary>
+        /// Реєстрація нового користувача.
+        /// </summary>
         public async Task<User> RegisterAsync(string name, string email, string password)
         {
             if (!IsValidEmail(email))
@@ -40,6 +49,7 @@ namespace MoneyRules.Application.Services
 
             var normalizedEmail = email.Trim().ToLower();
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail);
+
             if (existingUser != null)
                 throw new InvalidOperationException("Користувач з таким email вже існує.");
 
@@ -54,7 +64,7 @@ namespace MoneyRules.Application.Services
                 ProfilePhoto = Array.Empty<byte>(),
                 Settings = new Settings
                 {
-                    Currency = "USD",
+                    Currency = "UAH",
                     NotificationEnabled = true
                 }
             };
@@ -64,6 +74,8 @@ namespace MoneyRules.Application.Services
 
             return user;
         }
+
+        // --- ДОПОМІЖНІ МЕТОДИ ---
 
         private string HashPassword(string password)
         {

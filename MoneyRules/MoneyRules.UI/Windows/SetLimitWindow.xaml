@@ -1,0 +1,82 @@
+<Window x:Class="MoneyRules.UI.Windows.SetLimitWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Встановити місячний ліміт"
+        Height="260"
+        Width="400"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#F9F9F9">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <TextBlock Grid.Row="0"
+                   Text="Введіть дані для встановлення місячного ліміту"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   Foreground="#333"
+                   Margin="0,0,0,15"
+                   TextWrapping="Wrap" />
+
+        <!-- Поле для суми -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5">
+            <TextBlock Text="Сума (грн):" Width="120" VerticalAlignment="Center" />
+            <TextBox x:Name="AmountBox"
+                     Width="180"
+                     Height="25"
+                     HorizontalAlignment="Left"
+                     Margin="5,0,0,0"/>
+        </StackPanel>
+
+        <!-- Поле для місяця -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,5">
+            <TextBlock Text="Місяць (1–12):" Width="120" VerticalAlignment="Center" />
+            <TextBox x:Name="MonthBox"
+                     Width="180"
+                     Height="25"
+                     HorizontalAlignment="Left"
+                     Margin="5,0,0,0"/>
+        </StackPanel>
+
+        <!-- Поле для року -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,5">
+            <TextBlock Text="Рік:" Width="120" VerticalAlignment="Center" />
+            <TextBox x:Name="YearBox"
+                     Width="180"
+                     Height="25"
+                     HorizontalAlignment="Left"
+                     Margin="5,0,0,0"/>
+        </StackPanel>
+
+        <!-- Кнопка збереження -->
+        <Button Grid.Row="4"
+                Content="💾 Зберегти ліміт"
+                Width="160"
+                Height="30"
+                Margin="0,15,0,0"
+                HorizontalAlignment="Left"
+                Background="#4CAF50"
+                Foreground="White"
+                FontWeight="Bold"
+                Click="SaveLimit_Click"/>
+
+        <!-- Текст результату -->
+        <TextBlock x:Name="ResultText"
+                   Grid.Row="4"
+                   Margin="180,15,0,0"
+                   VerticalAlignment="Center"
+                   FontWeight="Bold"
+                   Foreground="Green"
+                   TextWrapping="Wrap"
+                   Text=""
+                   />
+    </Grid>
+</Window>

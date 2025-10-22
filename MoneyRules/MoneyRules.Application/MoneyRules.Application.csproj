@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MoneyRules.Domain\MoneyRules.Domain.csproj" />
     <ProjectReference Include="..\MoneyRules.Infrastructure\MoneyRules.Infrastructure.csproj" />
+
   </ItemGroup>
 
 </Project>

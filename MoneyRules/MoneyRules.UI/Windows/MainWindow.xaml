@@ -1,119 +1,59 @@
-﻿<Window x:Class="MoneyRules.UI.MainWindow"
+﻿<Window x:Class="MoneyRules.UI.Windows.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:MoneyRules.UI"
-        Title="MoneyRules" Height="500" Width="700">
+        xmlns:local="clr-namespace:MoneyRules.UI.Windows"
+        Title="MoneyRules"
+        Height="600"
+        Width="800"
+        WindowStartupLocation="CenterScreen">
+
     <Grid>
         <TabControl x:Name="MainTabControl">
-            <!-- Завантаження файлу -->
+
+            <!-- 📁 Завантаження файлу -->
             <TabItem Header="Завантаження файлу">
                 <local:FileUploadPage />
             </TabItem>
 
-            <!-- Редагування даних -->
+            <!-- 💸 Редагування даних -->
             <TabItem Header="Редагування даних">
-                <StackPanel Margin="-12,10,32,10">
+                <StackPanel Margin="10">
                     <TextBlock Text="Тут будуть транзакції та кнопки для редагування" Margin="5"/>
                     <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                         <Button Content="Додати транзакцію" Width="150" Margin="0,0,5,0" Click="AddTransactionButton_Click"/>
-                        <Button Content="Редагувати" Width="100" Margin="0,0,5,0"/>
-                        <Button Content="Видалити" Width="100" Margin="0,0,5,0"/>
-                        <Button Content="Переглянути історію" Width="200" Click="OpenHistory_Click"/>
+                        <Button Content="Переглянути історію" Width="200" Margin="0,0,5,0" Click="OpenHistory_Click"/>
+                        <Button Content="Встановити ліміт" Width="150" Click="BtnSetMonthlyLimit_Click"/>
                     </StackPanel>
                 </StackPanel>
             </TabItem>
 
-            <!-- Візуалізація -->
-            <TabItem Header="Візуалізація">
-                <StackPanel Margin="10">
-                    <TextBlock Text="Тут будуть графіки доходів/витрат" FontStyle="Italic"/>
-                </StackPanel>
-            </TabItem>
-
-            <!-- Підписка -->
-            <TabItem Header="Підписка">
-                <StackPanel Margin="10">
-                    <TextBlock Text="Активація преміум-підписки" Margin="0,0,0,5"/>
-                    <Button Content="Активувати підписку" Width="200"/>
-                    <TextBlock Text="Тут буде статус підписки" Margin="5"/>
-                </StackPanel>
-            </TabItem>
-
-            <!-- Поради -->
+            <!-- 💡 Поради -->
             <TabItem Header="Поради">
                 <StackPanel Margin="10">
-                    <TextBlock Text="Персональні поради на основі ваших транзакцій" FontStyle="Italic"/>
-                    <GroupBox Header="Поради щодо економії" Margin="0,10,0,0">
-                        <StackPanel>
-                            <ItemsControl x:Name="AdviceList" />
-                            <Button x:Name="RefreshAdviceButton" Content="Оновити поради" Width="150" Margin="0,8,0,0" Click="RefreshAdviceButton_Click" />
-                        </StackPanel>
-                    </GroupBox>
+                    <TextBlock Text="Поради на основі ваших транзакцій" FontStyle="Italic"/>
+                    <ItemsControl x:Name="AdviceList" Margin="0,10,0,0"/>
+                    <Button Content="Оновити поради" Width="150" Click="RefreshAdviceButton_Click"/>
                 </StackPanel>
             </TabItem>
 
-            <!-- Профіль -->
+            <!-- 👤 Профіль -->
             <TabItem Header="Профіль">
-                <Grid Margin="20">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="200"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <!-- Profile Photo -->
-                    <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top">
-                        <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="10" Padding="5">
-                            <Image x:Name="ProfileImage" Width="150" Height="150" Stretch="UniformToFill"/>
-                        </Border>
-                        <Button x:Name="BtnChangePhoto" Content="Змінити фото" Margin="0,10,0,0" Click="BtnChangePhoto_Click"/>
-                    </StackPanel>
-
-                    <!-- User Info + Settings -->
-                    <StackPanel Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Top">
-                        <TextBlock Text="Інформація про користувача" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
-
-                        <StackPanel Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Text="Ім'я:" Width="120" VerticalAlignment="Center"/>
-                            <TextBox x:Name="TxtName" Width="250"/>
-                        </StackPanel>
-
-                        <StackPanel Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Text="Email:" Width="120" VerticalAlignment="Center"/>
-                            <TextBox x:Name="TxtEmail" Width="250"/>
-                        </StackPanel>
-
-                        <Separator Margin="0,15,0,15"/>
-
-                        <TextBlock Text="Налаштування" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
-
-                        <StackPanel Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Text="Валюта:" Width="120" VerticalAlignment="Center"/>
-                            <ComboBox x:Name="CmbCurrency" Width="150">
-                                <ComboBoxItem Content="USD"/>
-                                <ComboBoxItem Content="EUR"/>
-                                <ComboBoxItem Content="UAH"/>
-                                <ComboBoxItem Content="GBP"/>
-                            </ComboBox>
-                        </StackPanel>
-
-                        <StackPanel Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Text="Сповіщення:" Width="120" VerticalAlignment="Center"/>
-                            <CheckBox x:Name="ChkNotifications" Content="Enabled"/>
-                        </StackPanel>
-
-                        <Button x:Name="BtnSaveProfile" Content="Зберегти зміни" Width="150" Margin="0,20,0,0" Click="BtnSaveProfile_Click"/>
-
-                        <!-- NEW: Logout Button -->
-                        <Button x:Name="BtnLogout"
-                                Content="Вийти з акаунту"
-                                Width="150"
-                                Margin="0,10,0,0"
-                                Background="#E57373"
-                                Foreground="White"
-                                Click="BtnLogout_Click"/>
-                    </StackPanel>
-                </Grid>
+                <StackPanel Margin="20">
+                    <Image x:Name="ProfileImage" Width="150" Height="150" Stretch="UniformToFill" Margin="0,0,0,10"/>
+                    <!-- ✅ Виправлено Click -->
+                    <Button Content="Змінити фото" Width="150" Margin="0,0,0,10" Click="BtnChangePhoto_Click"/>
+                    
+                    <TextBlock Text="Ім'я:"/>
+                    <TextBox x:Name="TxtName" Width="250" Margin="0,0,0,10"/>
+                    
+                    <TextBlock Text="Email:"/>
+                    <TextBox x:Name="TxtEmail" Width="250" Margin="0,0,0,10"/>
+                    
+                    <Button Content="Зберегти зміни" Width="150" Margin="0,0,0,10" Click="BtnSaveProfile_Click"/>
+                    <Button Content="Вийти з акаунту" Width="150" Background="#E57373" Foreground="White" Click="BtnLogout_Click"/>
+                </StackPanel>
             </TabItem>
+
         </TabControl>
     </Grid>
 </Window>
