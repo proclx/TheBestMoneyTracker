@@ -39,6 +39,7 @@ namespace MoneyRules.UI
                 // Сервіси
                 services.AddScoped<IAuthService, AuthService>();
                 services.AddScoped<ITransactionService, TransactionService>();
+                services.AddScoped<IUserProfileService, UserProfileService>();
 
                 // Вікна
                 services.AddTransient<WelcomeWindow>();

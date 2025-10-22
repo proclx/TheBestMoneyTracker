@@ -9,12 +9,14 @@ namespace MoneyRules.UI.Windows
     {
         private readonly IAuthService _authService;
         private readonly ITransactionService _transactionService;
+        private readonly IUserProfileService _profileService;
 
-        public RegisterWindow(IAuthService authService, ITransactionService transactionService)
+        public RegisterWindow(IAuthService authService, ITransactionService transactionService, IUserProfileService profileService)
         {
             InitializeComponent();
             _authService = authService;
             _transactionService = transactionService;
+            _profileService = profileService;
         }
 
         private async void Register_Click(object sender, RoutedEventArgs e)
@@ -41,13 +43,13 @@ namespace MoneyRules.UI.Windows
                     System.Windows.Application.Current.Properties["CurrentUser"] = user;
 
                     // Відкриваємо MainWindow
-                    var mainWindow = new MainWindow(_transactionService, _authService);
+                    var mainWindow = new MainWindow(_transactionService, _authService, _profileService);
                     mainWindow.Show();
                 }
                 else
                 {
                     // Повертаємо на WelcomeWindow
-                    var welcomeWindow = new WelcomeWindow(_authService, _transactionService);
+                    var welcomeWindow = new WelcomeWindow(_authService, _transactionService, _profileService);
                     welcomeWindow.Show();
                 }
 
@@ -62,7 +64,7 @@ namespace MoneyRules.UI.Windows
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             // Повертаємо на WelcomeWindow
-            var welcomeWindow = new WelcomeWindow(_authService, _transactionService);
+            var welcomeWindow = new WelcomeWindow(_authService, _transactionService, _profileService);
             welcomeWindow.Show();
             this.Close();
         }
