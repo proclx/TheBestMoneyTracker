@@ -5,5 +5,6 @@ namespace MoneyRules.Application.Interfaces
     public interface ITransactionService
     {
         Task<IEnumerable<Transaction>> GetTransactionsAsync(TransactionFilter filter);
+        Task<bool> DeleteTransactionAsync(int transactionId);
     }
 }
