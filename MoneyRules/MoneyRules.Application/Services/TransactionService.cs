@@ -14,6 +14,20 @@ namespace MoneyRules.Application.Services
             _context = context;
         }
 
+        public async Task<bool> DeleteTransactionAsync(int transactionId)
+        {
+            var transaction = await _context.Transactions
+                .FirstOrDefaultAsync(t => t.TransactionId == transactionId);
+
+            if (transaction == null)
+                return false;
+
+            _context.Transactions.Remove(transaction);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
         public async Task<IEnumerable<Transaction>> GetTransactionsAsync(TransactionFilter filter)
         {
             var query = _context.Transactions
@@ -27,7 +41,6 @@ namespace MoneyRules.Application.Services
             if (filter.CategoryId.HasValue)
                 query = query.Where(t => t.CategoryId == filter.CategoryId.Value);
 
-            // 🕒 Безпечне перетворення у UTC
             if (filter.FromDate.HasValue)
             {
                 var fromUtc = NormalizeToUtc(filter.FromDate.Value);
@@ -48,15 +61,12 @@ namespace MoneyRules.Application.Services
 
         private DateTime NormalizeToUtc(DateTime date)
         {
-            // Якщо дата без "Kind" — вважаємо її локальною і конвертуємо у UTC
             if (date.Kind == DateTimeKind.Unspecified)
                 return DateTime.SpecifyKind(date, DateTimeKind.Local).ToUniversalTime();
 
-            // Якщо локальна — просто переводимо у UTC
             if (date.Kind == DateTimeKind.Local)
                 return date.ToUniversalTime();
 
-            // Якщо вже UTC — нічого не робимо
             return date;
         }
     }
