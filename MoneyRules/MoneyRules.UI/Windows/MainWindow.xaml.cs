@@ -20,6 +20,7 @@ namespace MoneyRules.UI
         private readonly IAdviceService _adviceService;
         private readonly IUserProfileService _profileService;
         private User _currentUser;
+        
 
         public MainWindow(ITransactionService transactionService, IAuthService authService, IUserProfileService profileService)
         {
@@ -367,6 +368,7 @@ namespace MoneyRules.UI
 
             MessageBox.Show("Profile updated successfully.");
         }
+       
 
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {

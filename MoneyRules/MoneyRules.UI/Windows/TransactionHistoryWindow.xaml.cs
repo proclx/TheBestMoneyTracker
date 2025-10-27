@@ -11,6 +11,7 @@ namespace MoneyRules.UI.Windows
     {
         private readonly ITransactionService _transactionService;
         private readonly int _currentUserId;
+        private Transaction _selectedTransaction;
 
         public TransactionHistoryWindow(ITransactionService transactionService, int currentUserId)
         {
@@ -41,6 +42,25 @@ namespace MoneyRules.UI.Windows
             TransactionGrid.ItemsSource = transactions.ToList();
         }
 
+        private void TransactionGrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            _selectedTransaction = TransactionGrid.SelectedItem as Transaction;
+        }
+
+        private async void EditTransaction_Click(object sender, RoutedEventArgs e)
+        {
+            if (_selectedTransaction == null)
+            {
+                MessageBox.Show("Виберіть транзакцію для редагування.", "Увага", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var categories = await _transactionService.GetUserCategoriesAsync(_currentUserId);
+
+            var editWindow = new EditTransactionWindow(_transactionService, _selectedTransaction, categories);
+            editWindow.ShowDialog();
+
+            await LoadDataAsync();
         private async void DeleteTransaction_Click(object sender, RoutedEventArgs e)
         {
             if (sender is FrameworkElement element && element.Tag is int transactionId)

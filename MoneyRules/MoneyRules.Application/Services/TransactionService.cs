@@ -69,5 +69,17 @@ namespace MoneyRules.Application.Services
 
             return date;
         }
+        public async Task UpdateAsync(Transaction transaction)
+        {
+            _context.Transactions.Update(transaction);
+            await _context.SaveChangesAsync();
+        }
+        public async Task<List<Category>> GetUserCategoriesAsync(int userId)
+        {
+            return await _context.Categories
+                .Where(c => c.UserId == userId)
+                .ToListAsync();
+        }
+
     }
 }
