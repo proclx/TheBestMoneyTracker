@@ -1,6 +1,8 @@
 ﻿using MoneyRules.Application.Interfaces;
 using MoneyRules.Domain.Entities;
 using MoneyRules.Domain.Enums;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace MoneyRules.UI.Windows
@@ -16,7 +18,7 @@ namespace MoneyRules.UI.Windows
             InitializeComponent();
             _transactionService = transactionService;
             _currentUserId = currentUserId;
-            LoadDataAsync();
+            _ = LoadDataAsync();
         }
 
         private async Task LoadDataAsync()
@@ -59,6 +61,35 @@ namespace MoneyRules.UI.Windows
             editWindow.ShowDialog();
 
             await LoadDataAsync();
+        private async void DeleteTransaction_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement element && element.Tag is int transactionId)
+            {
+                await ConfirmAndDeleteAsync(transactionId);
+            }
+        }
+
+        private async Task ConfirmAndDeleteAsync(int transactionId)
+        {
+            var confirm = MessageBox.Show("Ви впевнені, що хочете видалити цю транзакцію?",
+                                          "Підтвердження",
+                                          MessageBoxButton.YesNo,
+                                          MessageBoxImage.Warning);
+
+            if (confirm == MessageBoxResult.Yes)
+            {
+                bool success = await _transactionService.DeleteTransactionAsync(transactionId);
+
+                if (success)
+                {
+                    MessageBox.Show("Транзакцію видалено.", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
+                    await LoadDataAsync();
+                }
+                else
+                {
+                    MessageBox.Show("Транзакцію не знайдено.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
     }
 }

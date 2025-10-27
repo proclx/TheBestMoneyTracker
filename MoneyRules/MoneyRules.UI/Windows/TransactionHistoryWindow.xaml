@@ -17,12 +17,35 @@
 
             <DataGrid x:Name="TransactionGrid" AutoGenerateColumns="False" Height="350" Margin="0,0,0,10"
                       SelectionMode="Single" SelectionUnit="FullRow" SelectionChanged="TransactionGrid_SelectionChanged">
+                <Button Content="Застосувати" Width="120" Click="ApplyFilter_Click"/>
+            </StackPanel>
+
+            <DataGrid x:Name="TransactionGrid"
+                      AutoGenerateColumns="False"
+                      Height="330"
+                      CanUserAddRows="False"
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      SelectionUnit="FullRow">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Дата" Binding="{Binding Date}" />
                     <DataGridTextColumn Header="Категорія" Binding="{Binding Category.Name}" />
                     <DataGridTextColumn Header="Тип" Binding="{Binding Type}" />
                     <DataGridTextColumn Header="Сума" Binding="{Binding Amount}" />
                     <DataGridTextColumn Header="Опис" Binding="{Binding Description}" />
+
+                    <DataGridTemplateColumn Header="Дії" Width="80">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Видалити"
+                                        Tag="{Binding TransactionId}"
+                                        Click="DeleteTransaction_Click"
+                                        Foreground="White"
+                                        Padding="5,2"
+                                        Cursor="Hand"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>
