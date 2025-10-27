@@ -61,6 +61,7 @@ namespace MoneyRules.UI.Windows
             editWindow.ShowDialog();
 
             await LoadDataAsync();
+        }
         private async void DeleteTransaction_Click(object sender, RoutedEventArgs e)
         {
             if (sender is FrameworkElement element && element.Tag is int transactionId)
