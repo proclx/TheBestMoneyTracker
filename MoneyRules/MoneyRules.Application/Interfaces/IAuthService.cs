@@ -6,5 +6,7 @@ namespace MoneyRules.Application.Interfaces
     {
         Task<User> LoginAsync(string email, string password);
         Task<User> RegisterAsync(string name, string email, string password);
+        Task ChangePasswordAsync(User user, string newPassword);
     }
 }
+
