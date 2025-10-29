@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Microsoft.Extensions.DependencyInjection;
 using MoneyRules.Application.Interfaces;
 using MoneyRules.Domain.Entities;
 
@@ -9,13 +10,22 @@ namespace MoneyRules.UI.Windows
         private readonly IAuthService _authService;
         private readonly ITransactionService _transactionService;
         private readonly IUserProfileService _profileService;
+        private readonly IAdviceService _adviceService;
+        private readonly ICurrencyService _currencyService;
 
-        public LoginWindow(IAuthService authService, ITransactionService transactionService, IUserProfileService profileService)
+        public LoginWindow(
+            IAuthService authService,
+            ITransactionService transactionService,
+            IUserProfileService profileService,
+            IAdviceService adviceService,
+            ICurrencyService currencyService)
         {
             InitializeComponent();
             _authService = authService;
             _transactionService = transactionService;
             _profileService = profileService;
+            _adviceService = adviceService;
+            _currencyService = currencyService;
         }
 
 
@@ -34,7 +44,8 @@ namespace MoneyRules.UI.Windows
                     System.Windows.Application.Current.Properties["CurrentUser"] = user;
 
                     // Відкриваємо MainWindow із сервісами
-                    var mainWindow = new MainWindow(_transactionService, _authService, _profileService);
+                    var mainWindow = (App.Current as App)?.ServiceProvider?.GetRequiredService<MainWindow>()
+                        ?? throw new InvalidOperationException("Could not create MainWindow");
                     mainWindow.Show();
 
                     this.Close();
@@ -53,7 +64,7 @@ namespace MoneyRules.UI.Windows
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             // Повертаємо користувача на WelcomeWindow
-            var welcomeWindow = new WelcomeWindow(_authService, _transactionService, _profileService);
+            var welcomeWindow = new WelcomeWindow(_authService, _transactionService, _profileService, _adviceService, _currencyService);
             welcomeWindow.Show();
             this.Close();
         }

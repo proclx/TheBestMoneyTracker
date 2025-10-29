@@ -30,8 +30,11 @@
             <TabItem Header="Візуалізація">
                 <StackPanel Margin="10">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="Рік:" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                        <ComboBox x:Name="CmbChartYear" Width="120" SelectionChanged="CmbChartYear_SelectionChanged" />
+                        <TextBlock Text="Рік:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                        <ComboBox x:Name="CmbChartYear" Width="100" SelectionChanged="CmbChartYear_SelectionChanged" />
+                        <TextBlock Text="Місяць:" VerticalAlignment="Center" Margin="8,0,4,0"/>
+                        <ComboBox x:Name="CmbChartMonth" Width="120" SelectionChanged="CmbChartYear_SelectionChanged" />
+                        <CheckBox x:Name="ChkMonthlyView" Content="Показати по днях" VerticalAlignment="Center" Margin="8,0,0,0" Checked="ChkMonthlyView_CheckedChanged" Unchecked="ChkMonthlyView_CheckedChanged" />
                         <Button Content="Оновити" Margin="8,0,0,0" Click="BtnRefreshChart_Click" />
                     </StackPanel>
 
@@ -86,6 +89,28 @@
                             <Image x:Name="ProfileImage" Width="150" Height="150" Stretch="UniformToFill"/>
                         </Border>
                         <Button x:Name="BtnChangePhoto" Content="Змінити фото" Margin="0,10,0,0" Click="BtnChangePhoto_Click"/>
+                        
+                        <!-- Currency Rates Panel -->
+                        <Border Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="1" 
+                                CornerRadius="8" Margin="0,20,0,0" Width="200">
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Курси валют" FontWeight="SemiBold" 
+                                         FontSize="14" HorizontalAlignment="Center"
+                                         Margin="0,0,0,10"/>
+                                <TextBlock x:Name="TxtExchangeRates" TextWrapping="Wrap"
+                                         FontFamily="Consolas"/>
+                                <Button x:Name="BtnRefreshRates" Content="Оновити курси"
+                                        Width="120" Margin="0,10,0,0"
+                                        Background="#2196F3" Foreground="White"
+                                        Padding="5" Click="BtnRefreshRates_Click">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="4"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
 
                     <!-- User Info + Settings -->
