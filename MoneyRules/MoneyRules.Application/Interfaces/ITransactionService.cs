@@ -9,5 +9,7 @@ namespace MoneyRules.Application.Interfaces
         Task<List<Category>> GetUserCategoriesAsync(int userId);
 
         Task<bool> DeleteTransactionAsync(int transactionId);
+        Task<Category> CreateCategoryAsync(Category category);
+
     }
 }

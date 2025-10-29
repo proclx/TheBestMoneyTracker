@@ -80,6 +80,22 @@ namespace MoneyRules.Application.Services
                 .Where(c => c.UserId == userId)
                 .ToListAsync();
         }
+        public async Task<Category> CreateCategoryAsync(Category category)
+        {
+            // Перевірка, чи така категорія вже існує
+            var existing = await _context.Categories
+                .FirstOrDefaultAsync(c =>
+                    c.Name.ToLower() == category.Name.ToLower() &&
+                    c.UserId == category.UserId);
+
+            if (existing != null)
+                return existing;
+
+            // Додаємо нову категорію
+            await _context.Categories.AddAsync(category);
+            await _context.SaveChangesAsync();
+            return category;
+        }
 
     }
 }
