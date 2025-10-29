@@ -65,7 +65,8 @@ namespace MoneyRules.Application.Services
             return user;
         }
 
-        private string HashPassword(string password)
+        // Зроблено публічним для повторного використання при зміні пароля
+        public string HashPassword(string password)
         {
             byte[] salt = RandomNumberGenerator.GetBytes(16);
             byte[] hash = Rfc2898DeriveBytes.Pbkdf2(
@@ -101,6 +102,16 @@ namespace MoneyRules.Application.Services
         {
             var pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
             return Regex.IsMatch(email, pattern, RegexOptions.IgnoreCase);
+        }
+
+        public async Task ChangePasswordAsync(User user, string newPassword)
+        {
+            if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 6)
+                throw new ArgumentException("Пароль має містити щонайменше 6 символів.");
+
+            user.PasswordHash = HashPassword(newPassword);
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
         }
     }
 }

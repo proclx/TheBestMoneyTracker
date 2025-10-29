@@ -416,5 +416,17 @@ namespace MoneyRules.UI
                 }
             }
         }
+        private void BtnChangePassword_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentUser == null)
+            {
+                MessageBox.Show("Користувач не завантажений.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var changePasswordWindow = new ChangePasswordWindow(_authService, _currentUser);
+            changePasswordWindow.Owner = this; // задаємо батьківське вікно
+            changePasswordWindow.ShowDialog();
+        }
     }
 }
