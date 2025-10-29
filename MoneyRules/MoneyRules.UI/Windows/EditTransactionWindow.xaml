@@ -21,14 +21,8 @@
             <ComboBoxItem Content="Expense"/>
         </ComboBox>
 
-		<TextBlock Text="Категорія:" Grid.Row="2" VerticalAlignment="Center"/>
-		<ComboBox x:Name="CmbCategory"
-				  Grid.Row="2"
-				  Margin="100,0,0,0"
-				  Width="200"
-				  DisplayMemberPath="Name"
-				  SelectedValuePath="CategoryId"/>
-
+        <TextBlock Text="Категорія:" Grid.Row="2" VerticalAlignment="Center"/>
+        <TextBox x:Name="TxtCategory" Grid.Row="2" Margin="100,0,0,0" Width="200"/>
 
 		<TextBlock Text="Дата:" Grid.Row="3" VerticalAlignment="Center"/>
         <DatePicker x:Name="DpDate" Grid.Row="3" Margin="100,0,0,0" Width="200"/>
