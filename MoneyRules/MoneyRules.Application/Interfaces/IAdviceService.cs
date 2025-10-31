@@ -10,5 +10,7 @@ namespace MoneyRules.Application.Interfaces
         /// <param name="transactions">All transactions for the user.</param>
         /// <returns>List of up to 3 advice strings.</returns>
         List<string> GetAdvice(IEnumerable<Transaction> transactions);
+        List<string> GetAdviceForUser(int userId);
+
     }
 }

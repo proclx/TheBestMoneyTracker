@@ -14,7 +14,7 @@ namespace MoneyRules.UI.Windows
     {
         private readonly ITransactionService _transactionService;
         private readonly int _currentUserId;
-        private Transaction _selectedTransaction;
+        private Transaction? _selectedTransaction;
         private bool _isFiltering = false;
 
         public TransactionHistoryWindow(ITransactionService transactionService, int currentUserId)

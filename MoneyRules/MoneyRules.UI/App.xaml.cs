@@ -12,8 +12,8 @@ namespace MoneyRules.UI
 {
     public partial class App : System.Windows.Application
     {
-        public IServiceProvider ServiceProvider { get; private set; }
-        public IConfiguration Configuration { get; private set; }
+        public IServiceProvider? ServiceProvider { get; set; }
+        public IConfiguration? Configuration { get; set; }
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -41,6 +41,10 @@ namespace MoneyRules.UI
                 services.AddScoped<IAuthService, AuthService>();
                 services.AddScoped<ITransactionService, TransactionService>();
                 services.AddScoped<IUserProfileService, UserProfileService>();
+                services.AddScoped<IAdviceService, AdviceService>();
+                services.AddScoped<IChartService, ChartService>();
+                services.AddScoped<ICurrencyService, CurrencyService>();
+
 
                 // Вікна
                 services.AddTransient<WelcomeWindow>();

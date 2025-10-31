@@ -1,12 +1,35 @@
 using MoneyRules.Application.Interfaces;
 using MoneyRules.Domain.Entities;
 using MoneyRules.Domain.Enums;
+using MoneyRules.Infrastructure.Persistence;// або твій простір імен, де знаходиться AppDbContext
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MoneyRules.Application.Services
 {
     public class AdviceService : IAdviceService
     {
-        // Returns up to 3 tips based on simple heuristics.
+        private readonly AppDbContext _dbContext;
+
+        public AdviceService(AppDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
+
+        // Метод для отримання порад із бази даних
+public List<string> GetAdviceForUser(int userId)
+{
+    var transactions = _dbContext.Transactions
+        .Where(t => t.UserId == userId)
+        .OrderByDescending(t => t.Date)
+        .ToList();
+
+    return GetAdvice(transactions);
+}
+
+
+        // Повертає до 3 порад на основі простих евристик
         public List<string> GetAdvice(IEnumerable<Transaction> transactions)
         {
             var tips = new List<string>();
@@ -18,15 +41,15 @@ namespace MoneyRules.Application.Services
 
             if (!txList.Any())
             {
-                tips.Add("Транзакцій не знайдено — почніть відстежувати покупи, щоб отримати персональні поради.");
+                tips.Add("Транзакцій не знайдено — почніть відстежувати покупки, щоб отримати персональні поради.");
                 return tips;
             }
-
 
             var expenseTx = txList.Where(t => t.Type == TransactionType.Expense).ToList();
             if (expenseTx.Any())
             {
-                var byCategory = expenseTx.GroupBy(t => t.Category?.Name ?? (t.Description ?? "(Без категорії)"))
+                var byCategory = expenseTx
+                    .GroupBy(t => t.Category?.Name ?? (t.Description ?? "(Без категорії)"))
                     .Select(g => new { Category = g.Key, Total = g.Sum(t => t.Amount) })
                     .OrderByDescending(x => x.Total)
                     .ToList();
@@ -35,13 +58,11 @@ namespace MoneyRules.Application.Services
                 tips.Add($"Ви витрачаєте найбільше на '{top.Category}' — розгляньте скорочення регулярних покупок або пошук дешевших альтернатив. (Витрачено {top.Total:C})");
             }
 
-
             var smallCount = txList.Count(t => Math.Abs(t.Amount) > 0 && Math.Abs(t.Amount) < 10);
             if (smallCount >= 5 && tips.Count < 3)
             {
                 tips.Add("Багато дрібних покупок накопичуються — перегляньте щоденні витрати (кава, снеки) і встановіть тижневий ліміт.");
             }
-
 
             if (txList.Any())
             {
@@ -60,8 +81,8 @@ namespace MoneyRules.Application.Services
                 }
             }
 
-
-            var generic = new[] {
+            var generic = new[]
+            {
                 "Складіть список покупок і уникайте імпульсивних покупок.",
                 "Скасуйте незатребувані підписки після швидкого аудиту.",
                 "Спробуйте переглянути або переговорити тарифи на регулярні платежі (інтернет, мобільний) або перейдіть на дешевший план."
