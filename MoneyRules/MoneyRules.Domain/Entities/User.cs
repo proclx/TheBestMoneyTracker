@@ -10,6 +10,8 @@ namespace MoneyRules.Domain.Entities
         public string PasswordHash { get; set; }
         public UserRole Role { get; set; }
         public byte[] ProfilePhoto { get; set; }
+        public string? RememberMeToken { get; set; }
+        public DateTime? RememberMeTokenExpiry { get; set; }
 
         // One-to-One
         public Settings Settings { get; set; }
