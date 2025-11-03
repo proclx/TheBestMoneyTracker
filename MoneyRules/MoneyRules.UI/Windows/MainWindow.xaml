@@ -88,7 +88,12 @@
                         <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="10" Padding="5">
                             <Image x:Name="ProfileImage" Width="150" Height="150" Stretch="UniformToFill"/>
                         </Border>
-                        <Button x:Name="BtnChangePhoto" Content="Змінити фото" Margin="0,10,0,0" Click="BtnChangePhoto_Click"/>
+                        <Button x:Name="BtnChangePhoto" 
+                                Content="Змінити фото" 
+                                Margin="0,10,0,0" 
+                                Click="BtnChangePhoto_Click"
+                                Background="#0078D7"     
+                                Foreground="White"/>
                         
                         <!-- Currency Rates Panel -->
                         <Border Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="1" 
