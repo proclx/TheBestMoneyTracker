@@ -4,15 +4,33 @@ using MoneyRules.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using Xunit;
+// --- ДОДАЙТЕ ЦІ РЯДКИ ---
+using Microsoft.EntityFrameworkCore;
+using MoneyRules.Infrastructure.Persistence;
+// --- КІНЕЦЬ ДОДАВАННЯ ---
 
 namespace MoneyRules.Tests.Tests
 {
     public class AdviceServiceTests
     {
+        // --- ДОДАНО ДОПОМІЖНИЙ МЕТОД ---
+        private AppDbContext GetInMemoryDbContext()
+        {
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            return new AppDbContext(options);
+        }
+        // --- КІНЕЦЬ ДОДАВАННЯ ---
+
         [Fact]
         public void ReturnsNoTransactionsMessage_WhenEmpty()
         {
-            var service = new AdviceService();
+            // --- ЗМІНЕНО ТУТ ---
+            var context = GetInMemoryDbContext();
+            var service = new AdviceService(context);
+            // --- КІНЕЦЬ ЗМІН ---
+
             var tips = service.GetAdvice(new List<Transaction>());
 
             Assert.Single(tips);
@@ -22,7 +40,10 @@ namespace MoneyRules.Tests.Tests
         [Fact]
         public void ReturnsUpToThreeTips_WhenTransactionsExist()
         {
-            var service = new AdviceService();
+            // --- ЗМІНЕНО ТУТ ---
+            var context = GetInMemoryDbContext();
+            var service = new AdviceService(context);
+            // --- КІНЕЦЬ ЗМІН ---
 
             var transactions = new List<Transaction>
             {

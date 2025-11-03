@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using MoneyRules.Application.Interfaces;
 using MoneyRules.Domain.Entities;
+using MoneyRules.UI.Utils; // <-- Додайте це
 
 namespace MoneyRules.UI.Windows
 {
@@ -9,7 +10,7 @@ namespace MoneyRules.UI.Windows
     {
         private readonly IAuthService _authService;
         private readonly ITransactionService _transactionService;
-        private readonly IUserProfileService _profileService;
+        private readonly IUserProfileService _profileService; // Припустимо, що у вас є ці сервіси
         private readonly IAdviceService _adviceService;
         private readonly ICurrencyService _currencyService;
 
@@ -28,20 +29,34 @@ namespace MoneyRules.UI.Windows
             _currencyService = currencyService;
         }
 
-
+        // --- ОНОВЛЕНИЙ МЕТОД ---
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             string email = EmailTextBox.Text;
             string password = PasswordBox.Password;
+            bool rememberMe = RememberMeCheckBox.IsChecked == true; // <-- Зчитуємо CheckBox
 
             try
             {
-                var user = await _authService.LoginAsync(email, password);
+                // Використовуємо новий метод сервісу
+                var result = await _authService.LoginAsync(email, password, rememberMe);
 
-                if (user != null)
+                if (result.IsSuccess && result.User != null)
                 {
+                    // --- НОВА ЛОГІКА ЗБЕРЕЖЕННЯ ТОКЕНА ---
+                    if (rememberMe && !string.IsNullOrEmpty(result.RememberMeToken))
+                    {
+                        SecureTokenStorage.SaveToken(result.RememberMeToken);
+                    }
+                    else
+                    {
+                        // Якщо "Remember Me" не обрано, чистимо старий токен
+                        SecureTokenStorage.ClearToken();
+                    }
+                    // --- КІНЕЦЬ НОВОЇ ЛОГІКИ ---
+
                     // Зберігаємо поточного користувача
-                    System.Windows.Application.Current.Properties["CurrentUser"] = user;
+                    System.Windows.Application.Current.Properties["CurrentUser"] = result.User;
 
                     // Відкриваємо MainWindow із сервісами
                     var mainWindow = (App.Current as App)?.ServiceProvider?.GetRequiredService<MainWindow>()
@@ -52,7 +67,7 @@ namespace MoneyRules.UI.Windows
                 }
                 else
                 {
-                    MessageBox.Show("Невірний email або пароль.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(result.ErrorMessage ?? "Невірний email або пароль.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (System.Exception ex)
@@ -64,11 +79,10 @@ namespace MoneyRules.UI.Windows
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             // Повертаємо користувача на WelcomeWindow
-            var welcomeWindow = new WelcomeWindow(_authService, _transactionService, _profileService, _adviceService, _currencyService);
+            var welcomeWindow = (App.Current as App)?.ServiceProvider?.GetRequiredService<WelcomeWindow>()
+                ?? new WelcomeWindow(_authService, _transactionService, _profileService, _adviceService, _currencyService); // Fallback
             welcomeWindow.Show();
             this.Close();
         }
     }
 }
-
-

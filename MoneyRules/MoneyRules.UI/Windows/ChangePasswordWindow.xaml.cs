@@ -2,6 +2,8 @@
 using System.Windows;
 using MoneyRules.Application.Interfaces;
 using MoneyRules.Domain.Entities;
+// Додайте це, якщо ваш LoginResult в DTOs
+using MoneyRules.Application.DTOs;
 
 namespace MoneyRules.UI.Windows
 {
@@ -39,13 +41,18 @@ namespace MoneyRules.UI.Windows
 
             try
             {
-                // Перевіряємо старий пароль
-                var loggedUser = await _authService.LoginAsync(_currentUser.Email, oldPassword);
-                if (loggedUser == null)
+                // --- ЗМІНЕНО ТУТ ---
+                // 1. Додано 'false' для параметра rememberMe
+                // 2. Змінено 'loggedUser' на 'loginResult'
+                var loginResult = await _authService.LoginAsync(_currentUser.Email, oldPassword, false);
+
+                // 3. Перевіряємо 'loginResult.IsSuccess' замість 'loggedUser == null'
+                if (!loginResult.IsSuccess)
                 {
                     MessageBox.Show("Старий пароль невірний.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
+                // --- КІНЕЦЬ ЗМІН ---
 
                 // Змінюємо пароль
                 await _authService.ChangePasswordAsync(_currentUser, newPassword);
@@ -60,4 +67,3 @@ namespace MoneyRules.UI.Windows
         }
     }
 }
-

@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using MoneyRules.Application.Interfaces;
 using MoneyRules.Domain.Enums;
+using MoneyRules.Application.DTOs; // <-- Додайте це
 
 namespace MoneyRules.Application.Services
 {
@@ -17,19 +18,73 @@ namespace MoneyRules.Application.Services
             _context = context;
         }
 
-        public async Task<User?> LoginAsync(string email, string password)
+        // --- ПОВНІСТЮ ОНОВЛЕНИЙ МЕТОД LOGINASYNC ---
+        public async Task<LoginResult> LoginAsync(string email, string password, bool rememberMe)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-                throw new ArgumentException("Email та пароль не можуть бути порожніми.");
+            {
+                return new LoginResult { IsSuccess = false, ErrorMessage = "Email та пароль не можуть бути порожніми." };
+            }
 
             var normalizedEmail = email.Trim().ToLower();
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail);
-            if (user == null)
-                return null;
 
-            return VerifyPassword(password, user.PasswordHash) ? user : null;
+            if (user == null || !VerifyPassword(password, user.PasswordHash))
+            {
+                return new LoginResult { IsSuccess = false, ErrorMessage = "Невірний email або пароль." };
+            }
+
+            // Успішний логін, тепер обробляємо "Remember Me"
+            string? rememberToken = null;
+            if (rememberMe)
+            {
+                // Генеруємо безпечний токен
+                rememberToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+                user.RememberMeToken = rememberToken;
+                user.RememberMeTokenExpiry = DateTime.UtcNow.AddDays(30); // Токен дійсний 30 днів
+            }
+            else
+            {
+                // Якщо "Remember Me" не обрано, скидаємо будь-які старі токени
+                user.RememberMeToken = null;
+                user.RememberMeTokenExpiry = null;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new LoginResult
+            {
+                IsSuccess = true,
+                User = user,
+                RememberMeToken = rememberToken // Повертаємо токен (буде null, якщо rememberMe=false)
+            };
         }
 
+        // --- НОВИЙ МЕТОД ---
+        public async Task<User?> LoginWithTokenAsync(string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                return null;
+            }
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.RememberMeToken == token &&
+                                          u.RememberMeTokenExpiry > DateTime.UtcNow);
+
+            // Якщо токен дійсний, оновимо його, щоб продовжити "сесію"
+            if (user != null)
+            {
+                user.RememberMeTokenExpiry = DateTime.UtcNow.AddDays(30);
+                await _context.SaveChangesAsync();
+            }
+
+            return user; // Поверне null, якщо токен не знайдено або він прострочений
+        }
+
+        // ... ваші існуючі методи RegisterAsync, HashPassword, VerifyPassword, IsValidEmail, ChangePasswordAsync ...
+        // ... (скопіюйте їх сюди без змін) ...
+        #region Existing Methods
         public async Task<User> RegisterAsync(string name, string email, string password)
         {
             if (!IsValidEmail(email))
@@ -65,7 +120,6 @@ namespace MoneyRules.Application.Services
             return user;
         }
 
-        // Зроблено публічним для повторного використання при зміні пароля
         public string HashPassword(string password)
         {
             byte[] salt = RandomNumberGenerator.GetBytes(16);
@@ -113,5 +167,6 @@ namespace MoneyRules.Application.Services
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
+        #endregion
     }
 }
