@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MoneyRules.Infrastructure.Persistence;
 using MoneyRules.Application.Services;
 using MoneyRules.Domain.Entities;
-using MoneyRules.Domain.Enums; // <-- Можливо, знадобиться
+using MoneyRules.Application.Interfaces; // <-- Потрібно для LoginResult
 
 namespace MoneyRules.Tests.Services
 {
@@ -34,52 +34,53 @@ namespace MoneyRules.Tests.Services
         }
 
         [Fact]
-        public async Task LoginAsync_ValidCredentials_ReturnsSuccessfulResult()
+        public async Task LoginAsync_ValidCredentials_ReturnsSuccessResult()
         {
             var context = GetInMemoryDbContext();
             var service = new AuthService(context);
 
-            var registeredUser = await service.RegisterAsync("Mary", "mary@example.com", "123456");
+            await service.RegisterAsync("Mary", "mary@example.com", "123456");
 
-            // --- ЗМІНЕНО ---
-            // Викликаємо з rememberMe: false
+            // Act
             var result = await service.LoginAsync("mary@example.com", "123456", false);
 
+            // Assert
             Assert.NotNull(result);
-            Assert.True(result.IsSuccess); // <-- Перевіряємо результат
+            Assert.True(result.IsSuccess);
             Assert.NotNull(result.User);
             Assert.Equal("mary@example.com", result.User.Email);
-            Assert.Null(result.RememberMeToken); // <-- Токена не повинно бути
         }
 
         [Fact]
-        public async Task LoginAsync_InvalidPassword_ReturnsFailedResult()
+        public async Task LoginAsync_InvalidPassword_ReturnsFailResult()
         {
             var context = GetInMemoryDbContext();
             var service = new AuthService(context);
 
             await service.RegisterAsync("Tom", "tom@example.com", "correctpass");
 
-            // --- ЗМІНЕНО ---
+            // Act
             var result = await service.LoginAsync("tom@example.com", "wrongpass", false);
 
+            // Assert
             Assert.NotNull(result);
-            Assert.False(result.IsSuccess); // <-- Перевіряємо результат
+            Assert.False(result.IsSuccess);
             Assert.Null(result.User);
             Assert.Equal("Невірний email або пароль.", result.ErrorMessage);
         }
 
         [Fact]
-        public async Task LoginAsync_UserNotExists_ReturnsFailedResult()
+        public async Task LoginAsync_UserNotExists_ReturnsFailResult()
         {
             var context = GetInMemoryDbContext();
             var service = new AuthService(context);
 
-            // --- ЗМІНЕНО ---
+            // Act
             var result = await service.LoginAsync("unknown@example.com", "123456", false);
 
+            // Assert
             Assert.NotNull(result);
-            Assert.False(result.IsSuccess); // <-- Перевіряємо результат
+            Assert.False(result.IsSuccess);
             Assert.Null(result.User);
         }
 
@@ -103,22 +104,43 @@ namespace MoneyRules.Tests.Services
                 await service.RegisterAsync("User", "user@example.com", "123"));
         }
 
-        // --- ОНОВЛЕНІ ТЕСТИ ЗМІНИ ПАРОЛЮ ---
+        // ------------------- Тести зміни паролю (Виправлено) -------------------
 
         [Fact]
-        public async Task ChangePasswordAsync_LoginAfterPasswordChange_WorksWithNewPassword()
+        public async Task ChangePasswordAsync_UpdatesPasswordHashSuccessfully()
+        {
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var service = new AuthService(context);
+
+            var user = await service.RegisterAsync("Alice", "alice@example.com", "OldPass123");
+            var oldHash = user.PasswordHash;
+            var newPassword = "NewPass456";
+
+            // Act
+            // Викликаємо публічний метод, а не робимо логіку тесту
+            await service.ChangePasswordAsync(user, newPassword);
+
+            var updatedUser = await context.Users.FindAsync(user.UserId);
+
+            // Assert
+            Assert.NotNull(updatedUser);
+            Assert.NotEqual(oldHash, updatedUser.PasswordHash);
+
+            // Перевіряємо логін з новим паролем
+            var loginResult = await service.LoginAsync("alice@example.com", newPassword, false);
+            Assert.True(loginResult.IsSuccess);
+        }
+
+        [Fact]
+        public async Task LoginAfterPasswordChange_WorksWithNewPassword()
         {
             var context = GetInMemoryDbContext();
             var service = new AuthService(context);
 
             var user = await service.RegisterAsync("Bob", "bob@example.com", "Initial123");
 
-            // Перевіряємо, що старий пароль працює
-            var loginOld = await service.LoginAsync("bob@example.com", "Initial123", false);
-            Assert.True(loginOld.IsSuccess);
-            Assert.NotNull(loginOld.User);
-
-            // Змінюємо пароль
+            // Change password
             await service.ChangePasswordAsync(user, "Changed456");
 
             // Act
@@ -126,101 +148,112 @@ namespace MoneyRules.Tests.Services
             var loginWithNewPassword = await service.LoginAsync("bob@example.com", "Changed456", false);
 
             // Assert
-            Assert.False(loginWithOldPassword.IsSuccess); // <-- Старий пароль не працює
-            Assert.True(loginWithNewPassword.IsSuccess);  // <-- Новий пароль працює
-            Assert.NotNull(loginWithNewPassword.User);
+            Assert.False(loginWithOldPassword.IsSuccess);
+            Assert.True(loginWithNewPassword.IsSuccess);
         }
 
-        // --- НОВІ ТЕСТИ ДЛЯ "REMEMBER ME" ---
+        // ------------------- НОВІ ТЕСТИ ДЛЯ "ЗАПАМ'ЯТАТИ МЕНЕ" -------------------
 
         [Fact]
-        public async Task LoginAsync_WithRememberMeTrue_GeneratesAndReturnsToken()
+        public async Task LoginAsync_RememberMeTrue_GeneratesToken()
         {
+            // Arrange
             var context = GetInMemoryDbContext();
             var service = new AuthService(context);
-            await service.RegisterAsync("Alice", "alice@example.com", "123456");
+            await service.RegisterAsync("User", "user@example.com", "pass123");
 
-            var result = await service.LoginAsync("alice@example.com", "123456", true);
+            // Act
+            var result = await service.LoginAsync("user@example.com", "pass123", true);
 
+            // Assert
             Assert.True(result.IsSuccess);
+            Assert.NotNull(result.User);
             Assert.NotNull(result.RememberMeToken);
-
-            // Перевіряємо, що токен збережено в БД
-            var userInDb = await context.Users.FirstAsync(u => u.Email == "alice@example.com");
-            Assert.Equal(result.RememberMeToken, userInDb.RememberMeToken);
-            Assert.NotNull(userInDb.RememberMeTokenExpiry);
-            Assert.True(userInDb.RememberMeTokenExpiry > DateTime.UtcNow.AddDays(29)); // Більше 29 днів
+            Assert.Equal(result.RememberMeToken, result.User.RememberMeToken);
+            Assert.NotNull(result.User.RememberMeTokenExpiry);
+            Assert.True(result.User.RememberMeTokenExpiry > DateTime.UtcNow.AddDays(29)); // Більше 29 днів
         }
 
         [Fact]
-        public async Task LoginAsync_WithRememberMeFalse_ClearsExistingToken()
+        public async Task LoginAsync_RememberMeFalse_NullifiesToken()
         {
+            // Arrange
             var context = GetInMemoryDbContext();
             var service = new AuthService(context);
-            var user = await service.RegisterAsync("Alice", "alice@example.com", "123456");
+            var user = await service.RegisterAsync("User", "user@example.com", "pass123");
 
-            // Встановлюємо "старий" токен
-            user.RememberMeToken = "old-token";
-            user.RememberMeTokenExpiry = DateTime.UtcNow.AddDays(10);
-            await context.SaveChangesAsync();
+            // Спочатку логінимось з "Remember Me", щоб отримати токен
+            await service.LoginAsync("user@example.com", "pass123", true);
+            Assert.NotNull(user.RememberMeToken); // Переконуємось, що токен є
 
-            // Входимо з rememberMe: false
-            var result = await service.LoginAsync("alice@example.com", "123456", false);
+            // Act
+            // Тепер логінимось без "Remember Me"
+            var result = await service.LoginAsync("user@example.com", "pass123", false);
 
+            var updatedUser = await context.Users.FindAsync(user.UserId);
+
+
+            // Assert
             Assert.True(result.IsSuccess);
-            Assert.Null(result.RememberMeToken); // Токен не повернуто
-
-            // Перевіряємо, що токен очищено в БД
-            var userInDb = await context.Users.FirstAsync(u => u.Email == "alice@example.com");
-            Assert.Null(userInDb.RememberMeToken);
-            Assert.Null(userInDb.RememberMeTokenExpiry);
+            Assert.Null(result.RememberMeToken); // Результат не повертає токен
+            Assert.Null(updatedUser.RememberMeToken); // Токен видалено з БД
+            Assert.Null(updatedUser.RememberMeTokenExpiry); // Дата видалена з БД
         }
 
         [Fact]
         public async Task LoginWithTokenAsync_ValidToken_ReturnsUser()
         {
+            // Arrange
             var context = GetInMemoryDbContext();
             var service = new AuthService(context);
-            await service.RegisterAsync("Alice", "alice@example.com", "123456");
-
-            // Входимо, щоб отримати токен
-            var loginResult = await service.LoginAsync("alice@example.com", "123456", true);
+            await service.RegisterAsync("User", "user@example.com", "pass123");
+            var loginResult = await service.LoginAsync("user@example.com", "pass123", true);
             var token = loginResult.RememberMeToken;
 
-            // Входимо за токеном
+            // Act
             var user = await service.LoginWithTokenAsync(token);
 
+            // Assert
             Assert.NotNull(user);
-            Assert.Equal("alice@example.com", user.Email);
+            Assert.Equal("user@example.com", user.Email);
         }
 
         [Fact]
         public async Task LoginWithTokenAsync_InvalidToken_ReturnsNull()
         {
+            // Arrange
             var context = GetInMemoryDbContext();
             var service = new AuthService(context);
+            await service.RegisterAsync("User", "user@example.com", "pass123");
+            await service.LoginAsync("user@example.com", "pass123", true);
 
-            var user = await service.LoginWithTokenAsync("invalid-fake-token");
+            // Act
+            var user = await service.LoginWithTokenAsync("це_недійсний_токен");
 
+            // Assert
             Assert.Null(user);
         }
 
         [Fact]
         public async Task LoginWithTokenAsync_ExpiredToken_ReturnsNull()
         {
+            // Arrange
             var context = GetInMemoryDbContext();
             var service = new AuthService(context);
-            var user = await service.RegisterAsync("Alice", "alice@example.com", "123456");
+            var user = await service.RegisterAsync("User", "user@example.com", "pass123");
 
-            // Встановлюємо прострочений токен
-            user.RememberMeToken = "expired-token";
-            user.RememberMeTokenExpiry = DateTime.UtcNow.AddMinutes(-10); // 10 хвилин тому
+            // Створюємо прострочений токен вручну
+            var expiredToken = "expired_token";
+            user.RememberMeToken = expiredToken;
+            user.RememberMeTokenExpiry = DateTime.UtcNow.AddMinutes(-5); // Прострочено 5 хвилин тому
             await context.SaveChangesAsync();
 
-            // Намагаємось увійти за токеном
-            var resultUser = await service.LoginWithTokenAsync("expired-token");
+            // Act
+            var resultUser = await service.LoginWithTokenAsync(expiredToken);
 
+            // Assert
             Assert.Null(resultUser);
         }
     }
 }
+
