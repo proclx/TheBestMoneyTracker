@@ -168,5 +168,43 @@ namespace MoneyRules.Application.Services
             await _context.SaveChangesAsync();
         }
         #endregion
+
+        private readonly Dictionary<string, string> _confirmationCodes = new();
+
+        public async Task<bool> CheckEmailExistsAsync(string email)
+        {
+            return await _context.Users.AnyAsync(u => u.Email == email);
+        }
+
+        public string GenerateConfirmationCode(string email)
+        {
+            var code = new Random().Next(100000, 999999).ToString();
+            _confirmationCodes[email] = code;
+            return code;
+        }
+
+        public async Task<bool> VerifyConfirmationCodeAsync(string email, string code)
+        {
+            return _confirmationCodes.ContainsKey(email) && _confirmationCodes[email] == code;
+        }
+
+        public async Task<bool> ResetPasswordAsync(string email, string newPassword)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+                return false;
+
+            user.PasswordHash = HashPassword(newPassword);
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            // видаляємо код підтвердження, щоб не можна було використати повторно
+            if (_confirmationCodes.ContainsKey(email))
+                _confirmationCodes.Remove(email);
+
+            return true;
+        }
+
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using MoneyRules.Application.Interfaces;
 using MoneyRules.Domain.Entities;
@@ -84,5 +85,11 @@ namespace MoneyRules.UI.Windows
             welcomeWindow.Show();
             this.Close();
         }
+        private void ForgotPassword_Click(object sender, MouseButtonEventArgs e)
+        {
+            var window = new ForgotPasswordWindow(_authService);
+            window.ShowDialog();
+        }
+
     }
 }
