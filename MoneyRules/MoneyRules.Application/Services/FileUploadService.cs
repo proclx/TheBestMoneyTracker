@@ -15,7 +15,7 @@ namespace MoneyRules.Application.Services
     {
         private readonly AppDbContext _db;
 
-        // Сервіс отримує AppDbContext через Dependency Injection
+
         public FileUploadService(AppDbContext dbContext)
         {
             _db = dbContext;
@@ -118,7 +118,7 @@ namespace MoneyRules.Application.Services
             await _db.SaveChangesAsync();
         }
 
-        // --- ЛОГІКА ПАРСИНГУ (перенесена сюди) ---
+
 
         private List<Transaction> ParseDefaultCsv(string[] lines, int userId)
         {

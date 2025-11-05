@@ -3,27 +3,24 @@ using System.Windows;
 using System.Windows.Controls;
 using System.IO;
 using MoneyRules.Domain.Entities;
-using MoneyRules.Application.Interfaces; // Імпорт інтерфейсу
+using MoneyRules.Application.Interfaces; 
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic; // Для Func
 
-//
-// КРИТИЧНЕ ВИПРАВЛЕННЯ: 
-// Простір імен змінено на MoneyRules.UI.Windows
-//
+
 namespace MoneyRules.UI.Windows 
 {
     public partial class FileUploadPage : UserControl
     {
         public FileUploadPage()
         {
-            // Тепер InitializeComponent() буде знайдено
+
             InitializeComponent();
         }
 
-        // Тепер UploadDefaultFile_Click буде знайдено
+
         private async void UploadDefaultFile_Click(object sender, RoutedEventArgs e)
         {
             await ProcessFileAsync(
@@ -31,7 +28,7 @@ namespace MoneyRules.UI.Windows
             );
         }
 
-        // Тепер UploadMonobankFile_Click буде знайдено
+
         private async void UploadMonobankFile_Click(object sender, RoutedEventArgs e)
         {
             await ProcessFileAsync(
@@ -48,7 +45,7 @@ namespace MoneyRules.UI.Windows
             
             if (openFileDialog.ShowDialog() != true)
             {
-                // Тепер StatusText буде знайдено
+
                 StatusText.Text = "Завантаження скасовано";
                 return;
             }
