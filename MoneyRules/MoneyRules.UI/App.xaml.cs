@@ -52,6 +52,7 @@ namespace MoneyRules.UI
                 services.AddScoped<IAdviceService, AdviceService>();
                 services.AddScoped<IChartService, ChartService>();
                 services.AddScoped<ICurrencyService, CurrencyService>();
+                services.AddScoped<IFileUploadService, FileUploadService>();
 
                 // Вікна
                 services.AddTransient<WelcomeWindow>();

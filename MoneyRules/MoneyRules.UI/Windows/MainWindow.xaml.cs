@@ -9,9 +9,11 @@ using System.IO;
 using System.Linq;
 using System.Windows.Media.Imaging;
 using MoneyRules.Infrastructure.Persistence;
-// ...existing using directives...
+using Microsoft.Extensions.DependencyInjection; 
+using System;
+using System.Collections.Generic;
 
-namespace MoneyRules.UI
+namespace MoneyRules.UI.Windows
 {
     public partial class MainWindow : Window
     {
@@ -21,6 +23,7 @@ namespace MoneyRules.UI
         private readonly IUserProfileService _profileService;
         private readonly IChartService _chartService;
         private readonly ICurrencyService _currencyService;
+        private readonly IFileUploadService _fileUploadService;
         private User? _currentUser;
         
 
@@ -30,7 +33,8 @@ namespace MoneyRules.UI
             IUserProfileService profileService,
             IAdviceService adviceService,
             IChartService chartService,
-            ICurrencyService currencyService)
+            ICurrencyService currencyService,
+            IFileUploadService fileUploadService)
         {
             InitializeComponent();
             _transactionService = transactionService;
@@ -39,6 +43,7 @@ namespace MoneyRules.UI
             _profileService = profileService;
             _chartService = chartService;
             _currencyService = currencyService;
+            _fileUploadService = fileUploadService;
 
             _currentUser = System.Windows.Application.Current.Properties["CurrentUser"] as User;
             if (_currentUser == null)
