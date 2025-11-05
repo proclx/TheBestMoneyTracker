@@ -13,5 +13,6 @@ namespace MoneyRules.Domain.Entities
 
         // Optional: collection of Transactions in this category
         public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
+        public ICollection<ScheduledPayment> ScheduledPayments { get; set; } = new List<ScheduledPayment>();
     }
 }

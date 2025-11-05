@@ -53,6 +53,7 @@ namespace MoneyRules.UI
                 services.AddScoped<IChartService, ChartService>();
                 services.AddScoped<ICurrencyService, CurrencyService>();
                 services.AddScoped<IFileUploadService, FileUploadService>();
+                services.AddScoped<IScheduledPaymentService, ScheduledPaymentService>();
 
                 // Вікна
                 services.AddTransient<WelcomeWindow>();
@@ -60,6 +61,7 @@ namespace MoneyRules.UI
                 services.AddTransient<MainWindow>();
                 services.AddTransient<RegisterWindow>();
                 services.AddTransient<AddTransactionWindow>();
+                services.AddTransient<ScheduledPaymentsWindow>();
 
                 ServiceProvider = services.BuildServiceProvider();
                 Log.Debug("OnStartup: ServiceProvider створено.");

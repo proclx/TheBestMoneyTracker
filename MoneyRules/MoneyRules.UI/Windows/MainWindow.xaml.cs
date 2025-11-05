@@ -12,6 +12,7 @@ using MoneyRules.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection; 
 using System;
 using System.Collections.Generic;
+using MoneyRules.UI;
 
 namespace MoneyRules.UI.Windows
 {
@@ -643,6 +644,26 @@ private void LoadAdvice()
             var changePasswordWindow = new ChangePasswordWindow(_authService, _currentUser);
             changePasswordWindow.Owner = this; // задаємо батьківське вікно
             changePasswordWindow.ShowDialog();
+        }
+
+        private void BtnScheduledPayments_Click(object sender, RoutedEventArgs e)
+        {
+            var app = System.Windows.Application.Current as App;
+            if (app == null || app.ServiceProvider == null)
+            {
+                MessageBox.Show("Не вдалося отримати доступ до сервісів додатку.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var window = app.ServiceProvider.GetService(typeof(ScheduledPaymentsWindow)) as ScheduledPaymentsWindow;
+            if (window == null)
+            {
+                MessageBox.Show("Служба вікна не зареєстрована.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            window.Owner = this;
+            window.ShowDialog();
         }
     }
 }

@@ -10,6 +10,7 @@ namespace MoneyRules.Infrastructure.Persistence
         public DbSet<Settings> Settings { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<ScheduledPayment> ScheduledPayments { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         public AppDbContext() : base() { }
@@ -41,6 +42,21 @@ namespace MoneyRules.Infrastructure.Persistence
                 .WithOne(t => t.Category)
                 .HasForeignKey(t => t.CategoryId)
                 .IsRequired();
+
+            modelBuilder.Entity<ScheduledPayment>()
+                .HasKey(sp => sp.ScheduledPaymentId);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.ScheduledPayments)
+                .WithOne(sp => sp.User)
+                .HasForeignKey(sp => sp.UserId)
+                .IsRequired();
+
+            modelBuilder.Entity<Category>()
+                .HasMany(c => c.ScheduledPayments)
+                .WithOne(sp => sp.Category)
+                .HasForeignKey(sp => sp.CategoryId)
+                .IsRequired(false);
 
             base.OnModelCreating(modelBuilder);
         }
