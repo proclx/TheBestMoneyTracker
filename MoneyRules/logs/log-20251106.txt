@@ -216,3 +216,48 @@ Npgsql.PostgresException (0x80004005): 42P07: відношення "Users" вж�
 2025-11-06 02:05:42.316 +02:00 [DBG] OnStartup: Збережений токен не знайдено.
 2025-11-06 02:05:42.316 +02:00 [INF] OnStartup: Вхід за токеном НЕ вдався. Відкриття WelcomeWindow.
 2025-11-06 02:13:00.878 +02:00 [INF] --- Завершення роботи програми ---
+2025-11-06 02:33:35.388 +02:00 [INF] --- Запуск програми ---
+2025-11-06 02:33:35.520 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-06 02:33:35.629 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-06 02:33:35.670 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-06 02:33:35.680 +02:00 [DBG] OnStartup: Застосування міграцій бази даних...
+2025-11-06 02:33:38.230 +02:00 [FTL] Критична помилка під час запуску програми
+Npgsql.PostgresException (0x80004005): 28P01: ���������� "postgres" �� ������� �������������� �� ��������� ������
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.Internal.NpgsqlConnector.AuthenticateSASL(List`1 mechanisms, String username, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.Authenticate(String username, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|214_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|33_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.Open()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenDbConnection(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternal(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.Open(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Migrations.HistoryRepository.GetAppliedMigrations()
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal.NpgsqlHistoryRepository.GetAppliedMigrations()
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal.NpgsqlMigrator.Migrate(String targetMigration)
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.Migrate(DatabaseFacade databaseFacade)
+   at MoneyRules.UI.App.OnStartup(StartupEventArgs e) in C:\Users\admin\OneDrive\Desktop\tbmr\TheBestMoneyTracker\MoneyRules\MoneyRules.UI\App.xaml.cs:line 79
+  Exception data:
+    Severity: ��������
+    SqlState: 28P01
+    MessageText: ���������� "postgres" �� ������� �������������� �� ��������� ������
+    File: auth.c
+    Line: 324
+    Routine: auth_failed
+2025-11-06 02:34:49.162 +02:00 [INF] --- Запуск програми ---
+2025-11-06 02:34:49.302 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-06 02:34:49.453 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-06 02:34:49.500 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-06 02:34:49.513 +02:00 [DBG] OnStartup: Застосування міграцій бази даних...
+2025-11-06 02:34:56.244 +02:00 [DBG] OnStartup: Міграції застосовано.
+2025-11-06 02:34:56.255 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-06 02:34:56.279 +02:00 [DBG] SecureTokenStorage: Файл токена не знайдено.
+2025-11-06 02:34:56.281 +02:00 [DBG] OnStartup: Збережений токен не знайдено.
+2025-11-06 02:34:56.281 +02:00 [INF] OnStartup: Вхід за токеном НЕ вдався. Відкриття WelcomeWindow.
+2025-11-06 02:35:27.390 +02:00 [DBG] SecureTokenStorage: Токен успішно збережено.
+2025-11-06 02:35:56.444 +02:00 [INF] --- Завершення роботи програми ---

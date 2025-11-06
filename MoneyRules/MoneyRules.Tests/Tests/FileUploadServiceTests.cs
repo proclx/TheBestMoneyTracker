@@ -14,46 +14,39 @@ namespace MoneyRules.Tests.Tests
 {
     public class FileUploadServiceTests
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly AppDbContext _dbContext;
-        private readonly string _testUserId = "1";
 
         public FileUploadServiceTests()
         {
-            var services = new ServiceCollection();
-            
-            // Налаштовуємо тестову базу даних
-            var dbContextFactory = new TestDbContextFactory();
-            _dbContext = dbContextFactory.CreateDbContext();
-            services.AddSingleton(_dbContext);
-
-            _serviceProvider = services.BuildServiceProvider();
+            // Use the static test factory
+            _dbContext = TestDbContextFactory.CreateInMemoryDb();
         }
 
         [Fact]
-        public async Task ProcessFileAsync_DefaultFormat_ShouldImportTransactions()
+        public async Task ImportDefaultCsvAsync_ShouldImportTransactions()
         {
             // Arrange
-            var service = new FileUploadService(_serviceProvider);
+            var service = new FileUploadService(_dbContext);
             var testFilePath = CreateTestCsvFile(false);
-            var userId = 1;
+            var userId =1;
 
             try
             {
+                var lines = File.ReadAllLines(testFilePath);
                 // Act
-                var result = await service.ProcessFileAsync(testFilePath, userId, false);
+                var result = await service.ImportDefaultCsvAsync(lines, userId);
 
                 // Assert
-                Assert.True(result.success);
-                Assert.True(result.count > 0);
-                
+                Assert.True(result.Success);
+                Assert.True(result.ImportedCount >0);
+
                 // Перевіряємо, що транзакції додані в базу даних
                 var transactions = _dbContext.Transactions
                     .Where(t => t.UserId == userId)
                     .ToList();
-                
+
                 Assert.NotEmpty(transactions);
-                Assert.All(transactions, t => 
+                Assert.All(transactions, t =>
                 {
                     Assert.Equal(userId, t.UserId);
                     Assert.NotEqual(0, t.Amount);
@@ -71,29 +64,29 @@ namespace MoneyRules.Tests.Tests
         }
 
         [Fact]
-        public async Task ProcessFileAsync_MonobankFormat_ShouldImportTransactions()
+        public async Task ImportMonobankCsvAsync_ShouldImportTransactions()
         {
             // Arrange
-            var service = new FileUploadService(_serviceProvider);
+            var service = new FileUploadService(_dbContext);
             var testFilePath = CreateTestCsvFile(true);
-            var userId = 1;
+            var userId =1;
 
             try
             {
+                var lines = File.ReadAllLines(testFilePath);
                 // Act
-                var result = await service.ProcessFileAsync(testFilePath, userId, true);
+                var result = await service.ImportMonobankCsvAsync(lines, userId);
 
                 // Assert
-                Assert.True(result.success);
-                Assert.True(result.count > 0);
-                
-                // Перевіряємо, що транзакції додані в базу даних
+                Assert.True(result.Success);
+                Assert.True(result.ImportedCount >0);
+
                 var transactions = _dbContext.Transactions
                     .Where(t => t.UserId == userId)
                     .ToList();
-                
+
                 Assert.NotEmpty(transactions);
-                Assert.All(transactions, t => 
+                Assert.All(transactions, t =>
                 {
                     Assert.Equal(userId, t.UserId);
                     Assert.NotEqual(0, t.Amount);
@@ -111,23 +104,24 @@ namespace MoneyRules.Tests.Tests
         }
 
         [Fact]
-        public async Task ProcessFileAsync_EmptyFile_ShouldReturnError()
+        public async Task ImportDefaultCsvAsync_EmptyFile_ShouldReturnError()
         {
             // Arrange
-            var service = new FileUploadService(_serviceProvider);
+            var service = new FileUploadService(_dbContext);
             var testFilePath = Path.GetTempFileName();
             File.WriteAllText(testFilePath, "Date,CategoryId,Amount,Type,Description\n");
-            var userId = 1;
+            var userId =1;
 
             try
             {
+                var lines = File.ReadAllLines(testFilePath);
                 // Act
-                var result = await service.ProcessFileAsync(testFilePath, userId, false);
+                var result = await service.ImportDefaultCsvAsync(lines, userId);
 
                 // Assert
-                Assert.False(result.success);
-                Assert.Contains("empty", result.message.ToLower());
-                Assert.Equal(0, result.count);
+                Assert.False(result.Success);
+                Assert.Contains("валідних", result.ErrorMessage ?? string.Empty);
+                Assert.Equal(0, result.ImportedCount);
             }
             finally
             {
@@ -140,22 +134,23 @@ namespace MoneyRules.Tests.Tests
         }
 
         [Fact]
-        public async Task ProcessFileAsync_InvalidFile_ShouldReturnError()
+        public async Task ImportDefaultCsvAsync_InvalidFile_ShouldReturnError()
         {
             // Arrange
-            var service = new FileUploadService(_serviceProvider);
+            var service = new FileUploadService(_dbContext);
             var testFilePath = Path.GetTempFileName();
             File.WriteAllText(testFilePath, "Invalid,CSV,Format\n1,2,3");
-            var userId = 1;
+            var userId =1;
 
             try
             {
+                var lines = File.ReadAllLines(testFilePath);
                 // Act
-                var result = await service.ProcessFileAsync(testFilePath, userId, false);
+                var result = await service.ImportDefaultCsvAsync(lines, userId);
 
                 // Assert
-                Assert.False(result.success);
-                Assert.Equal(0, result.count);
+                Assert.False(result.Success);
+                Assert.Equal(0, result.ImportedCount);
             }
             finally
             {
@@ -175,8 +170,8 @@ namespace MoneyRules.Tests.Tests
             if (isMonobank)
             {
                 content.AppendLine("Дата,Опис,MCC,Сума");
-                content.AppendLine("\"01.11.2025 10:00:00\",\"Покупка в магазині\",\"5411\",\"-100.50\"");
-                content.AppendLine("\"01.11.2025 11:00:00\",\"Зарплата\",\"0\",\"5000.00\"");
+                content.AppendLine("\"01.11.202510:00:00\",\"Покупка в магазині\",\"5411\",\"-100.50\"");
+                content.AppendLine("\"01.11.202511:00:00\",\"Зарплата\",\"0\",\"5000.00\"");
             }
             else
             {

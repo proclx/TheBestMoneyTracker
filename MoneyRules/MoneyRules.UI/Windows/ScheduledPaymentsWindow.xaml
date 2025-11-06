@@ -1,0 +1,29 @@
+<Window x:Class="MoneyRules.UI.Windows.ScheduledPaymentsWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="Scheduled Payments" Height="450" Width="800">
+  <Grid Margin="10">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,8">
+      <Button x:Name="BtnAdd" Content="Add" Width="80" Margin="0,0,8,0" Click="BtnAdd_Click" />
+      <Button x:Name="BtnEdit" Content="Edit" Width="80" Margin="0,0,8,0" Click="BtnEdit_Click" />
+      <Button x:Name="BtnDelete" Content="Delete" Width="80" Click="BtnDelete_Click" />
+    </StackPanel>
+    <ListView x:Name="PaymentsListView" Grid.Row="1">
+      <ListView.View>
+        <GridView>
+          <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}" Width="250" />
+          <GridViewColumn Header="Amount" DisplayMemberBinding="{Binding Amount}" Width="80" />
+          <GridViewColumn Header="Frequency" DisplayMemberBinding="{Binding Frequency}" Width="100" />
+          <GridViewColumn Header="Interval" DisplayMemberBinding="{Binding Interval}" Width="60" />
+          <GridViewColumn Header="StartDate" DisplayMemberBinding="{Binding StartDate}" Width="140" />
+          <GridViewColumn Header="EndDate" DisplayMemberBinding="{Binding EndDate}" Width="140" />
+          <GridViewColumn Header="Category" DisplayMemberBinding="{Binding Category.Name}" Width="120" />
+        </GridView>
+      </ListView.View>
+    </ListView>
+  </Grid>
+</Window>

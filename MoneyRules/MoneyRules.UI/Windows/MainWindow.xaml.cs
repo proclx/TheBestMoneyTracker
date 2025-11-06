@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using MoneyRules.UI.Utils; // --- ДОДАНО --- для ThemeManager
+using MoneyRules.UI; // --- ДОДАНО --- з GitHub
 
 namespace MoneyRules.UI.Windows
 {
@@ -40,7 +41,6 @@ namespace MoneyRules.UI.Windows
             InitializeComponent();
 
             // --- ВИПРАВЛЕНО: Присвоєння сервісів перенесено на початок ---
-            // Це виправляє попередження "may be null"
             _transactionService = transactionService;
             _authService = authService;
             _adviceService = adviceService;
@@ -686,7 +686,7 @@ private void LoadAdvice()
         }
 
         //
-        // --- ДОДАНО НОВІ МЕТОДИ ДЛЯ ТЕМИ ---
+        // --- ОБ'ЄДНАНО: МЕТОДИ ДЛЯ ТЕМИ (ВАШІ) + МЕТОД ЗАПЛАНОВАНИХ ПЛАТЕЖІВ (GITHUB) ---
         //
         private void ThemeToggle_Checked(object sender, RoutedEventArgs e)
         {
@@ -696,6 +696,26 @@ private void LoadAdvice()
         private void ThemeToggle_Unchecked(object sender, RoutedEventArgs e)
         {
             ThemeManager.SwitchTheme(Theme.Light);
+        }
+        
+        private void BtnScheduledPayments_Click(object sender, RoutedEventArgs e)
+        {
+            var app = System.Windows.Application.Current as App;
+            if (app == null || app.ServiceProvider == null)
+            {
+                MessageBox.Show("Не вдалося отримати доступ до сервісів додатку.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var window = app.ServiceProvider.GetService(typeof(ScheduledPaymentsWindow)) as ScheduledPaymentsWindow;
+            if (window == null)
+            {
+                MessageBox.Show("Служба вікна не зареєстрована.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            window.Owner = this;
+            window.ShowDialog();
         }
     }
 }
