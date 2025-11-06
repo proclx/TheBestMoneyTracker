@@ -59,6 +59,10 @@ namespace MoneyRules.Infrastructure.Migrations
                     b.Property<bool>("NotificationEnabled")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Theme")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("UserId");
 
                     b.ToTable("Settings");

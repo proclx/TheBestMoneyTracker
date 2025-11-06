@@ -2,6 +2,7 @@
 using MoneyRules.Application.Interfaces;
 using MoneyRules.Domain.Entities;
 using MoneyRules.Infrastructure.Persistence;
+using System.Threading.Tasks;
 using System.Linq;
 
 namespace MoneyRules.Application.Services
@@ -18,8 +19,8 @@ namespace MoneyRules.Application.Services
         public User GetUserById(int userId)
         {
             return _context.Users
-                           .Include(u => u.Settings)
-                           .FirstOrDefault(u => u.UserId == userId);
+                            .Include(u => u.Settings)
+                            .FirstOrDefault(u => u.UserId == userId);
         }
 
         public void UpdateUser(User user)
@@ -57,6 +58,17 @@ namespace MoneyRules.Application.Services
         {
             user.ProfilePhoto = photoData;
             UpdateUser(user);
+        }
+
+        // --- ДОДАНО ДЛЯ ТЕМИ ---
+        public async Task<Settings?> GetUserSettingsAsync(int userId)
+        {
+            // Знаходимо користувача разом з його налаштуваннями
+            var user = await _context.Users
+                                 .Include(u => u.Settings) // "Підтягуємо" пов'язані налаштування
+                                 .FirstOrDefaultAsync(u => u.UserId == userId);
+            
+            return user?.Settings; // Повертаємо налаштування (або null, якщо щось не так)
         }
     }
 }

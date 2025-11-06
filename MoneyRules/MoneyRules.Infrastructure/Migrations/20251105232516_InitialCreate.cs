@@ -22,7 +22,9 @@ namespace MoneyRules.Infrastructure.Migrations
                     Email = table.Column<string>(type: "text", nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
                     Role = table.Column<int>(type: "integer", nullable: false),
-                    SettingsId = table.Column<int>(type: "integer", nullable: false)
+                    ProfilePhoto = table.Column<byte[]>(type: "bytea", nullable: false),
+                    RememberMeToken = table.Column<string>(type: "text", nullable: true),
+                    RememberMeTokenExpiry = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -54,15 +56,14 @@ namespace MoneyRules.Infrastructure.Migrations
                 name: "Settings",
                 columns: table => new
                 {
-                    SettingsId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
                     Currency = table.Column<string>(type: "text", nullable: false),
                     NotificationEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: false)
+                    Theme = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Settings", x => x.SettingsId);
+                    table.PrimaryKey("PK_Settings", x => x.UserId);
                     table.ForeignKey(
                         name: "FK_Settings_Users_UserId",
                         column: x => x.UserId,
@@ -105,12 +106,6 @@ namespace MoneyRules.Infrastructure.Migrations
                 name: "IX_Categories_UserId",
                 table: "Categories",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Settings_UserId",
-                table: "Settings",
-                column: "UserId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_CategoryId",

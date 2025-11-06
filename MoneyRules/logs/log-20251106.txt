@@ -1,0 +1,218 @@
+2025-11-06 00:45:47.485 +02:00 [INF] --- Запуск програми ---
+2025-11-06 00:45:47.574 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-06 00:45:47.656 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-06 00:45:47.684 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-06 00:45:47.684 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-06 00:45:47.717 +02:00 [DBG] SecureTokenStorage: Файл токена не знайдено.
+2025-11-06 00:45:47.717 +02:00 [DBG] OnStartup: Збережений токен не знайдено.
+2025-11-06 00:45:47.734 +02:00 [DBG] OnStartup: Застосування міграцій бази даних (Migrate)...
+2025-11-06 00:45:50.902 +02:00 [FTL] Критична помилка під час запуску програми
+Npgsql.PostgresException (0x80004005): 42P07: відношення "Users" вже існує
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery(Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQuery(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Migrations.MigrationCommand.ExecuteNonQuery(IRelationalConnection connection, IReadOnlyDictionary`2 parameterValues)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.Execute(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean beginTransaction, Boolean commitTransaction, Nullable`1 isolationLevel)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.<>c.<ExecuteNonQuery>b__3_1(DbContext _, ValueTuple`6 s)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQuery(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean commitTransaction, Nullable`1 isolationLevel)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateImplementation(DbContext context, String targetMigration, MigrationExecutionState state, Boolean useTransaction)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.<>c.<Migrate>b__20_1(DbContext c, ValueTuple`4 s)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.Migrate(String targetMigration)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal.NpgsqlMigrator.Migrate(String targetMigration)
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.Migrate(DatabaseFacade databaseFacade)
+   at MoneyRules.UI.App.OnStartup(StartupEventArgs e) in C:\Users\admin\OneDrive\Desktop\tbmr\TheBestMoneyTracker\MoneyRules\MoneyRules.UI\App.xaml.cs:line 96
+  Exception data:
+    Severity: ПОМИЛКА
+    SqlState: 42P07
+    MessageText: відношення "Users" вже існує
+    File: heap.c
+    Line: 1161
+    Routine: heap_create_with_catalog
+2025-11-06 00:57:58.068 +02:00 [INF] --- Запуск програми ---
+2025-11-06 00:57:58.179 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-06 00:57:58.272 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-06 00:57:58.313 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-06 00:57:58.314 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-06 00:57:58.331 +02:00 [DBG] SecureTokenStorage: Файл токена не знайдено.
+2025-11-06 00:57:58.331 +02:00 [DBG] OnStartup: Збережений токен не знайдено.
+2025-11-06 00:57:58.345 +02:00 [DBG] OnStartup: Застосування міграцій бази даних (Migrate)...
+2025-11-06 00:58:01.289 +02:00 [FTL] Критична помилка під час запуску програми
+Npgsql.PostgresException (0x80004005): 42P07: відношення "Users" вже існує
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery(Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQuery(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Migrations.MigrationCommand.ExecuteNonQuery(IRelationalConnection connection, IReadOnlyDictionary`2 parameterValues)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.Execute(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean beginTransaction, Boolean commitTransaction, Nullable`1 isolationLevel)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.<>c.<ExecuteNonQuery>b__3_1(DbContext _, ValueTuple`6 s)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQuery(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean commitTransaction, Nullable`1 isolationLevel)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateImplementation(DbContext context, String targetMigration, MigrationExecutionState state, Boolean useTransaction)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.<>c.<Migrate>b__20_1(DbContext c, ValueTuple`4 s)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.Migrate(String targetMigration)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal.NpgsqlMigrator.Migrate(String targetMigration)
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.Migrate(DatabaseFacade databaseFacade)
+   at MoneyRules.UI.App.OnStartup(StartupEventArgs e) in C:\Users\admin\OneDrive\Desktop\tbmr\TheBestMoneyTracker\MoneyRules\MoneyRules.UI\App.xaml.cs:line 96
+  Exception data:
+    Severity: ПОМИЛКА
+    SqlState: 42P07
+    MessageText: відношення "Users" вже існує
+    File: heap.c
+    Line: 1161
+    Routine: heap_create_with_catalog
+2025-11-06 01:00:08.609 +02:00 [INF] --- Запуск програми ---
+2025-11-06 01:00:08.715 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-06 01:00:08.813 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-06 01:00:08.852 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-06 01:00:08.853 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-06 01:00:08.867 +02:00 [DBG] SecureTokenStorage: Файл токена не знайдено.
+2025-11-06 01:00:08.867 +02:00 [DBG] OnStartup: Збережений токен не знайдено.
+2025-11-06 01:00:08.879 +02:00 [DBG] OnStartup: Застосування міграцій бази даних (Migrate)...
+2025-11-06 01:00:11.742 +02:00 [FTL] Критична помилка під час запуску програми
+Npgsql.PostgresException (0x80004005): 42P07: відношення "Users" вже існує
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery(Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQuery(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Migrations.MigrationCommand.ExecuteNonQuery(IRelationalConnection connection, IReadOnlyDictionary`2 parameterValues)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.Execute(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean beginTransaction, Boolean commitTransaction, Nullable`1 isolationLevel)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.<>c.<ExecuteNonQuery>b__3_1(DbContext _, ValueTuple`6 s)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQuery(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean commitTransaction, Nullable`1 isolationLevel)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateImplementation(DbContext context, String targetMigration, MigrationExecutionState state, Boolean useTransaction)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.<>c.<Migrate>b__20_1(DbContext c, ValueTuple`4 s)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.Migrate(String targetMigration)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal.NpgsqlMigrator.Migrate(String targetMigration)
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.Migrate(DatabaseFacade databaseFacade)
+   at MoneyRules.UI.App.OnStartup(StartupEventArgs e) in C:\Users\admin\OneDrive\Desktop\tbmr\TheBestMoneyTracker\MoneyRules\MoneyRules.UI\App.xaml.cs:line 96
+  Exception data:
+    Severity: ПОМИЛКА
+    SqlState: 42P07
+    MessageText: відношення "Users" вже існує
+    File: heap.c
+    Line: 1161
+    Routine: heap_create_with_catalog
+2025-11-06 01:01:05.111 +02:00 [INF] --- Запуск програми ---
+2025-11-06 01:01:05.214 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-06 01:01:05.294 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-06 01:01:05.322 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-06 01:01:05.322 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-06 01:01:05.338 +02:00 [DBG] SecureTokenStorage: Файл токена не знайдено.
+2025-11-06 01:01:05.339 +02:00 [DBG] OnStartup: Збережений токен не знайдено.
+2025-11-06 01:01:05.354 +02:00 [DBG] OnStartup: Застосування міграцій бази даних (Migrate)...
+2025-11-06 01:01:10.511 +02:00 [INF] OnStartup: Вхід за токеном НЕ вдався. Відкриття WelcomeWindow.
+2025-11-06 01:01:58.085 +02:00 [INF] --- Завершення роботи програми ---
+2025-11-06 01:06:28.515 +02:00 [INF] --- Запуск програми ---
+2025-11-06 01:06:28.609 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-06 01:06:28.684 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-06 01:06:28.720 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-06 01:06:28.734 +02:00 [DBG] OnStartup: Застосування міграцій бази даних...
+2025-11-06 01:06:31.671 +02:00 [DBG] OnStartup: Міграції застосовано.
+2025-11-06 01:06:31.678 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-06 01:06:31.689 +02:00 [DBG] SecureTokenStorage: Файл токена не знайдено.
+2025-11-06 01:06:31.689 +02:00 [DBG] OnStartup: Збережений токен не знайдено.
+2025-11-06 01:06:31.689 +02:00 [INF] OnStartup: Вхід за токеном НЕ вдався. Відкриття WelcomeWindow.
+2025-11-06 01:08:08.894 +02:00 [INF] --- Завершення роботи програми ---
+2025-11-06 01:11:50.683 +02:00 [INF] --- Запуск програми ---
+2025-11-06 01:11:50.783 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-06 01:11:50.877 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-06 01:11:50.911 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-06 01:11:50.921 +02:00 [DBG] OnStartup: Застосування міграцій бази даних...
+2025-11-06 01:11:56.267 +02:00 [DBG] OnStartup: Міграції застосовано.
+2025-11-06 01:11:56.273 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-06 01:11:56.286 +02:00 [DBG] SecureTokenStorage: Файл токена не знайдено.
+2025-11-06 01:11:56.287 +02:00 [DBG] OnStartup: Збережений токен не знайдено.
+2025-11-06 01:11:56.288 +02:00 [INF] OnStartup: Вхід за токеном НЕ вдався. Відкриття WelcomeWindow.
+2025-11-06 01:12:27.950 +02:00 [INF] --- Завершення роботи програми ---
+2025-11-06 01:19:37.786 +02:00 [INF] --- Запуск програми ---
+2025-11-06 01:19:37.894 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-06 01:19:38.014 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-06 01:19:38.057 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-06 01:19:38.085 +02:00 [DBG] OnStartup: Застосування міграцій бази даних...
+2025-11-06 01:19:41.913 +02:00 [FTL] Критична помилка під час запуску програми
+Npgsql.PostgresException (0x80004005): 42P07: відношення "Users" вже існує
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery(Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQuery(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Migrations.MigrationCommand.ExecuteNonQuery(IRelationalConnection connection, IReadOnlyDictionary`2 parameterValues)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.Execute(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean beginTransaction, Boolean commitTransaction, Nullable`1 isolationLevel)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.<>c.<ExecuteNonQuery>b__3_1(DbContext _, ValueTuple`6 s)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQuery(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean commitTransaction, Nullable`1 isolationLevel)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateImplementation(DbContext context, String targetMigration, MigrationExecutionState state, Boolean useTransaction)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.<>c.<Migrate>b__20_1(DbContext c, ValueTuple`4 s)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.Migrate(String targetMigration)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal.NpgsqlMigrator.Migrate(String targetMigration)
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.Migrate(DatabaseFacade databaseFacade)
+   at MoneyRules.UI.App.OnStartup(StartupEventArgs e) in C:\Users\admin\OneDrive\Desktop\tbmr\TheBestMoneyTracker\MoneyRules\MoneyRules.UI\App.xaml.cs:line 77
+  Exception data:
+    Severity: ПОМИЛКА
+    SqlState: 42P07
+    MessageText: відношення "Users" вже існує
+    File: heap.c
+    Line: 1161
+    Routine: heap_create_with_catalog
+2025-11-06 01:26:08.320 +02:00 [INF] --- Запуск програми ---
+2025-11-06 01:26:08.422 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-06 01:26:08.521 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-06 01:26:08.564 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-06 01:26:08.577 +02:00 [DBG] OnStartup: Застосування міграцій бази даних...
+2025-11-06 01:26:13.414 +02:00 [DBG] OnStartup: Міграції застосовано.
+2025-11-06 01:26:13.419 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-06 01:26:13.431 +02:00 [DBG] SecureTokenStorage: Файл токена не знайдено.
+2025-11-06 01:26:13.431 +02:00 [DBG] OnStartup: Збережений токен не знайдено.
+2025-11-06 01:26:13.431 +02:00 [INF] OnStartup: Вхід за токеном НЕ вдався. Відкриття WelcomeWindow.
+2025-11-06 01:39:51.022 +02:00 [INF] --- Завершення роботи програми ---
+2025-11-06 01:40:14.523 +02:00 [INF] --- Запуск програми ---
+2025-11-06 01:40:14.617 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-06 01:40:14.686 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-06 01:40:14.714 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-06 01:40:14.724 +02:00 [DBG] OnStartup: Застосування міграцій бази даних...
+2025-11-06 01:40:17.884 +02:00 [DBG] OnStartup: Міграції застосовано.
+2025-11-06 01:40:17.893 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-06 01:40:17.907 +02:00 [DBG] SecureTokenStorage: Файл токена не знайдено.
+2025-11-06 01:40:17.907 +02:00 [DBG] OnStartup: Збережений токен не знайдено.
+2025-11-06 01:40:17.907 +02:00 [INF] OnStartup: Вхід за токеном НЕ вдався. Відкриття WelcomeWindow.
+2025-11-06 01:40:54.473 +02:00 [INF] --- Завершення роботи програми ---
+2025-11-06 02:05:38.599 +02:00 [INF] --- Запуск програми ---
+2025-11-06 02:05:38.732 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-06 02:05:38.834 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-06 02:05:38.869 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-06 02:05:38.879 +02:00 [DBG] OnStartup: Застосування міграцій бази даних...
+2025-11-06 02:05:42.294 +02:00 [DBG] OnStartup: Міграції застосовано.
+2025-11-06 02:05:42.303 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-06 02:05:42.315 +02:00 [DBG] SecureTokenStorage: Файл токена не знайдено.
+2025-11-06 02:05:42.316 +02:00 [DBG] OnStartup: Збережений токен не знайдено.
+2025-11-06 02:05:42.316 +02:00 [INF] OnStartup: Вхід за токеном НЕ вдався. Відкриття WelcomeWindow.
+2025-11-06 02:13:00.878 +02:00 [INF] --- Завершення роботи програми ---

@@ -12,6 +12,7 @@ using MoneyRules.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection; 
 using System;
 using System.Collections.Generic;
+using MoneyRules.UI.Utils; // --- ДОДАНО --- для ThemeManager
 
 namespace MoneyRules.UI.Windows
 {
@@ -37,6 +38,9 @@ namespace MoneyRules.UI.Windows
             IFileUploadService fileUploadService)
         {
             InitializeComponent();
+
+            // --- ВИПРАВЛЕНО: Присвоєння сервісів перенесено на початок ---
+            // Це виправляє попередження "may be null"
             _transactionService = transactionService;
             _authService = authService;
             _adviceService = adviceService;
@@ -106,6 +110,8 @@ private void LoadAdvice()
             {
                 Text = t,
                 TextWrapping = TextWrapping.Wrap
+                // --- ДОДАЙТЕ ЦЕЙ РЯДОК --- (Крок 4)
+                , Foreground = (System.Windows.Media.Brush)FindResource("SecondaryText")
             });
         }
     }
@@ -175,6 +181,14 @@ private void LoadAdvice()
 
                 var chkNotifications = FindName("ChkNotifications") as CheckBox;
                 if (chkNotifications != null) chkNotifications.IsChecked = _currentUser.Settings.NotificationEnabled;
+                
+                // --- ДОДАНО ---
+                // Встановлюємо галочку "Темна тема", якщо вона збережена
+                var themeToggle = FindName("ThemeToggle") as CheckBox;
+                if (themeToggle != null)
+                {
+                    themeToggle.IsChecked = _currentUser.Settings.Theme.Equals("Dark", StringComparison.OrdinalIgnoreCase);
+                }
             }
 
             // Populate chart years
@@ -528,8 +542,8 @@ private void LoadAdvice()
 
             var cmbCurrency2 = FindName("CmbCurrency") as ComboBox;
             var selectedCurrency = (cmbCurrency2?.SelectedItem as ComboBoxItem)?.Content.ToString()
-                        ?? _currentUser.Settings?.Currency
-                        ?? "UAH";
+                                 ?? _currentUser.Settings?.Currency
+                                 ?? "UAH";
 
             if (_currentUser.Settings == null)
                 _currentUser.Settings = new Settings { UserId = _currentUser.UserId };
@@ -538,25 +552,45 @@ private void LoadAdvice()
             var chkNotifications2 = FindName("ChkNotifications") as CheckBox;
             _currentUser.Settings.NotificationEnabled = chkNotifications2?.IsChecked ?? false;
 
+            // --- ДОДАНО ---
+            // Зберігаємо вибір теми
+            var themeToggle = FindName("ThemeToggle") as CheckBox;
+            if (themeToggle != null)
+            {
+                _currentUser.Settings.Theme = (themeToggle.IsChecked == true) ? "Dark" : "Light";
+            }
+            
             // Використовуємо сервіс для збереження змін
             _profileService.UpdateUser(_currentUser);
 
             MessageBox.Show("Profile updated successfully.");
         }
-       
+        
 
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show("Ви впевнені, що хочете вийти з акаунту?",
-                                         "Підтвердження виходу",
-                                         MessageBoxButton.YesNo,
-                                         MessageBoxImage.Question);
+                                          "Підтвердження виходу",
+                                          MessageBoxButton.YesNo,
+                                          MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
                 System.Windows.Application.Current.Properties["CurrentUser"] = null;
 
-                var welcomeWindow = new WelcomeWindow(_authService, _transactionService, _profileService, _adviceService, _currencyService);
+                // --- ВИПРАВЛЕНО --- Цей рядок викликав помилку збірки CS0117
+                // SecureTokenStorage.DeleteToken(); 
+
+                // Потрібно отримати ServiceProvider з App
+                var serviceProvider = (System.Windows.Application.Current as App)!.ServiceProvider;
+                if (serviceProvider == null)
+                {
+                    MessageBox.Show("Критична помилка: ServiceProvider не знайдено.");
+                    return;
+                }
+                
+                // --- ЗМІНЕНО --- Отримуємо WelcomeWindow з DI
+                var welcomeWindow = serviceProvider.GetRequiredService<WelcomeWindow>();
                 welcomeWindow.Show();
 
                 this.Close();
@@ -581,8 +615,8 @@ private void LoadAdvice()
                                 decimal.TryParse(rate.SaleRate.Replace(',', '.'), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal sellRate))
                             {
                                 ratesList.Add($"💱 {rate.Currency}/{rate.BaseCurrency}\n" +
-                                            $"▪ Купівля:  {buyRate:N2}\n" +
-                                            $"▪ Продаж:   {sellRate:N2}");
+                                              $"▪ Купівля:  {buyRate:N2}\n" +
+                                              $"▪ Продаж:   {sellRate:N2}");
                             }
                         }
                     }
@@ -640,9 +674,28 @@ private void LoadAdvice()
                 return;
             }
 
+            // --- ЗМІНЕНО --- Отримуємо вікно з DI
+            var serviceProvider = (System.Windows.Application.Current as App)!.ServiceProvider;
+            if (serviceProvider == null) { /* ... обробка помилки ... */ return; }
+            
+            // Ми не можемо отримати ChangePasswordWindow напряму, якщо воно не зареєстровано.
+            // Але ми можемо передати сервіси, які зареєстровані.
             var changePasswordWindow = new ChangePasswordWindow(_authService, _currentUser);
             changePasswordWindow.Owner = this; // задаємо батьківське вікно
             changePasswordWindow.ShowDialog();
+        }
+
+        //
+        // --- ДОДАНО НОВІ МЕТОДИ ДЛЯ ТЕМИ ---
+        //
+        private void ThemeToggle_Checked(object sender, RoutedEventArgs e)
+        {
+            ThemeManager.SwitchTheme(Theme.Dark);
+        }
+
+        private void ThemeToggle_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ThemeManager.SwitchTheme(Theme.Light);
         }
     }
 }

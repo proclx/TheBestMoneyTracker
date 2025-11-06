@@ -2,15 +2,15 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog; // <-- Потрібно для логування
+using Serilog;
 using MoneyRules.Infrastructure.Persistence;
 using MoneyRules.Application.Services;
 using MoneyRules.UI.Windows;
 using MoneyRules.Application.Interfaces;
-using MoneyRules.UI.Utils; // <-- Потрібно для SecureTokenStorage
-using System.Threading.Tasks; // <-- Потрібно для async
+using MoneyRules.UI.Utils; // <-- Додано для ThemeManager
+using System.Threading.Tasks;
 using System;
-using MoneyRules.Domain.Entities; // <-- Потрібно для User
+using MoneyRules.Domain.Entities;
 
 namespace MoneyRules.UI
 {
@@ -19,11 +19,10 @@ namespace MoneyRules.UI
         public IServiceProvider? ServiceProvider { get; set; }
         public IConfiguration? Configuration { get; set; }
 
-        // Змінено на async
         protected override async void OnStartup(StartupEventArgs e)
         {
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug() // Встановлюємо рівень Debug, щоб бачити все
+                .MinimumLevel.Debug()
                 .WriteTo.Console()
                 .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
@@ -64,17 +63,29 @@ namespace MoneyRules.UI
                 ServiceProvider = services.BuildServiceProvider();
                 Log.Debug("OnStartup: ServiceProvider створено.");
 
-                // --- ЛОГІКА АВТО-ВХОДУ ---
+                //
+                // =================================================================
+                //  ВИПРАВЛЕННЯ: СПОЧАТКУ МІГРАЦІЯ, ПОТІМ ВХІД
+                // =================================================================
+                //
 
+                // --- 1. ПЕРЕВІРКА МІГРАЦІЙ (ЗАПУСКАЄМО ПЕРЕД ВСІМ) ---
+                using (var scope = ServiceProvider.CreateScope())
+                {
+                    Log.Debug("OnStartup: Застосування міграцій бази даних...");
+                    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                    db.Database.Migrate(); // <-- ЦЕЙ РЯДОК МАЄ БУТИ ТУТ
+                    Log.Debug("OnStartup: Міграції застосовано.");
+                }
+
+                // --- 2. ЛОГІКА АВТО-ВХОДУ (ЗАПУСКАЄМО ПІСЛЯ МІГРАЦІЙ) ---
                 Log.Debug("OnStartup: Перевірка наявності токена...");
-                string? token = SecureTokenStorage.LoadToken(); // 'LoadToken' вже логує свій результат
+                string? token = SecureTokenStorage.LoadToken(); 
                 User? user = null;
 
                 if (!string.IsNullOrEmpty(token))
                 {
                     Log.Debug("OnStartup: Токен знайдено, спроба входу...");
-                    // Потрібно отримати IAuthService з нашого нового ServiceProvider
-                    // Використовуємо CreateScope для "одноразового" сервісу
                     using (var scope = ServiceProvider.CreateScope())
                     {
                         var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
@@ -86,27 +97,40 @@ namespace MoneyRules.UI
                     Log.Debug("OnStartup: Збережений токен не знайдено.");
                 }
 
-                // Перевірка міграцій
-                using (var scope = ServiceProvider.CreateScope())
-                {
-                    Log.Debug("OnStartup: Застосування міграцій бази даних (EnsureCreated)...");
-                    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                    db.Database.EnsureCreated(); // Або db.Database.Migrate()
-                }
 
                 if (user != null)
                 {
                     Log.Information("OnStartup: Вхід за токеном успішний. Відкриття MainWindow.");
-                    // Зберігаємо користувача в сесії
+                    
+                    // --- ДОДАНО ДЛЯ ТЕМИ ---
+                    using (var scope = ServiceProvider.CreateScope())
+                    {
+                        var userProfileService = scope.ServiceProvider.GetRequiredService<IUserProfileService>();
+                        var settings = await userProfileService.GetUserSettingsAsync(user.UserId);
+                        var theme = settings?.Theme ?? "Light";
+
+                        if (theme.Equals("Dark", StringComparison.OrdinalIgnoreCase))
+                        {
+                            ThemeManager.SwitchTheme(Theme.Dark);
+                        }
+                        else
+                        {
+                            ThemeManager.SwitchTheme(Theme.Light);
+                        }
+                    }
+                    // --- КІНЕЦЬ БЛОКУ ТЕМИ ---
+                    
                     System.Windows.Application.Current.Properties["CurrentUser"] = user;
-                    // Відкриваємо головне вікно
                     var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
                     mainWindow.Show();
                 }
                 else
                 {
                     Log.Information("OnStartup: Вхід за токеном НЕ вдався. Відкриття WelcomeWindow.");
-                    // Немає токена або він недійсний, показуємо вікно логіну
+                    
+                    // --- ДОДАНО ДЛЯ ТЕМИ ---
+                    ThemeManager.SwitchTheme(Theme.Light); // Встановлюємо світлу тему
+
                     var welcomeWindow = ServiceProvider.GetRequiredService<WelcomeWindow>();
                     welcomeWindow.Show();
                 }
@@ -117,21 +141,17 @@ namespace MoneyRules.UI
             {
                 Log.Fatal(ex, "Критична помилка під час запуску програми");
                 MessageBox.Show(ex.Message, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
-                // Важливо закрити логер, якщо сталася фатальна помилка
                 Log.CloseAndFlush();
             }
 
             base.OnStartup(e);
         }
 
-        // --- ДОДАНО НОВИЙ МЕТОД ---
         protected override void OnExit(ExitEventArgs e)
         {
-            // Це ГАРАНТУЄ, що всі логи з буфера будуть збережені у файл
             Log.Information("--- Завершення роботи програми ---");
             Log.CloseAndFlush();
             base.OnExit(e);
         }
     }
 }
-
