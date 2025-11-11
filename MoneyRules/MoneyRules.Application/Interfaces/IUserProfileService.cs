@@ -11,5 +11,6 @@ namespace MoneyRules.Application.Interfaces
 
         // --- ДОДАНО ДЛЯ ТЕМИ ---
         Task<Settings?> GetUserSettingsAsync(int userId);
+        void UpdateUserBudget(int userId, decimal newBudget);
     }
 }

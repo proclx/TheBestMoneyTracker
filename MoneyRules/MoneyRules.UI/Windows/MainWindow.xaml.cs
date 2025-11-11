@@ -189,11 +189,63 @@ private void LoadAdvice()
                 {
                     themeToggle.IsChecked = _currentUser.Settings.Theme.Equals("Dark", StringComparison.OrdinalIgnoreCase);
                 }
+
+                var txtMonthlyBudget = FindName("TxtMonthlyBudget") as TextBox;
+                if (txtMonthlyBudget != null)
+                {
+                    // "N2" форматує число з 2 знаками після коми
+                    txtMonthlyBudget.Text = _currentUser.Settings.MonthlyBudget.ToString("N2");
+                }
             }
 
             // Populate chart years
             PopulateChartYears();
             DrawChartForSelectedYear();
+        }
+
+        private void BtnSetBudget_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentUser == null)
+            {
+                MessageBox.Show("Користувач не завантажений.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var txtMonthlyBudget = FindName("TxtMonthlyBudget") as TextBox;
+            if (txtMonthlyBudget == null) return;
+
+            if (decimal.TryParse(txtMonthlyBudget.Text, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.CurrentCulture, out decimal newBudget))
+            {
+                try
+                {
+                    // ==========================================================
+                    // === ЗМІНА ТУТ: Викликаємо новий, безпечний метод сервісу ===
+                    // ==========================================================
+                    _profileService.UpdateUserBudget(_currentUser.UserId, newBudget);
+
+                    // Тепер, коли в базі даних все збережено,
+                    // оновимо наш локальний об'єкт _currentUser, щоб він відповідав дійсності.
+                    if (_currentUser.Settings == null)
+                    {
+                        _currentUser.Settings = new Settings { UserId = _currentUser.UserId };
+                    }
+                    _currentUser.Settings.MonthlyBudget = newBudget;
+                    // ==========================================================
+
+                    MessageBox.Show("Бюджет успішно збережено.", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // Оновлюємо графік
+                    DrawChartForSelectedYear();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Помилка збереження бюджету: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Будь ласка, введіть коректне числове значення для бюджету (наприклад, 5000.50).", "Невірний формат", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void PopulateChartYears()
@@ -411,6 +463,43 @@ private void LoadAdvice()
             double canvasW2 = chart.ActualWidth > 0 ? chart.ActualWidth : chart.Width;
             double canvasH2 = chart.ActualHeight > 0 ? chart.ActualHeight : chart.Height;
             double barWidth2 = (canvasW2 - 40) / 12.0;
+
+            // малювання лінії бюджету
+            decimal monthlyBudget = _currentUser.Settings?.MonthlyBudget ?? 0m;
+            if (monthlyBudget > 0 && maxVal2 > 0)
+            {
+                // Розраховуємо Y-координату для лінії бюджету
+                double budgetY = canvasH2 - 30 - ((double)monthlyBudget / maxVal2 * (canvasH2 - 60));
+
+                // Малюємо, тільки якщо лінія потрапляє в межі графіка
+                if (budgetY > 4 && budgetY < (canvasH2 - 30))
+                {
+                    var budgetLine = new System.Windows.Shapes.Line
+                    {
+                        X1 = 20, // Від лівого краю графіка
+                        Y1 = budgetY,
+                        X2 = canvasW2 - 20, // До правого краю графіка
+                        Y2 = budgetY,
+                        Stroke = (System.Windows.Media.Brush)FindResource("PrimaryText"), // Колір з ресурсів
+                        StrokeThickness = 2,
+                        StrokeDashArray = new System.Windows.Media.DoubleCollection(new double[] { 4, 2 }) // Пунктирна лінія
+                    };
+                    chart.Children.Add(budgetLine);
+
+                    // Додаємо підпис для лінії бюджету
+                    var budgetLabel = new TextBlock
+                    {
+                        Text = $"Бюджет: {monthlyBudget:N0}",
+                        Foreground = (System.Windows.Media.Brush)FindResource("SecondaryText"),
+                        FontSize = 10,
+                        FontStyle = FontStyles.Italic,
+                        Background = (System.Windows.Media.Brush)FindResource("AppBackground") // Фон, щоб текст читався
+                    };
+                    Canvas.SetLeft(budgetLabel, 25); // Трохи відступивши зліва
+                    Canvas.SetTop(budgetLabel, budgetY - 15); // Над лінією
+                    chart.Children.Add(budgetLabel);
+                }
+            }
 
             for (int i = 0; i < 12; i++)
             {
