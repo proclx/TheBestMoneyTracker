@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MoneyRules.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251105232516_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251110141050_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,6 +48,51 @@ namespace MoneyRules.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("MoneyRules.Domain.Entities.ScheduledPayment", b =>
+                {
+                    b.Property<int>("ScheduledPaymentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ScheduledPaymentId"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Frequency")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Interval")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ScheduledPaymentId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ScheduledPayments");
                 });
 
             modelBuilder.Entity("MoneyRules.Domain.Entities.Settings", b =>
@@ -156,6 +201,23 @@ namespace MoneyRules.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("MoneyRules.Domain.Entities.ScheduledPayment", b =>
+                {
+                    b.HasOne("MoneyRules.Domain.Entities.Category", "Category")
+                        .WithMany("ScheduledPayments")
+                        .HasForeignKey("CategoryId");
+
+                    b.HasOne("MoneyRules.Domain.Entities.User", "User")
+                        .WithMany("ScheduledPayments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("MoneyRules.Domain.Entities.Settings", b =>
                 {
                     b.HasOne("MoneyRules.Domain.Entities.User", "User")
@@ -188,12 +250,16 @@ namespace MoneyRules.Infrastructure.Migrations
 
             modelBuilder.Entity("MoneyRules.Domain.Entities.Category", b =>
                 {
+                    b.Navigation("ScheduledPayments");
+
                     b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("MoneyRules.Domain.Entities.User", b =>
                 {
                     b.Navigation("Categories");
+
+                    b.Navigation("ScheduledPayments");
 
                     b.Navigation("Settings")
                         .IsRequired();

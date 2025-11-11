@@ -70,5 +70,37 @@ namespace MoneyRules.Application.Services
             
             return user?.Settings; // Повертаємо налаштування (або null, якщо щось не так)
         }
+
+        public void UpdateUserBudget(int userId, decimal newBudget)
+        {
+            // 1. Знаходимо ТІЛЬКИ налаштування за ID користувача
+            // Це єдиний об'єкт, який DbContext буде відстежувати.
+            var settings = _context.Settings.FirstOrDefault(s => s.UserId == userId);
+
+            if (settings == null)
+            {
+                // 2. Якщо налаштувань не існує - створюємо їх
+                settings = new Settings
+                {
+                    UserId = userId,
+                    MonthlyBudget = newBudget,
+                    // Встановіть значення за замовчуванням для інших полів,
+                    // інакше вони можуть бути null у базі даних
+                    Currency = "UAH",
+                    NotificationEnabled = false,
+                    Theme = "Light"
+                };
+                _context.Settings.Add(settings);
+            }
+            else
+            {
+                // 3. Якщо налаштування існують - просто оновлюємо бюджет
+                settings.MonthlyBudget = newBudget;
+                _context.Settings.Update(settings);
+            }
+
+            // 4. Зберігаємо зміни
+            _context.SaveChanges();
+        }
     }
 }

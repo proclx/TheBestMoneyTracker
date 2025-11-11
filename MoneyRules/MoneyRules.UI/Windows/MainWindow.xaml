@@ -49,6 +49,12 @@
                         <Button Content="Оновити" Margin="8,0,0,0" Click="BtnRefreshChart_Click" Background="{DynamicResource ButtonBackground}" Foreground="{DynamicResource ButtonForeground}"/>
                     </StackPanel>
 
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <TextBlock Text="Місячний бюджет:" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="{DynamicResource PrimaryText}"/>
+                        <TextBox x:Name="TxtMonthlyBudget" Width="120" Background="{DynamicResource WindowBackground}" Foreground="{DynamicResource PrimaryText}" BorderBrush="{DynamicResource BorderColor}"/>
+                        <Button x:Name="BtnSetBudget" Content="Зберегти бюджет" Margin="8,0,0,0" Click="BtnSetBudget_Click" Background="{DynamicResource ButtonBackground}" Foreground="{DynamicResource ButtonForeground}"/>
+                    </StackPanel>
+
                     <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" Margin="0,10,0,0" Padding="8" Background="{DynamicResource WindowBackground}">
                         <StackPanel>
                             <Canvas x:Name="ChartCanvas" Height="260" Background="{DynamicResource AppBackground}" />

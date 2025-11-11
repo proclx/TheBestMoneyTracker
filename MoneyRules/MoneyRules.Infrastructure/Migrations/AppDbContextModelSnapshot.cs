@@ -101,6 +101,9 @@ namespace MoneyRules.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<decimal>("MonthlyBudget")
+                        .HasColumnType("numeric");
+
                     b.Property<bool>("NotificationEnabled")
                         .HasColumnType("boolean");
 

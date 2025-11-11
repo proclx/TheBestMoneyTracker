@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MoneyRules.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251105195900_AddScheduledPayments")]
-    partial class AddScheduledPayments
+    [Migration("20251110154147_AddMonthlyBudgetToSettings")]
+    partial class AddMonthlyBudgetToSettings
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -104,8 +104,15 @@ namespace MoneyRules.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<decimal>("MonthlyBudget")
+                        .HasColumnType("numeric");
+
                     b.Property<bool>("NotificationEnabled")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("Theme")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("UserId");
 
