@@ -610,5 +610,12 @@ namespace MoneyRules.UI.Windows
             window.Owner = this;
             window.ShowDialog();
         }
+
+        private void BtnDeleteAccount_Click(object sender, RoutedEventArgs e)
+        {
+            var deleteWindow = new MoneyRules.UI.Windows.DeleteAccountWindow();
+            deleteWindow.ShowDialog();
+        }
+
     }
 }

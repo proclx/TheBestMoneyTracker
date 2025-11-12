@@ -197,6 +197,13 @@
                                 Click="BtnChangePassword_Click"    
                                 Background="{DynamicResource ButtonBackground}"   
                                 Foreground="{DynamicResource ButtonForeground}"/>
+                        <Button x:Name="BtnDeleteAccount" 
+                                Content="Видалити акаунт" 
+                                Width="120" HorizontalAlignment="Left" 
+                                Margin="8" 
+                                Click="BtnDeleteAccount_Click"
+                                Background="red" 
+                                Foreground="White"/>
 
                     </StackPanel>
                 </Grid>

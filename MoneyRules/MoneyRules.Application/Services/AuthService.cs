@@ -5,20 +5,25 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using MoneyRules.Application.Interfaces;
 using MoneyRules.Domain.Enums;
-using MoneyRules.Application.DTOs; // <-- Додайте це
+using MoneyRules.Application.DTOs;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MoneyRules.Application.Services
 {
     public class AuthService : IAuthService
     {
         private readonly AppDbContext _context;
+        private readonly Dictionary<string, string> _confirmationCodes = new();
 
         public AuthService(AppDbContext context)
         {
             _context = context;
         }
 
-        // --- ПОВНІСТЮ ОНОВЛЕНИЙ МЕТОД LOGINASYNC ---
+        #region Login & Register
+
         public async Task<LoginResult> LoginAsync(string email, string password, bool rememberMe)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
@@ -34,18 +39,15 @@ namespace MoneyRules.Application.Services
                 return new LoginResult { IsSuccess = false, ErrorMessage = "Невірний email або пароль." };
             }
 
-            // Успішний логін, тепер обробляємо "Remember Me"
             string? rememberToken = null;
             if (rememberMe)
             {
-                // Генеруємо безпечний токен
                 rememberToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
                 user.RememberMeToken = rememberToken;
-                user.RememberMeTokenExpiry = DateTime.UtcNow.AddDays(30); // Токен дійсний 30 днів
+                user.RememberMeTokenExpiry = DateTime.UtcNow.AddDays(30);
             }
             else
             {
-                // Якщо "Remember Me" не обрано, скидаємо будь-які старі токени
                 user.RememberMeToken = null;
                 user.RememberMeTokenExpiry = null;
             }
@@ -56,35 +58,27 @@ namespace MoneyRules.Application.Services
             {
                 IsSuccess = true,
                 User = user,
-                RememberMeToken = rememberToken // Повертаємо токен (буде null, якщо rememberMe=false)
+                RememberMeToken = rememberToken
             };
         }
 
-        // --- НОВИЙ МЕТОД ---
         public async Task<User?> LoginWithTokenAsync(string token)
         {
-            if (string.IsNullOrEmpty(token))
-            {
-                return null;
-            }
+            if (string.IsNullOrEmpty(token)) return null;
 
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.RememberMeToken == token &&
                                           u.RememberMeTokenExpiry > DateTime.UtcNow);
 
-            // Якщо токен дійсний, оновимо його, щоб продовжити "сесію"
             if (user != null)
             {
                 user.RememberMeTokenExpiry = DateTime.UtcNow.AddDays(30);
                 await _context.SaveChangesAsync();
             }
 
-            return user; // Поверне null, якщо токен не знайдено або він прострочений
+            return user;
         }
 
-        // ... ваші існуючі методи RegisterAsync, HashPassword, VerifyPassword, IsValidEmail, ChangePasswordAsync ...
-        // ... (скопіюйте їх сюди без змін) ...
-        #region Existing Methods
         public async Task<User> RegisterAsync(string name, string email, string password)
         {
             if (!IsValidEmail(email))
@@ -120,43 +114,9 @@ namespace MoneyRules.Application.Services
             return user;
         }
 
-        public string HashPassword(string password)
-        {
-            byte[] salt = RandomNumberGenerator.GetBytes(16);
-            byte[] hash = Rfc2898DeriveBytes.Pbkdf2(
-                password,
-                salt,
-                100_000,
-                HashAlgorithmName.SHA256,
-                32);
+        #endregion
 
-            return $"{Convert.ToBase64String(salt)}:{Convert.ToBase64String(hash)}";
-        }
-
-        private bool VerifyPassword(string password, string storedHash)
-        {
-            var parts = storedHash.Split(':');
-            if (parts.Length != 2)
-                return false;
-
-            byte[] salt = Convert.FromBase64String(parts[0]);
-            byte[] stored = Convert.FromBase64String(parts[1]);
-
-            byte[] computed = Rfc2898DeriveBytes.Pbkdf2(
-                password,
-                salt,
-                100_000,
-                HashAlgorithmName.SHA256,
-                32);
-
-            return CryptographicOperations.FixedTimeEquals(stored, computed);
-        }
-
-        private bool IsValidEmail(string email)
-        {
-            var pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-            return Regex.IsMatch(email, pattern, RegexOptions.IgnoreCase);
-        }
+        #region Password & Verification
 
         public async Task ChangePasswordAsync(User user, string newPassword)
         {
@@ -167,9 +127,32 @@ namespace MoneyRules.Application.Services
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
-        #endregion
 
-        private readonly Dictionary<string, string> _confirmationCodes = new();
+        public string HashPassword(string password)
+        {
+            byte[] salt = RandomNumberGenerator.GetBytes(16);
+            byte[] hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, 100_000, HashAlgorithmName.SHA256, 32);
+            return $"{Convert.ToBase64String(salt)}:{Convert.ToBase64String(hash)}";
+        }
+
+        private bool VerifyPassword(string password, string storedHash)
+        {
+            var parts = storedHash.Split(':');
+            if (parts.Length != 2) return false;
+
+            byte[] salt = Convert.FromBase64String(parts[0]);
+            byte[] stored = Convert.FromBase64String(parts[1]);
+
+            byte[] computed = Rfc2898DeriveBytes.Pbkdf2(password, salt, 100_000, HashAlgorithmName.SHA256, 32);
+
+            return CryptographicOperations.FixedTimeEquals(stored, computed);
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            var pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            return Regex.IsMatch(email, pattern, RegexOptions.IgnoreCase);
+        }
 
         public async Task<bool> CheckEmailExistsAsync(string email)
         {
@@ -191,20 +174,43 @@ namespace MoneyRules.Application.Services
         public async Task<bool> ResetPasswordAsync(string email, string newPassword)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if (user == null)
-                return false;
+            if (user == null) return false;
 
             user.PasswordHash = HashPassword(newPassword);
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            // видаляємо код підтвердження, щоб не можна було використати повторно
             if (_confirmationCodes.ContainsKey(email))
                 _confirmationCodes.Remove(email);
 
             return true;
         }
 
+        #endregion
 
+        #region Delete Account
+
+        public async Task<bool> DeleteUserAccountAsync(string email, string password)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                return false;
+
+            var user = await _context.Users
+                .Include(u => u.Transactions)
+                .Include(u => u.Categories)
+                .Include(u => u.Settings)
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == email.Trim().ToLower());
+
+            if (user == null) return false;
+
+            if (!VerifyPassword(password, user.PasswordHash)) return false;
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        #endregion
     }
 }
+

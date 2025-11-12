@@ -1,5 +1,6 @@
 ﻿using MoneyRules.Domain.Entities;
 using MoneyRules.Application.DTOs;
+using System.Threading.Tasks;
 
 namespace MoneyRules.Application.Interfaces
 {
@@ -15,6 +16,9 @@ namespace MoneyRules.Application.Interfaces
         Task<bool> VerifyConfirmationCodeAsync(string email, string code);
         Task<bool> ResetPasswordAsync(string email, string newPassword);
 
+        // --- Новий метод для видалення акаунту ---
+        Task<bool> DeleteUserAccountAsync(string email, string password);
     }
 }
+
 
