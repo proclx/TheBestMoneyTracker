@@ -1,0 +1,138 @@
+2025-11-12 21:30:53.362 +02:00 [INF] --- Запуск програми ---
+2025-11-12 21:30:53.415 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-12 21:30:53.529 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-12 21:30:53.541 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-12 21:30:53.546 +02:00 [DBG] OnStartup: Застосування міграцій бази даних...
+2025-11-12 21:30:55.773 +02:00 [FTL] Критична помилка під час запуску програми
+Npgsql.PostgresException (0x80004005): 42P07: відношення "Users" вже існує
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult()
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery(Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQuery(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Migrations.MigrationCommand.ExecuteNonQuery(IRelationalConnection connection, IReadOnlyDictionary`2 parameterValues)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.Execute(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean beginTransaction, Boolean commitTransaction, Nullable`1 isolationLevel)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.<>c.<ExecuteNonQuery>b__3_1(DbContext _, ValueTuple`6 s)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQuery(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean commitTransaction, Nullable`1 isolationLevel)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateImplementation(DbContext context, String targetMigration, MigrationExecutionState state, Boolean useTransaction)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.<>c.<Migrate>b__20_1(DbContext c, ValueTuple`4 s)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.Migrate(String targetMigration)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal.NpgsqlMigrator.Migrate(String targetMigration)
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.Migrate(DatabaseFacade databaseFacade)
+   at MoneyRules.UI.App.OnStartup(StartupEventArgs e) in C:\Users\place\OneDrive\Робочий стіл\wdas\TheBestMoneyTracker\MoneyRules\MoneyRules.UI\App.xaml.cs:line 79
+  Exception data:
+    Severity: ПОМИЛКА
+    SqlState: 42P07
+    MessageText: відношення "Users" вже існує
+    File: heap.c
+    Line: 1162
+    Routine: heap_create_with_catalog
+2025-11-12 21:35:32.787 +02:00 [INF] --- Запуск програми ---
+2025-11-12 21:35:32.869 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-12 21:35:32.919 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-12 21:35:32.940 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-12 21:35:32.947 +02:00 [DBG] OnStartup: Застосування міграцій бази даних...
+2025-11-12 21:35:34.858 +02:00 [DBG] OnStartup: Міграції застосовано.
+2025-11-12 21:35:34.861 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-12 21:35:34.883 +02:00 [DBG] SecureTokenStorage: Токен успішно завантажено.
+2025-11-12 21:35:34.883 +02:00 [DBG] OnStartup: Токен знайдено, спроба входу...
+2025-11-12 21:35:35.216 +02:00 [INF] OnStartup: Вхід за токеном НЕ вдався. Відкриття WelcomeWindow.
+2025-11-12 21:38:10.624 +02:00 [INF] --- Завершення роботи програми ---
+2025-11-12 21:39:34.073 +02:00 [INF] --- Запуск програми ---
+2025-11-12 21:39:34.116 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-12 21:39:34.146 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-12 21:39:34.158 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-12 21:39:34.162 +02:00 [DBG] OnStartup: Застосування міграцій бази даних...
+2025-11-12 21:39:35.575 +02:00 [DBG] OnStartup: Міграції застосовано.
+2025-11-12 21:39:35.579 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-12 21:39:35.588 +02:00 [DBG] SecureTokenStorage: Токен успішно завантажено.
+2025-11-12 21:39:35.589 +02:00 [DBG] OnStartup: Токен знайдено, спроба входу...
+2025-11-12 21:39:35.947 +02:00 [INF] OnStartup: Вхід за токеном НЕ вдався. Відкриття WelcomeWindow.
+2025-11-12 21:39:49.676 +02:00 [DBG] SecureTokenStorage: Токен успішно збережено.
+2025-11-12 21:53:40.631 +02:00 [INF] --- Завершення роботи програми ---
+2025-11-12 21:55:29.730 +02:00 [INF] --- Запуск програми ---
+2025-11-12 21:55:29.795 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-12 21:55:29.828 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-12 21:55:29.846 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-12 21:55:29.853 +02:00 [DBG] OnStartup: Застосування міграцій бази даних...
+2025-11-12 21:55:31.440 +02:00 [DBG] OnStartup: Міграції застосовано.
+2025-11-12 21:55:31.444 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-12 21:55:31.452 +02:00 [DBG] SecureTokenStorage: Токен успішно завантажено.
+2025-11-12 21:55:31.453 +02:00 [DBG] OnStartup: Токен знайдено, спроба входу...
+2025-11-12 21:55:32.127 +02:00 [INF] OnStartup: Вхід за токеном успішний. Відкриття MainWindow.
+2025-11-12 22:03:01.349 +02:00 [INF] --- Завершення роботи програми ---
+2025-11-12 22:06:04.553 +02:00 [INF] --- Запуск програми ---
+2025-11-12 22:06:04.615 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-12 22:06:04.663 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-12 22:06:04.683 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-12 22:06:04.690 +02:00 [DBG] OnStartup: Застосування міграцій бази даних...
+2025-11-12 22:06:06.641 +02:00 [DBG] OnStartup: Міграції застосовано.
+2025-11-12 22:06:06.647 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-12 22:06:06.657 +02:00 [DBG] SecureTokenStorage: Токен успішно завантажено.
+2025-11-12 22:06:06.658 +02:00 [DBG] OnStartup: Токен знайдено, спроба входу...
+2025-11-12 22:06:07.332 +02:00 [INF] OnStartup: Вхід за токеном успішний. Відкриття MainWindow.
+2025-11-12 22:06:08.423 +02:00 [FTL] Критична помилка під час запуску програми
+OfficeOpenXml.LicenseContextPropertyObsoleteException: Please use the static 'ExcelPackage.License' property to set the required license information from EPPlus 8 and later versions. For more info see http://epplussoftware.com/developers/licensenotsetexception.
+   at OfficeOpenXml.ExcelPackage.set_LicenseContext(Nullable`1 value)
+   at MoneyRules.Application.Services.FileUploadService..ctor(AppDbContext dbContext) in C:\Users\place\OneDrive\Робочий стіл\wdas\TheBestMoneyTracker\MoneyRules\MoneyRules.Application\Services\FileUploadService.cs:line 25
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at System.Reflection.RuntimeConstructorInfo.Invoke(BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScopeCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitDisposeCache(ServiceCallSite transientCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass2_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
+   at MoneyRules.UI.App.OnStartup(StartupEventArgs e) in C:\Users\place\OneDrive\Робочий стіл\wdas\TheBestMoneyTracker\MoneyRules\MoneyRules.UI\App.xaml.cs:line 126
+2025-11-12 22:12:15.911 +02:00 [INF] --- Запуск програми ---
+2025-11-12 22:12:15.977 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-12 22:12:16.030 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-12 22:12:16.050 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-12 22:12:16.057 +02:00 [DBG] OnStartup: Застосування міграцій бази даних...
+2025-11-12 22:12:17.875 +02:00 [DBG] OnStartup: Міграції застосовано.
+2025-11-12 22:12:17.879 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-12 22:12:17.889 +02:00 [DBG] SecureTokenStorage: Токен успішно завантажено.
+2025-11-12 22:12:17.889 +02:00 [DBG] OnStartup: Токен знайдено, спроба входу...
+2025-11-12 22:12:18.353 +02:00 [INF] OnStartup: Вхід за токеном успішний. Відкриття MainWindow.
+2025-11-12 22:13:05.020 +02:00 [DBG] SecureTokenStorage: Токен успішно збережено.
+2025-11-12 22:17:17.601 +02:00 [INF] --- Завершення роботи програми ---
+2025-11-12 22:17:24.279 +02:00 [INF] --- Запуск програми ---
+2025-11-12 22:17:24.341 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-12 22:17:24.375 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-12 22:17:24.389 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-12 22:17:24.394 +02:00 [DBG] OnStartup: Застосування міграцій бази даних...
+2025-11-12 22:17:25.831 +02:00 [DBG] OnStartup: Міграції застосовано.
+2025-11-12 22:17:25.835 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-12 22:17:25.842 +02:00 [DBG] SecureTokenStorage: Токен успішно завантажено.
+2025-11-12 22:17:25.842 +02:00 [DBG] OnStartup: Токен знайдено, спроба входу...
+2025-11-12 22:17:26.361 +02:00 [INF] OnStartup: Вхід за токеном успішний. Відкриття MainWindow.
+2025-11-12 22:17:56.059 +02:00 [INF] --- Завершення роботи програми ---
+2025-11-12 22:21:19.140 +02:00 [INF] --- Запуск програми ---
+2025-11-12 22:21:19.200 +02:00 [DBG] OnStartup: Налаштування конфігурації...
+2025-11-12 22:21:19.256 +02:00 [DBG] OnStartup: Налаштування сервісів (DI)...
+2025-11-12 22:21:19.284 +02:00 [DBG] OnStartup: ServiceProvider створено.
+2025-11-12 22:21:19.292 +02:00 [DBG] OnStartup: Застосування міграцій бази даних...
+2025-11-12 22:21:21.175 +02:00 [DBG] OnStartup: Міграції застосовано.
+2025-11-12 22:21:21.179 +02:00 [DBG] OnStartup: Перевірка наявності токена...
+2025-11-12 22:21:21.186 +02:00 [DBG] SecureTokenStorage: Токен успішно завантажено.
+2025-11-12 22:21:21.186 +02:00 [DBG] OnStartup: Токен знайдено, спроба входу...
+2025-11-12 22:21:21.635 +02:00 [INF] OnStartup: Вхід за токеном успішний. Відкриття MainWindow.
+2025-11-12 22:21:39.654 +02:00 [INF] --- Завершення роботи програми ---
