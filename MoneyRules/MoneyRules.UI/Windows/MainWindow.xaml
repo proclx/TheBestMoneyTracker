@@ -7,37 +7,36 @@
     <Grid>
         <TabControl x:Name="MainTabControl" Background="{DynamicResource AppBackground}">
             
-            <!-- Завантаження файлу -->
             <TabItem Header="Завантаження файлу" Background="{DynamicResource AppBackground}">
                 <local:FileUploadPage />
             </TabItem>
 
-            <!-- Редагування даних -->
             <TabItem Header="Редагування даних" Background="{DynamicResource AppBackground}">
                 <StackPanel Margin="-12,10,32,10">
                     <TextBlock Text="Тут будуть транзакції та кнопки для редагування" Margin="5" Foreground="{DynamicResource SecondaryText}"/>
+                    
                     <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                        <!-- 
-                        =================================================
-                        ОСЬ ТУТ БУВ КОНФЛІКТ - МИ ЙОГО ВИРІШИЛИ:
-                        Ми взяли ваші кнопки з DynamicResource 
-                        і додали нову кнопку "Заплановані платежі" з GitHub.
-                        =================================================
-                        -->
+                        
                         <Button Content="Додати транзакцію" Width="150" Margin="0,0,5,0" Click="AddTransactionButton_Click" Background="{DynamicResource ButtonBackground}" Foreground="{DynamicResource ButtonForeground}"/>
                         <Button Content="Видалити" Width="100" Margin="0,0,5,0" Background="{DynamicResource ButtonBackground}" Foreground="{DynamicResource ButtonForeground}"/>
                         <Button Content="Переглянути історію" Width="160" Click="OpenHistory_Click" Background="{DynamicResource ButtonBackground}" Foreground="{DynamicResource ButtonForeground}"/>
                         <Button x:Name="BtnScheduledPayments" Content="Заплановані платежі" Width="160" Margin="8,0,0,0" Click="BtnScheduledPayments_Click" Background="{DynamicResource ButtonBackground}" Foreground="{DynamicResource ButtonForeground}"/>
+                        
+                        <Button x:Name="OpenDuplicatePaymentWindowButton" 
+                                Content="Дублювати платіж" 
+                                Click="OpenDuplicatePaymentWindow_Click" 
+                                Width="160" Margin="8,0,0,0" 
+                                Background="{DynamicResource ButtonBackground}" 
+                                Foreground="{DynamicResource ButtonForeground}"/>
+                    
                     </StackPanel>
                     
-                    <!-- Export PDF button moved below for better layout -->
                     <StackPanel HorizontalAlignment="Center" Margin="0,12,0,0">
                         <Button x:Name="BtnExportPdf" Content="Експорт PDF" Width="180" Height="36" FontWeight="SemiBold" Click="BtnExportPdf_Click" Background="{DynamicResource ButtonBackground}" Foreground="{DynamicResource ButtonForeground}"/>
                     </StackPanel>
                 </StackPanel>
             </TabItem>
 
-            <!-- Візуалізація -->
             <TabItem Header="Візуалізація" Background="{DynamicResource AppBackground}">
                 <StackPanel Margin="10">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -70,7 +69,6 @@
                 </StackPanel>
             </TabItem>
 
-            <!-- Підписка -->
             <TabItem Header="Підписка" Background="{DynamicResource AppBackground}">
                 <StackPanel Margin="10">
                     <TextBlock Text="Активація преміум-підписки" Margin="0,0,0,5" Foreground="{DynamicResource PrimaryText}"/>
@@ -79,7 +77,6 @@
                 </StackPanel>
             </TabItem>
 
-            <!-- Поради -->
             <TabItem Header="Поради" Background="{DynamicResource AppBackground}">
                 <StackPanel Margin="10">
                     <TextBlock Text="Персональні поради на основі ваших транзакцій" FontStyle="Italic" Foreground="{DynamicResource SecondaryText}"/>
@@ -92,7 +89,6 @@
                 </StackPanel>
             </TabItem>
 
-            <!-- Профіль -->
             <TabItem Header="Профіль" Background="{DynamicResource AppBackground}">
                 <Grid Margin="20">
                     <Grid.ColumnDefinitions>
@@ -100,7 +96,6 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Profile Photo -->
                     <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top">
                         <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="10" Padding="5">
                             <Image x:Name="ProfileImage" Width="150" Height="150" Stretch="UniformToFill"/>
@@ -112,7 +107,6 @@
                                 Background="{DynamicResource ButtonBackground}"   
                                 Foreground="{DynamicResource ButtonForeground}"/>
                         
-                        <!-- Currency Rates Panel -->
                         <Border Background="{DynamicResource WindowBackground}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" 
                                 CornerRadius="8" Margin="0,20,0,0" Width="200">
                             <StackPanel Margin="10">
@@ -137,7 +131,6 @@
                         </Border>
                     </StackPanel>
 
-                    <!-- User Info + Settings -->
                     <StackPanel Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Top">
                         <TextBlock Text="Інформація про користувача" FontSize="18" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryText}"/>
 
@@ -170,12 +163,7 @@
                             <CheckBox x:Name="ChkNotifications" Content="Enabled" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryText}"/>
                         </StackPanel>
                         
-                        <!-- 
-                        =================================================
-                        ОСЬ ЦЕЙ БЛОК БУЛО ДОДАНО:
-                        Це наша "кнопка" для перемикання теми.
-                        =================================================
-                        -->
+                        
                         <StackPanel Orientation="Horizontal" Margin="0,5">
                             <TextBlock Text="Інтерфейс:" Width="120" VerticalAlignment="Center" Foreground="{DynamicResource SecondaryText}"/>
                             <CheckBox x:Name="ThemeToggle" 
@@ -186,7 +174,6 @@
                                       Unchecked="ThemeToggle_Unchecked"/>
                         </StackPanel>
                         
-                        <!-- Save changes Button -->
                         <Button x:Name="BtnSaveProfile" 
                                 Content="Зберегти зміни" 
                                 Width="150" Margin="0,20,0,0" 
@@ -195,7 +182,6 @@
                                 Foreground="{DynamicResource ButtonForeground}"/>
 
 
-                        <!-- Logout Button -->
                         <Button x:Name="BtnLogout"
                                 Content="Вийти з акаунту"
                                 Width="150"
@@ -204,12 +190,11 @@
                                 Foreground="White"
                                 Click="BtnLogout_Click"/>
 
-                        <!-- Change password Button -->
                         <Button x:Name="BtnChangePassword"    
                                 Content="Змінити пароль"    
                                 Width="150"         
                                 Margin="0,10,0,0"    
-                                Click="BtnChangePassword_Click"     
+                                Click="BtnChangePassword_Click"    
                                 Background="{DynamicResource ButtonBackground}"   
                                 Foreground="{DynamicResource ButtonForeground}"/>
 

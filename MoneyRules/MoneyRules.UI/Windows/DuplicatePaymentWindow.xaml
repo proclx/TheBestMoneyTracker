@@ -1,0 +1,43 @@
+<Window x:Class="MoneyRules.UI.Windows.DuplicatePaymentWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MoneyRules.UI.Windows"
+        mc:Ignorable="d"
+        Title="Дублювати платіж" Height="450" Width="600" WindowStartupLocation="CenterOwner"
+        Loaded="Window_Loaded">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="1. Оберіть платіж зі списку для дублювання:" FontWeight="SemiBold"/>
+        
+        <DataGrid x:Name="transactionsDataGrid" Grid.Row="1" Margin="0,5,0,10"
+                  AutoGenerateColumns="False" 
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  SelectionChanged="TransactionsDataGrid_SelectionChanged">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat='dd.MM.yyyy'}" Width="Auto"/>
+                <DataGridTextColumn Header="Категорія" Binding="{Binding Category.Name}" Width="*"/>
+                <DataGridTextColumn Header="Опис" Binding="{Binding Description}" Width="*"/>
+                <DataGridTextColumn Header="Сума" Binding="{Binding Amount, StringFormat='N2'}" Width="Auto"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
+            <TextBlock Text="2. Нова сума (дата буде поточною):" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <TextBox x:Name="AmountTextBox" Width="150" FontWeight="Bold"/>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="SaveButton" Content="Зберегти дублікат" Width="150" Margin="5" Click="SaveButton_Click"/>
+            <Button x:Name="CancelButton" Content="Відміна" Width="100" Margin="5" Click="CancelButton_Click" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>
