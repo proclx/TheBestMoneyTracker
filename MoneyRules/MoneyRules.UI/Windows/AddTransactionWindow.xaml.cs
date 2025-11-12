@@ -10,11 +10,39 @@ namespace MoneyRules.UI.Windows
     {
         public Transaction? CreatedTransaction { get; private set; }
 
+        // --- ВАШ ІСНУЮЧИЙ КОНСТРУКТОР ---
+        // (Використовується для кнопки "Додати")
         public AddTransactionWindow()
         {
             InitializeComponent();
         }
 
+        // --- ПОЧАТОК НОВОГО КОДУ ---
+        
+        // --- НОВИЙ КОНСТРУКТОР ДЛЯ ДУБЛЮВАННЯ ---
+        // (Використовується для кнопки "Дублювати платіж")
+        public AddTransactionWindow(Transaction transactionToDuplicate)
+        {
+            InitializeComponent();
+
+            // Заповнюємо поля даними з обраної транзакції
+            AmountTextBox.Text = transactionToDuplicate.Amount.ToString();
+            DescriptionTextBox.Text = transactionToDuplicate.Description;
+            
+            // Встановлюємо дату на СЬОГОДНІ
+            DatePicker.SelectedDate = DateTime.Now;
+
+            // Встановлюємо правильний тип (Дохід/Витрата)
+            TypeComboBox.SelectedIndex = (transactionToDuplicate.Type == TransactionType.Income) ? 0 : 1;
+
+            // Встановлюємо назву категорії
+            CategoryTextBox.Text = transactionToDuplicate.Category.Name;
+        }
+
+        // --- КІНЕЦЬ НОВОГО КОДУ ---
+
+
+        // --- ВАШ ІСНУЮЧИЙ КОД ЗБЕРЕЖЕННЯ (OkButton_Click) ---
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -64,7 +92,7 @@ namespace MoneyRules.UI.Windows
                 context.SaveChanges();
 
                 MessageBox.Show("Транзакція успішно додана!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
-                this.Close();
+                this.Close(); // Закриваємо вікно
             }
             catch (Exception ex)
             {

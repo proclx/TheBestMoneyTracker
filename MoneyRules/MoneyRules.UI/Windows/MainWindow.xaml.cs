@@ -12,8 +12,8 @@ using MoneyRules.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection; 
 using System;
 using System.Collections.Generic;
-using MoneyRules.UI.Utils; // --- ДОДАНО --- для ThemeManager
-using MoneyRules.UI; // --- ДОДАНО --- з GitHub
+using MoneyRules.UI.Utils;
+using MoneyRules.UI;
 
 namespace MoneyRules.UI.Windows
 {
@@ -40,7 +40,6 @@ namespace MoneyRules.UI.Windows
         {
             InitializeComponent();
 
-            // --- ВИПРАВЛЕНО: Присвоєння сервісів перенесено на початок ---
             _transactionService = transactionService;
             _authService = authService;
             _adviceService = adviceService;
@@ -60,11 +59,8 @@ namespace MoneyRules.UI.Windows
             LoadUserProfile();
             LoadAdvice();
             LoadExchangeRates();
-
-            // Populate months for chart selection
             PopulateChartMonths();
 
-            // redraw when canvas size changes so labels stay readable
             if (FindName("ChartCanvas") is Canvas _chart)
                 _chart.SizeChanged += (s, e) => DrawChartForSelectedYear();
         }
@@ -93,43 +89,45 @@ namespace MoneyRules.UI.Windows
             }
         }
 
-private void LoadAdvice()
-{
-    try
-    {
-        if (_currentUser == null)
-            return;
-
-        // Викликаємо новий метод сервісу
-        var tips = _adviceService.GetAdviceForUser(_currentUser.UserId);
-
-        var adviceList = FindName("AdviceList") as ItemsControl;
-        if (adviceList != null)
+        // --- ПОЧАТОК НОВОГО КОДУ ---
+        /* * * * Це новий метод, який відкриває НОВЕ вікно для дублювання.
+         */
+        private void OpenDuplicatePaymentWindow_Click(object sender, RoutedEventArgs e)
         {
-            adviceList.ItemsSource = tips.Select(t => new TextBlock
-            {
-                Text = t,
-                TextWrapping = TextWrapping.Wrap
-                // --- ДОДАЙТЕ ЦЕЙ РЯДОК --- (Крок 4)
-                , Foreground = (System.Windows.Media.Brush)FindResource("SecondaryText")
-            });
+            DuplicatePaymentWindow duplicateWindow = new DuplicatePaymentWindow();
+            duplicateWindow.Owner = this; 
+            duplicateWindow.ShowDialog();
         }
-    }
-    catch (Exception ex)
-    {
-        var adviceList = FindName("AdviceList") as ItemsControl;
-        if (adviceList != null)
+        // --- КІНЕЦЬ НОВОГО КОДУ ---
+
+        private void LoadAdvice()
         {
-            adviceList.ItemsSource = new[]
+            try
             {
-                new TextBlock
+                if (_currentUser == null)
+                    return;
+                var tips = _adviceService.GetAdviceForUser(_currentUser.UserId);
+                var adviceList = FindName("AdviceList") as ItemsControl;
+                if (adviceList != null)
                 {
-                    Text = "Не вдалося отримати поради: " + ex.Message
+                    adviceList.ItemsSource = tips.Select(t => new TextBlock
+                    {
+                        Text = t,
+                        TextWrapping = TextWrapping.Wrap
+                        , Foreground = (System.Windows.Media.Brush)FindResource("SecondaryText")
+                    });
                 }
-            };
+            }
+            catch (Exception ex)
+            {
+                var adviceList = FindName("AdviceList") as ItemsControl;
+                if (adviceList != null)
+                {
+                    adviceList.ItemsSource = new[]
+                    { new TextBlock { Text = "Не вдалося отримати поради: " + ex.Message } };
+                }
+            }
         }
-    }
-}
 
 
         private void RefreshAdviceButton_Click(object sender, RoutedEventArgs e)
@@ -182,8 +180,6 @@ private void LoadAdvice()
                 var chkNotifications = FindName("ChkNotifications") as CheckBox;
                 if (chkNotifications != null) chkNotifications.IsChecked = _currentUser.Settings.NotificationEnabled;
                 
-                // --- ДОДАНО ---
-                // Встановлюємо галочку "Темна тема", якщо вона збережена
                 var themeToggle = FindName("ThemeToggle") as CheckBox;
                 if (themeToggle != null)
                 {
@@ -193,12 +189,10 @@ private void LoadAdvice()
                 var txtMonthlyBudget = FindName("TxtMonthlyBudget") as TextBox;
                 if (txtMonthlyBudget != null)
                 {
-                    // "N2" форматує число з 2 знаками після коми
                     txtMonthlyBudget.Text = _currentUser.Settings.MonthlyBudget.ToString("N2");
                 }
             }
-
-            // Populate chart years
+            
             PopulateChartYears();
             DrawChartForSelectedYear();
         }
@@ -218,23 +212,13 @@ private void LoadAdvice()
             {
                 try
                 {
-                    // ==========================================================
-                    // === ЗМІНА ТУТ: Викликаємо новий, безпечний метод сервісу ===
-                    // ==========================================================
                     _profileService.UpdateUserBudget(_currentUser.UserId, newBudget);
-
-                    // Тепер, коли в базі даних все збережено,
-                    // оновимо наш локальний об'єкт _currentUser, щоб він відповідав дійсності.
                     if (_currentUser.Settings == null)
                     {
                         _currentUser.Settings = new Settings { UserId = _currentUser.UserId };
                     }
                     _currentUser.Settings.MonthlyBudget = newBudget;
-                    // ==========================================================
-
                     MessageBox.Show("Бюджет успішно збережено.", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                    // Оновлюємо графік
                     DrawChartForSelectedYear();
                 }
                 catch (Exception ex)
@@ -267,10 +251,7 @@ private void LoadAdvice()
                         cmb.SelectedIndex = 0;
                 }
             }
-            catch
-            {
-                // ignore silently
-            }
+            catch { /* ignore silently */ }
         }
 
         private void PopulateChartMonths()
@@ -291,10 +272,7 @@ private void LoadAdvice()
                     cmb.SelectedIndex = DateTime.Now.Month - 1;
                 }
             }
-            catch
-            {
-                // ignore silently
-            }
+            catch { /* ignore silently */ }
         }
 
         private void BtnRefreshChart_Click(object sender, RoutedEventArgs e)
@@ -313,9 +291,7 @@ private void LoadAdvice()
             var txtStatus = FindName("TxtChartStatus") as TextBlock;
             var cmb = FindName("CmbChartYear") as ComboBox;
 
-            if (chart == null)
-                return; // nothing to draw into
-
+            if (chart == null) return;
             chart.Children.Clear();
 
             if (_currentUser == null)
@@ -333,14 +309,12 @@ private void LoadAdvice()
             var chkMonthly = FindName("ChkMonthlyView") as CheckBox;
             if (chkMonthly != null && chkMonthly.IsChecked == true)
             {
-                // Daily view for selected month
                 var cmbMonth = FindName("CmbChartMonth") as ComboBox;
                 int month = DateTime.Now.Month;
                 if (cmbMonth != null && cmbMonth.SelectedItem is ComboBoxItem ms && ms.Tag is int mt)
                     month = mt;
 
                 var dailyStats = _chartService.GetDailyStatistics(_currentUser.UserId, year, month);
-                // Show only days that have Income or Expense != 0, order by day
                 var days = dailyStats
                     .Where(kvp => kvp.Value.Income != 0m || kvp.Value.Expense != 0m)
                     .OrderBy(kvp => kvp.Key)
@@ -369,33 +343,14 @@ private void LoadAdvice()
                     double x = 20 + i * barWidth;
 
                     double hInc = (double)d.Income / maxVal * (canvasH - 60);
-                    var rectInc = new System.Windows.Shapes.Rectangle
-                    {
-                        Width = barWidth * 0.4,
-                        Height = Math.Max(1, hInc),
-                        Fill = System.Windows.Media.Brushes.Green,
-                        Stroke = System.Windows.Media.Brushes.Black
-                    };
+                    var rectInc = new System.Windows.Shapes.Rectangle { Width = barWidth * 0.4, Height = Math.Max(1, hInc), Fill = System.Windows.Media.Brushes.Green, Stroke = System.Windows.Media.Brushes.Black };
                     Canvas.SetLeft(rectInc, x + barWidth * 0.05);
                     Canvas.SetTop(rectInc, canvasH - 30 - rectInc.Height);
                     chart.Children.Add(rectInc);
 
                     var incText = ((decimal)d.Income).ToString("N0");
-                    var incLabel = new TextBlock
-                    {
-                        Text = incText,
-                        FontSize = 11,
-                        FontWeight = System.Windows.FontWeights.SemiBold,
-                        Foreground = System.Windows.Media.Brushes.White
-                    };
-                    var incBorder = new System.Windows.Controls.Border
-                    {
-                        Background = System.Windows.Media.Brushes.DarkGreen,
-                        CornerRadius = new CornerRadius(4),
-                        Child = incLabel,
-                        Padding = new Thickness(6, 2, 6, 2),
-                        Opacity = d.Income == 0 ? 0.7 : 1
-                    };
+                    var incLabel = new TextBlock { Text = incText, FontSize = 11, FontWeight = System.Windows.FontWeights.SemiBold, Foreground = System.Windows.Media.Brushes.White };
+                    var incBorder = new System.Windows.Controls.Border { Background = System.Windows.Media.Brushes.DarkGreen, CornerRadius = new CornerRadius(4), Child = incLabel, Padding = new Thickness(6, 2, 6, 2), Opacity = d.Income == 0 ? 0.7 : 1 };
                     incBorder.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
                     double incW = incBorder.DesiredSize.Width;
                     double incLeft = x + barWidth * 0.05 + (barWidth * 0.4 - incW) / 2;
@@ -404,33 +359,14 @@ private void LoadAdvice()
                     chart.Children.Add(incBorder);
 
                     double hExp = (double)d.Expense / maxVal * (canvasH - 60);
-                    var rectExp = new System.Windows.Shapes.Rectangle
-                    {
-                        Width = barWidth * 0.4,
-                        Height = Math.Max(1, hExp),
-                        Fill = System.Windows.Media.Brushes.Red,
-                        Stroke = System.Windows.Media.Brushes.Black
-                    };
+                    var rectExp = new System.Windows.Shapes.Rectangle { Width = barWidth * 0.4, Height = Math.Max(1, hExp), Fill = System.Windows.Media.Brushes.Red, Stroke = System.Windows.Media.Brushes.Black };
                     Canvas.SetLeft(rectExp, x + barWidth * 0.55);
                     Canvas.SetTop(rectExp, canvasH - 30 - rectExp.Height);
                     chart.Children.Add(rectExp);
 
                     var expText = ((decimal)d.Expense).ToString("N0");
-                    var expLabel = new TextBlock
-                    {
-                        Text = expText,
-                        FontSize = 11,
-                        FontWeight = System.Windows.FontWeights.SemiBold,
-                        Foreground = System.Windows.Media.Brushes.White
-                    };
-                    var expBorder = new System.Windows.Controls.Border
-                    {
-                        Background = System.Windows.Media.Brushes.DarkRed,
-                        CornerRadius = new CornerRadius(4),
-                        Child = expLabel,
-                        Padding = new Thickness(6, 2, 6, 2),
-                        Opacity = d.Expense == 0 ? 0.7 : 1
-                    };
+                    var expLabel = new TextBlock { Text = expText, FontSize = 11, FontWeight = System.Windows.FontWeights.SemiBold, Foreground = System.Windows.Media.Brushes.White };
+                    var expBorder = new System.Windows.Controls.Border { Background = System.Windows.Media.Brushes.DarkRed, CornerRadius = new CornerRadius(4), Child = expLabel, Padding = new Thickness(6, 2, 6, 2), Opacity = d.Expense == 0 ? 0.7 : 1 };
                     expBorder.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
                     double expW = expBorder.DesiredSize.Width;
                     double expLeft = x + barWidth * 0.55 + (barWidth * 0.4 - expW) / 2;
@@ -448,14 +384,8 @@ private void LoadAdvice()
                 return;
             }
 
-            // default yearly (monthly) view
             var monthlyStats = _chartService.GetMonthlyStatistics(_currentUser.UserId, year);
-            var months = monthlyStats.Select(kvp => new
-            {
-                Month = kvp.Key,
-                Income = kvp.Value.Income,
-                Expense = kvp.Value.Expense
-            }).ToList();
+            var months = monthlyStats.Select(kvp => new { Month = kvp.Key, Income = kvp.Value.Income, Expense = kvp.Value.Expense }).ToList();
 
             var maxVal2 = Math.Max((double)months.Max(m => m.Income), (double)months.Max(m => m.Expense));
             if (maxVal2 < 1) maxVal2 = 1;
@@ -463,40 +393,18 @@ private void LoadAdvice()
             double canvasW2 = chart.ActualWidth > 0 ? chart.ActualWidth : chart.Width;
             double canvasH2 = chart.ActualHeight > 0 ? chart.ActualHeight : chart.Height;
             double barWidth2 = (canvasW2 - 40) / 12.0;
-
-            // малювання лінії бюджету
+            
             decimal monthlyBudget = _currentUser.Settings?.MonthlyBudget ?? 0m;
             if (monthlyBudget > 0 && maxVal2 > 0)
             {
-                // Розраховуємо Y-координату для лінії бюджету
                 double budgetY = canvasH2 - 30 - ((double)monthlyBudget / maxVal2 * (canvasH2 - 60));
-
-                // Малюємо, тільки якщо лінія потрапляє в межі графіка
                 if (budgetY > 4 && budgetY < (canvasH2 - 30))
                 {
-                    var budgetLine = new System.Windows.Shapes.Line
-                    {
-                        X1 = 20, // Від лівого краю графіка
-                        Y1 = budgetY,
-                        X2 = canvasW2 - 20, // До правого краю графіка
-                        Y2 = budgetY,
-                        Stroke = (System.Windows.Media.Brush)FindResource("PrimaryText"), // Колір з ресурсів
-                        StrokeThickness = 2,
-                        StrokeDashArray = new System.Windows.Media.DoubleCollection(new double[] { 4, 2 }) // Пунктирна лінія
-                    };
+                    var budgetLine = new System.Windows.Shapes.Line { X1 = 20, Y1 = budgetY, X2 = canvasW2 - 20, Y2 = budgetY, Stroke = (System.Windows.Media.Brush)FindResource("PrimaryText"), StrokeThickness = 2, StrokeDashArray = new System.Windows.Media.DoubleCollection(new double[] { 4, 2 }) };
                     chart.Children.Add(budgetLine);
-
-                    // Додаємо підпис для лінії бюджету
-                    var budgetLabel = new TextBlock
-                    {
-                        Text = $"Бюджет: {monthlyBudget:N0}",
-                        Foreground = (System.Windows.Media.Brush)FindResource("SecondaryText"),
-                        FontSize = 10,
-                        FontStyle = FontStyles.Italic,
-                        Background = (System.Windows.Media.Brush)FindResource("AppBackground") // Фон, щоб текст читався
-                    };
-                    Canvas.SetLeft(budgetLabel, 25); // Трохи відступивши зліва
-                    Canvas.SetTop(budgetLabel, budgetY - 15); // Над лінією
+                    var budgetLabel = new TextBlock { Text = $"Бюджет: {monthlyBudget:N0}", Foreground = (System.Windows.Media.Brush)FindResource("SecondaryText"), FontSize = 10, FontStyle = FontStyles.Italic, Background = (System.Windows.Media.Brush)FindResource("AppBackground") };
+                    Canvas.SetLeft(budgetLabel, 25);
+                    Canvas.SetTop(budgetLabel, budgetY - 15);
                     chart.Children.Add(budgetLabel);
                 }
             }
@@ -506,36 +414,15 @@ private void LoadAdvice()
                 var m = months[i];
                 double x = 20 + i * barWidth2;
 
-                // Income bar (green)
                 double hInc = (double)m.Income / maxVal2 * (canvasH2 - 60);
-                var rectInc = new System.Windows.Shapes.Rectangle
-                {
-                    Width = barWidth2 * 0.4,
-                    Height = Math.Max(1, hInc),
-                    Fill = System.Windows.Media.Brushes.Green,
-                    Stroke = System.Windows.Media.Brushes.Black
-                };
+                var rectInc = new System.Windows.Shapes.Rectangle { Width = barWidth2 * 0.4, Height = Math.Max(1, hInc), Fill = System.Windows.Media.Brushes.Green, Stroke = System.Windows.Media.Brushes.Black };
                 Canvas.SetLeft(rectInc, x + barWidth2 * 0.05);
                 Canvas.SetTop(rectInc, canvasH2 - 30 - rectInc.Height);
                 chart.Children.Add(rectInc);
 
-                // Income label (bordered) - measure to center
                 var incText2 = ((decimal)m.Income).ToString("N0");
-                var incLabel2 = new TextBlock
-                {
-                    Text = incText2,
-                    FontSize = 11,
-                    FontWeight = System.Windows.FontWeights.SemiBold,
-                    Foreground = System.Windows.Media.Brushes.White
-                };
-                var incBorder2 = new System.Windows.Controls.Border
-                {
-                    Background = System.Windows.Media.Brushes.DarkGreen,
-                    CornerRadius = new CornerRadius(4),
-                    Child = incLabel2,
-                    Padding = new Thickness(6, 2, 6, 2),
-                    Opacity = m.Income == 0 ? 0.7 : 1
-                };
+                var incLabel2 = new TextBlock { Text = incText2, FontSize = 11, FontWeight = System.Windows.FontWeights.SemiBold, Foreground = System.Windows.Media.Brushes.White };
+                var incBorder2 = new System.Windows.Controls.Border { Background = System.Windows.Media.Brushes.DarkGreen, CornerRadius = new CornerRadius(4), Child = incLabel2, Padding = new Thickness(6, 2, 6, 2), Opacity = m.Income == 0 ? 0.7 : 1 };
                 incBorder2.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
                 double incW2 = incBorder2.DesiredSize.Width;
                 double incLeft2 = x + barWidth2 * 0.05 + (barWidth2 * 0.4 - incW2) / 2;
@@ -543,36 +430,15 @@ private void LoadAdvice()
                 Canvas.SetTop(incBorder2, Math.Max(4, canvasH2 - 36 - rectInc.Height - incBorder2.DesiredSize.Height));
                 chart.Children.Add(incBorder2);
 
-                // Expense bar (red)
                 double hExp = (double)m.Expense / maxVal2 * (canvasH2 - 60);
-                var rectExp = new System.Windows.Shapes.Rectangle
-                {
-                    Width = barWidth2 * 0.4,
-                    Height = Math.Max(1, hExp),
-                    Fill = System.Windows.Media.Brushes.Red,
-                    Stroke = System.Windows.Media.Brushes.Black
-                };
+                var rectExp = new System.Windows.Shapes.Rectangle { Width = barWidth2 * 0.4, Height = Math.Max(1, hExp), Fill = System.Windows.Media.Brushes.Red, Stroke = System.Windows.Media.Brushes.Black };
                 Canvas.SetLeft(rectExp, x + barWidth2 * 0.55);
                 Canvas.SetTop(rectExp, canvasH2 - 30 - rectExp.Height);
                 chart.Children.Add(rectExp);
 
-                // Expense label (bordered) - measure to center
                 var expText2 = ((decimal)m.Expense).ToString("N0");
-                var expLabel2 = new TextBlock
-                {
-                    Text = expText2,
-                    FontSize = 11,
-                    FontWeight = System.Windows.FontWeights.SemiBold,
-                    Foreground = System.Windows.Media.Brushes.White
-                };
-                var expBorder2 = new System.Windows.Controls.Border
-                {
-                    Background = System.Windows.Media.Brushes.DarkRed,
-                    CornerRadius = new CornerRadius(4),
-                    Child = expLabel2,
-                    Padding = new Thickness(6, 2, 6, 2),
-                    Opacity = m.Expense == 0 ? 0.7 : 1
-                };
+                var expLabel2 = new TextBlock { Text = expText2, FontSize = 11, FontWeight = System.Windows.FontWeights.SemiBold, Foreground = System.Windows.Media.Brushes.White };
+                var expBorder2 = new System.Windows.Controls.Border { Background = System.Windows.Media.Brushes.DarkRed, CornerRadius = new CornerRadius(4), Child = expLabel2, Padding = new Thickness(6, 2, 6, 2), Opacity = m.Expense == 0 ? 0.7 : 1 };
                 expBorder2.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
                 double expW2 = expBorder2.DesiredSize.Width;
                 double expLeft2 = x + barWidth2 * 0.55 + (barWidth2 * 0.4 - expW2) / 2;
@@ -580,7 +446,6 @@ private void LoadAdvice()
                 Canvas.SetTop(expBorder2, Math.Max(4, canvasH2 - 36 - rectExp.Height - expBorder2.DesiredSize.Height));
                 chart.Children.Add(expBorder2);
 
-                // Month label (below bars)
                 var monthLbl = new TextBlock { Text = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i + 1), FontSize = 10 };
                 Canvas.SetLeft(monthLbl, x + barWidth2 * 0.1);
                 Canvas.SetTop(monthLbl, canvasH2 - 12);
@@ -601,10 +466,7 @@ private void LoadAdvice()
             if (dlg.ShowDialog() == true)
             {
                 byte[] imageData = File.ReadAllBytes(dlg.FileName);
-
-                // Використовуємо сервіс для зміни фото
                 _profileService.ChangeProfilePhoto(_currentUser!, imageData);
-
                 using var ms = new MemoryStream(imageData);
                 var bitmap = new BitmapImage();
                 bitmap.BeginInit();
@@ -618,11 +480,7 @@ private void LoadAdvice()
 
         private void BtnSaveProfile_Click(object sender, RoutedEventArgs e)
         {
-            if (_currentUser == null)
-            {
-                MessageBox.Show("User not loaded.");
-                return;
-            }
+            if (_currentUser == null) { MessageBox.Show("User not loaded."); return; }
 
             var txtName2 = FindName("TxtName") as TextBox;
             var txtEmail2 = FindName("TxtEmail") as TextBox;
@@ -630,9 +488,7 @@ private void LoadAdvice()
             if (txtEmail2 != null) _currentUser.Email = txtEmail2.Text;
 
             var cmbCurrency2 = FindName("CmbCurrency") as ComboBox;
-            var selectedCurrency = (cmbCurrency2?.SelectedItem as ComboBoxItem)?.Content.ToString()
-                                 ?? _currentUser.Settings?.Currency
-                                 ?? "UAH";
+            var selectedCurrency = (cmbCurrency2?.SelectedItem as ComboBoxItem)?.Content.ToString() ?? _currentUser.Settings?.Currency ?? "UAH";
 
             if (_currentUser.Settings == null)
                 _currentUser.Settings = new Settings { UserId = _currentUser.UserId };
@@ -640,48 +496,30 @@ private void LoadAdvice()
             _currentUser.Settings.Currency = selectedCurrency;
             var chkNotifications2 = FindName("ChkNotifications") as CheckBox;
             _currentUser.Settings.NotificationEnabled = chkNotifications2?.IsChecked ?? false;
-
-            // --- ДОДАНО ---
-            // Зберігаємо вибір теми
+            
             var themeToggle = FindName("ThemeToggle") as CheckBox;
             if (themeToggle != null)
             {
                 _currentUser.Settings.Theme = (themeToggle.IsChecked == true) ? "Dark" : "Light";
             }
             
-            // Використовуємо сервіс для збереження змін
             _profileService.UpdateUser(_currentUser);
-
             MessageBox.Show("Profile updated successfully.");
         }
         
 
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
-            var result = MessageBox.Show("Ви впевнені, що хочете вийти з акаунту?",
-                                          "Підтвердження виходу",
-                                          MessageBoxButton.YesNo,
-                                          MessageBoxImage.Question);
+            var result = MessageBox.Show("Ви впевнені, що хочете вийти з акаунту?", "Підтвердження виходу", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
                 System.Windows.Application.Current.Properties["CurrentUser"] = null;
-
-                // --- ВИПРАВЛЕНО --- Цей рядок викликав помилку збірки CS0117
-                // SecureTokenStorage.DeleteToken(); 
-
-                // Потрібно отримати ServiceProvider з App
                 var serviceProvider = (System.Windows.Application.Current as App)!.ServiceProvider;
-                if (serviceProvider == null)
-                {
-                    MessageBox.Show("Критична помилка: ServiceProvider не знайдено.");
-                    return;
-                }
+                if (serviceProvider == null) { MessageBox.Show("Критична помилка: ServiceProvider не знайдено."); return; }
                 
-                // --- ЗМІНЕНО --- Отримуємо WelcomeWindow з DI
                 var welcomeWindow = serviceProvider.GetRequiredService<WelcomeWindow>();
                 welcomeWindow.Show();
-
                 this.Close();
             }
         }
@@ -704,8 +542,8 @@ private void LoadAdvice()
                                 decimal.TryParse(rate.SaleRate.Replace(',', '.'), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal sellRate))
                             {
                                 ratesList.Add($"💱 {rate.Currency}/{rate.BaseCurrency}\n" +
-                                              $"▪ Купівля:  {buyRate:N2}\n" +
-                                              $"▪ Продаж:   {sellRate:N2}");
+                                                $"▪ Купівля:  {buyRate:N2}\n" +
+                                                $"▪ Продаж:   {sellRate:N2}");
                             }
                         }
                     }
@@ -715,10 +553,7 @@ private void LoadAdvice()
             catch (Exception ex)
             {
                 var txtRates = FindName("TxtExchangeRates") as TextBlock;
-                if (txtRates != null)
-                {
-                    txtRates.Text = $"Помилка завантаження курсів валют: {ex.Message}";
-                }
+                if (txtRates != null) { txtRates.Text = $"Помилка завантаження курсів валют: {ex.Message}"; }
             }
         }
 
@@ -729,23 +564,14 @@ private void LoadAdvice()
 
         private void BtnExportPdf_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new SaveFileDialog
-            {
-                Filter = "PDF files (*.pdf)|*.pdf",
-                FileName = $"TransactionsReport_{DateTime.Now:yyyyMMdd}.pdf"
-            };
+            var dlg = new SaveFileDialog { Filter = "PDF files (*.pdf)|*.pdf", FileName = $"TransactionsReport_{DateTime.Now:yyyyMMdd}.pdf" };
 
             if (dlg.ShowDialog() == true)
             {
                 try
                 {
                     var service = new MoneyRules.Application.Services.PdfReportService();
-                    if (_currentUser == null)
-                    {
-                        MessageBox.Show("Користувач не знайдений. Експорт неможливий.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-
+                    if (_currentUser == null) { MessageBox.Show("Користувач не знайдений. Експорт неможливий.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error); return; }
                     service.CreateTransactionsReport(dlg.FileName, _currentUser.UserId);
                     MessageBox.Show("PDF збережено успішно.", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -757,26 +583,14 @@ private void LoadAdvice()
         }
         private void BtnChangePassword_Click(object sender, RoutedEventArgs e)
         {
-            if (_currentUser == null)
-            {
-                MessageBox.Show("Користувач не завантажений.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            // --- ЗМІНЕНО --- Отримуємо вікно з DI
+            if (_currentUser == null) { MessageBox.Show("Користувач не завантажений.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error); return; }
             var serviceProvider = (System.Windows.Application.Current as App)!.ServiceProvider;
             if (serviceProvider == null) { /* ... обробка помилки ... */ return; }
-            
-            // Ми не можемо отримати ChangePasswordWindow напряму, якщо воно не зареєстровано.
-            // Але ми можемо передати сервіси, які зареєстровані.
             var changePasswordWindow = new ChangePasswordWindow(_authService, _currentUser);
-            changePasswordWindow.Owner = this; // задаємо батьківське вікно
+            changePasswordWindow.Owner = this;
             changePasswordWindow.ShowDialog();
         }
-
-        //
-        // --- ОБ'ЄДНАНО: МЕТОДИ ДЛЯ ТЕМИ (ВАШІ) + МЕТОД ЗАПЛАНОВАНИХ ПЛАТЕЖІВ (GITHUB) ---
-        //
+        
         private void ThemeToggle_Checked(object sender, RoutedEventArgs e)
         {
             ThemeManager.SwitchTheme(Theme.Dark);
@@ -790,19 +604,9 @@ private void LoadAdvice()
         private void BtnScheduledPayments_Click(object sender, RoutedEventArgs e)
         {
             var app = System.Windows.Application.Current as App;
-            if (app == null || app.ServiceProvider == null)
-            {
-                MessageBox.Show("Не вдалося отримати доступ до сервісів додатку.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
+            if (app == null || app.ServiceProvider == null) { MessageBox.Show("Не вдалося отримати доступ до сервісів додатку.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error); return; }
             var window = app.ServiceProvider.GetService(typeof(ScheduledPaymentsWindow)) as ScheduledPaymentsWindow;
-            if (window == null)
-            {
-                MessageBox.Show("Служба вікна не зареєстрована.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
+            if (window == null) { MessageBox.Show("Служба вікна не зареєстрована.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error); return; }
             window.Owner = this;
             window.ShowDialog();
         }
