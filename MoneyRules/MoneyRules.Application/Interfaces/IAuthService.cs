@@ -16,9 +16,14 @@ namespace MoneyRules.Application.Interfaces
         Task<bool> VerifyConfirmationCodeAsync(string email, string code);
         Task<bool> ResetPasswordAsync(string email, string newPassword);
 
-        // --- Новий метод для видалення акаунту ---
         Task<bool> DeleteUserAccountAsync(string email, string password);
+
+        // --- Нові методи для локальної 2FA ---
+        string GenerateTwoFactorCode(string email);
+        bool VerifyTwoFactorCode(string email, string code);
+        void RemoveTwoFactorCode(string email);
     }
 }
+
 
 

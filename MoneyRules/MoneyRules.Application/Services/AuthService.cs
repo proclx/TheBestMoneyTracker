@@ -16,6 +16,7 @@ namespace MoneyRules.Application.Services
     {
         private readonly AppDbContext _context;
         private readonly Dictionary<string, string> _confirmationCodes = new();
+        private readonly Dictionary<string, string> _twoFactorCodes = new();
 
         public AuthService(AppDbContext context)
         {
@@ -23,21 +24,16 @@ namespace MoneyRules.Application.Services
         }
 
         #region Login & Register
-
         public async Task<LoginResult> LoginAsync(string email, string password, bool rememberMe)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-            {
                 return new LoginResult { IsSuccess = false, ErrorMessage = "Email та пароль не можуть бути порожніми." };
-            }
 
             var normalizedEmail = email.Trim().ToLower();
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail);
 
             if (user == null || !VerifyPassword(password, user.PasswordHash))
-            {
                 return new LoginResult { IsSuccess = false, ErrorMessage = "Невірний email або пароль." };
-            }
 
             string? rememberToken = null;
             if (rememberMe)
@@ -83,7 +79,6 @@ namespace MoneyRules.Application.Services
         {
             if (!IsValidEmail(email))
                 throw new ArgumentException("Невірний формат email.");
-
             if (password.Length < 6)
                 throw new ArgumentException("Пароль має містити щонайменше 6 символів.");
 
@@ -101,11 +96,7 @@ namespace MoneyRules.Application.Services
                 PasswordHash = passwordHash,
                 Role = UserRole.User,
                 ProfilePhoto = Array.Empty<byte>(),
-                Settings = new Settings
-                {
-                    Currency = "USD",
-                    NotificationEnabled = true
-                }
+                Settings = new Settings { Currency = "USD", NotificationEnabled = true }
             };
 
             _context.Users.Add(user);
@@ -113,11 +104,9 @@ namespace MoneyRules.Application.Services
 
             return user;
         }
-
         #endregion
 
         #region Password & Verification
-
         public async Task ChangePasswordAsync(User user, string newPassword)
         {
             if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 6)
@@ -144,7 +133,6 @@ namespace MoneyRules.Application.Services
             byte[] stored = Convert.FromBase64String(parts[1]);
 
             byte[] computed = Rfc2898DeriveBytes.Pbkdf2(password, salt, 100_000, HashAlgorithmName.SHA256, 32);
-
             return CryptographicOperations.FixedTimeEquals(stored, computed);
         }
 
@@ -185,15 +173,12 @@ namespace MoneyRules.Application.Services
 
             return true;
         }
-
         #endregion
 
         #region Delete Account
-
         public async Task<bool> DeleteUserAccountAsync(string email, string password)
         {
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-                return false;
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password)) return false;
 
             var user = await _context.Users
                 .Include(u => u.Transactions)
@@ -202,15 +187,34 @@ namespace MoneyRules.Application.Services
                 .FirstOrDefaultAsync(u => u.Email.ToLower() == email.Trim().ToLower());
 
             if (user == null) return false;
-
             if (!VerifyPassword(password, user.PasswordHash)) return false;
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
             return true;
         }
+        #endregion
 
+        #region Two-Factor Authentication (2FA)
+        public string GenerateTwoFactorCode(string email)
+        {
+            var code = new Random().Next(100000, 999999).ToString();
+            _twoFactorCodes[email] = code;
+            return code;
+        }
+
+        public bool VerifyTwoFactorCode(string email, string code)
+        {
+            return _twoFactorCodes.ContainsKey(email) && _twoFactorCodes[email] == code;
+        }
+
+        public void RemoveTwoFactorCode(string email)
+        {
+            if (_twoFactorCodes.ContainsKey(email))
+                _twoFactorCodes.Remove(email);
+        }
         #endregion
     }
 }
+
 
