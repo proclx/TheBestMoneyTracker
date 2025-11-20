@@ -117,5 +117,34 @@ namespace MoneyRules.Application.Services
 
             return result;
         }
+
+        public Dictionary<string, decimal> GetCategoryTotals(int userId, int? year = null, int? month = null)
+        {
+            try
+            {
+                var query = _dbContext.Transactions.AsQueryable()
+                    .Where(t => t.UserId == userId);
+
+                if (year.HasValue)
+                    query = query.Where(t => t.Date.Year == year.Value);
+
+                if (month.HasValue)
+                    query = query.Where(t => t.Date.Month == month.Value);
+
+                var grouped = query
+                    .Where(t => t.Type.ToString().ToLower().Contains("expense"))
+                    .ToList()
+                    .GroupBy(t => t.Category?.Name ?? (t.Description ?? "(Без категорії)"))
+                    .Select(g => new { Category = g.Key, Total = g.Sum(t => t.Amount) })
+                    .OrderByDescending(x => x.Total)
+                    .ToDictionary(x => x.Category, x => x.Total);
+
+                return grouped;
+            }
+            catch (Exception)
+            {
+                return new Dictionary<string, decimal>();
+            }
+        }
     }
 }

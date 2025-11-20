@@ -306,26 +306,41 @@ namespace MoneyRules.UI.Windows
             else
                 year = DateTime.Now.Year;
 
+            // determine month for selector/draw
+            int? month = null;
+            var chkMonthly2 = FindName("ChkMonthlyView") as CheckBox;
+            if (chkMonthly2 != null && chkMonthly2.IsChecked == true)
+            {
+                var cmbMonth = FindName("CmbChartMonth") as ComboBox;
+                if (cmbMonth != null && cmbMonth.SelectedItem is ComboBoxItem ms && ms.Tag is int mt)
+                    month = mt;
+            }
+
+            // populate category selector for the chosen period
+            PopulateCategorySelector(year, month);
+
             var chkMonthly = FindName("ChkMonthlyView") as CheckBox;
             if (chkMonthly != null && chkMonthly.IsChecked == true)
             {
                 var cmbMonth = FindName("CmbChartMonth") as ComboBox;
-                int month = DateTime.Now.Month;
+                int monthValue = month ?? DateTime.Now.Month;
                 if (cmbMonth != null && cmbMonth.SelectedItem is ComboBoxItem ms && ms.Tag is int mt)
-                    month = mt;
+                    monthValue = mt;
 
-                var dailyStats = _chartService.GetDailyStatistics(_currentUser.UserId, year, month);
+                var dailyStats = _chartService.GetDailyStatistics(_currentUser.UserId, year, monthValue);
                 var days = dailyStats
                     .Where(kvp => kvp.Value.Income != 0m || kvp.Value.Expense != 0m)
                     .OrderBy(kvp => kvp.Key)
                     .Select(kvp => new { Day = kvp.Key, Income = kvp.Value.Income, Expense = kvp.Value.Expense })
                     .ToList();
 
-                var monthName = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month);
+                var monthName = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthValue);
 
                 if (days.Count == 0)
                 {
                     if (txtStatus != null) txtStatus.Text = $"Немає транзакцій за {monthName} {year}";
+                    // Очищаємо кругову діаграму, якщо немає даних
+                    DrawPieChartForSelectedPeriod();
                     return;
                 }
 
@@ -381,6 +396,8 @@ namespace MoneyRules.UI.Windows
                 }
 
                 if (txtStatus != null) txtStatus.Text = $"Дохід/Витрати за {monthName} {year}";
+                DrawPieChartForSelectedPeriod();
+                DrawIncomeExpensePie(year, monthValue);
                 return;
             }
 
@@ -453,6 +470,385 @@ namespace MoneyRules.UI.Windows
             }
 
             if (txtStatus != null) txtStatus.Text = $"Дохід/Витрати за {year}";
+            DrawPieChartForSelectedPeriod();
+            DrawIncomeExpensePie(year, null);
+        }
+
+        private void DrawPieChartForSelectedPeriod()
+        {
+            // Draw Top-5 pie (unchanged behaviour)
+            if (_currentUser == null) return;
+            try
+            {
+                var pie = FindName("PieTop5Canvas") as Canvas;
+                var legend = FindName("PieTop5Legend") as ItemsControl;
+                if (pie == null) return;
+                pie.Children.Clear();
+                if (legend != null) legend.ItemsSource = null;
+
+                var cmb = FindName("CmbChartYear") as ComboBox;
+                int year;
+                if (cmb != null && cmb.SelectedItem is ComboBoxItem sel && sel.Tag is int y)
+                    year = y;
+                else
+                    year = DateTime.Now.Year;
+
+                var chkMonthly = FindName("ChkMonthlyView") as CheckBox;
+                int? month = null;
+                if (chkMonthly != null && chkMonthly.IsChecked == true)
+                {
+                    var cmbMonth = FindName("CmbChartMonth") as ComboBox;
+                    if (cmbMonth != null && cmbMonth.SelectedItem is ComboBoxItem ms && ms.Tag is int mt)
+                        month = mt;
+                }
+
+                var categoryTotals = _chartService.GetCategoryTotals(_currentUser.UserId, year, month);
+                if (categoryTotals == null || categoryTotals.Count == 0)
+                {
+                    // nothing to draw
+                    return;
+                }
+
+                var final = categoryTotals.OrderByDescending(k => k.Value).Take(5).ToDictionary(k => k.Key, v => v.Value);
+                if (final.Count == 0) return;
+
+                double width = pie.ActualWidth > 0 ? pie.ActualWidth : pie.Width;
+                double height = pie.ActualHeight > 0 ? pie.ActualHeight : pie.Height;
+                if (double.IsNaN(width) || width <= 0) width = 320;
+                if (double.IsNaN(height) || height <= 0) height = 220;
+
+                var center = new System.Windows.Point(width / 2, height / 2);
+                double radius = Math.Min(width, height) * 0.45;
+
+                double total = (double)final.Values.Sum(v => v);
+                if (total <= 0) return;
+
+                var brushes = new System.Windows.Media.Brush[] {
+                    System.Windows.Media.Brushes.CadetBlue,
+                    System.Windows.Media.Brushes.Coral,
+                    System.Windows.Media.Brushes.MediumSeaGreen,
+                    System.Windows.Media.Brushes.Goldenrod,
+                    System.Windows.Media.Brushes.MediumPurple,
+                    System.Windows.Media.Brushes.SandyBrown,
+                    System.Windows.Media.Brushes.SlateBlue,
+                    System.Windows.Media.Brushes.Tomato,
+                    System.Windows.Media.Brushes.MediumTurquoise,
+                    System.Windows.Media.Brushes.OliveDrab
+                };
+
+                double startAngle = -90.0;
+                int i = 0;
+                var legendItems = new List<object>();
+
+                foreach (var kvp in final)
+                {
+                    double val = (double)kvp.Value;
+                    double sweep = val / total * 360.0;
+
+                    double startRad = (startAngle) * Math.PI / 180.0;
+                    double endRad = (startAngle + sweep) * Math.PI / 180.0;
+
+                    var startPoint = new System.Windows.Point(center.X + Math.Cos(startRad) * radius, center.Y + Math.Sin(startRad) * radius);
+                    var endPoint = new System.Windows.Point(center.X + Math.Cos(endRad) * radius, center.Y + Math.Sin(endRad) * radius);
+
+                    var geom = new System.Windows.Media.StreamGeometry();
+                    using (var ctx = geom.Open())
+                    {
+                        ctx.BeginFigure(center, true, true);
+                        ctx.LineTo(startPoint, true, true);
+                        bool isLarge = sweep > 180.0;
+                        ctx.ArcTo(endPoint, new System.Windows.Size(radius, radius), 0.0, isLarge, System.Windows.Media.SweepDirection.Clockwise, true, true);
+                        ctx.LineTo(center, true, true);
+                    }
+                    geom.Freeze();
+
+                    var path = new System.Windows.Shapes.Path
+                    {
+                        Data = geom,
+                        Fill = brushes[i % brushes.Length],
+                        Stroke = System.Windows.Media.Brushes.Black,
+                        StrokeThickness = 0.5
+                    };
+                    pie.Children.Add(path);
+
+                    legendItems.Add(new { Color = brushes[i % brushes.Length], Label = kvp.Key, Value = ((decimal)kvp.Value).ToString("N2") + $" ({((double)kvp.Value/total*100):F1}% )" });
+
+                    startAngle += sweep;
+                    i++;
+                }
+
+                if (legend != null) legend.ItemsSource = legendItems;
+            }
+            catch { }
+        }
+
+        // Removed ListBox selection handler - using checkbox events instead
+
+        private void PopulateCategorySelector(int? year = null, int? month = null)
+        {
+            if (_currentUser == null) return;
+            try
+            {
+                var container = FindName("CategoryCheckboxes") as System.Windows.Controls.StackPanel;
+                if (container == null) return;
+
+                var totals = _chartService.GetCategoryTotals(_currentUser.UserId, year, month);
+                if (totals == null) totals = new Dictionary<string, decimal>();
+
+                // Build list ordered by value desc
+                var items = totals.OrderByDescending(k => k.Value).ToList();
+
+                container.Children.Clear();
+                int added = 0;
+                foreach (var kv in items)
+                {
+                    var cb = new CheckBox { Content = kv.Key + $" ({kv.Value:N2})", Tag = kv.Key, Margin = new Thickness(2,2,2,2), Foreground = (System.Windows.Media.Brush)FindResource("PrimaryText") };
+                    cb.Checked += CategoryCheckChanged;
+                    cb.Unchecked += CategoryCheckChanged;
+                    container.Children.Add(cb);
+                    added++;
+                }
+
+                // hide hint by default
+                var hint = FindName("CategoryHintText") as TextBlock;
+                if (hint != null) hint.Visibility = Visibility.Collapsed;
+            }
+            catch { }
+        }
+
+        private void CategoryCheckChanged(object? sender, RoutedEventArgs e)
+        {
+            if (_currentUser == null) return;
+            try
+            {
+                var container = FindName("CategoryCheckboxes") as StackPanel;
+                var selected = new List<string>();
+                if (container != null)
+                {
+                    foreach (var child in container.Children)
+                    {
+                        if (child is CheckBox cb && cb.IsChecked == true && cb.Tag is string tag)
+                        {
+                            selected.Add(tag);
+                        }
+                    }
+                }
+
+                var hint = FindName("CategoryHintText") as TextBlock;
+                if (selected.Count < 2 || selected.Count > 10)
+                {
+                    if (hint != null)
+                    {
+                        hint.Text = "Виберіть від 2 до 10 категорій для другої діаграми";
+                        hint.Visibility = Visibility.Visible;
+                    }
+                    // clear selected pie
+                    var selPie = FindName("PieSelectedCanvas") as Canvas;
+                    var selLegend = FindName("PieSelectedLegend") as ItemsControl;
+                    if (selPie != null) selPie.Children.Clear();
+                    if (selLegend != null) selLegend.ItemsSource = null;
+                    return;
+                }
+
+                if (hint != null) hint.Visibility = Visibility.Collapsed;
+
+                // determine year/month like other methods
+                var cmb = FindName("CmbChartYear") as ComboBox;
+                int year;
+                if (cmb != null && cmb.SelectedItem is ComboBoxItem sel && sel.Tag is int y)
+                    year = y;
+                else
+                    year = DateTime.Now.Year;
+
+                var chkMonthly = FindName("ChkMonthlyView") as CheckBox;
+                int? month = null;
+                if (chkMonthly != null && chkMonthly.IsChecked == true)
+                {
+                    var cmbMonth = FindName("CmbChartMonth") as ComboBox;
+                    if (cmbMonth != null && cmbMonth.SelectedItem is ComboBoxItem ms && ms.Tag is int mt)
+                        month = mt;
+                }
+
+                var totals = _chartService.GetCategoryTotals(_currentUser.UserId, year, month) ?? new Dictionary<string, decimal>();
+                var filtered = totals.Where(kv => selected.Contains(kv.Key)).ToDictionary(k => k.Key, v => v.Value);
+                if (filtered.Count == 0)
+                {
+                    var selPie = FindName("PieSelectedCanvas") as Canvas;
+                    var selLegend = FindName("PieSelectedLegend") as ItemsControl;
+                    if (selPie != null) selPie.Children.Clear();
+                    if (selLegend != null) selLegend.ItemsSource = null;
+                    return;
+                }
+
+                // draw into PieSelectedCanvas
+                var pie = FindName("PieSelectedCanvas") as Canvas;
+                var legend = FindName("PieSelectedLegend") as ItemsControl;
+                if (pie == null) return;
+                pie.Children.Clear();
+                if (legend != null) legend.ItemsSource = null;
+
+                double width = pie.ActualWidth > 0 ? pie.ActualWidth : pie.Width;
+                double height = pie.ActualHeight > 0 ? pie.ActualHeight : pie.Height;
+                if (double.IsNaN(width) || width <= 0) width = 320;
+                if (double.IsNaN(height) || height <= 0) height = 200;
+
+                var center = new System.Windows.Point(width / 2, height / 2);
+                double radius = Math.Min(width, height) * 0.45;
+
+                double total = (double)filtered.Values.Sum(v => v);
+                if (total <= 0) return;
+
+                var brushes = new System.Windows.Media.Brush[] {
+                    System.Windows.Media.Brushes.CadetBlue,
+                    System.Windows.Media.Brushes.Coral,
+                    System.Windows.Media.Brushes.MediumSeaGreen,
+                    System.Windows.Media.Brushes.Goldenrod,
+                    System.Windows.Media.Brushes.MediumPurple,
+                    System.Windows.Media.Brushes.SandyBrown,
+                    System.Windows.Media.Brushes.SlateBlue,
+                    System.Windows.Media.Brushes.Tomato,
+                    System.Windows.Media.Brushes.MediumTurquoise,
+                    System.Windows.Media.Brushes.OliveDrab
+                };
+
+                double startAngle = -90.0;
+                int i = 0;
+                var legendItems = new List<object>();
+
+                foreach (var kvp in filtered)
+                {
+                    double val = (double)kvp.Value;
+                    double sweep = val / total * 360.0;
+
+                    double startRad = (startAngle) * Math.PI / 180.0;
+                    double endRad = (startAngle + sweep) * Math.PI / 180.0;
+
+                    var startPoint = new System.Windows.Point(center.X + Math.Cos(startRad) * radius, center.Y + Math.Sin(startRad) * radius);
+                    var endPoint = new System.Windows.Point(center.X + Math.Cos(endRad) * radius, center.Y + Math.Sin(endRad) * radius);
+
+                    var geom = new System.Windows.Media.StreamGeometry();
+                    using (var ctx = geom.Open())
+                    {
+                        ctx.BeginFigure(center, true, true);
+                        ctx.LineTo(startPoint, true, true);
+                        bool isLarge = sweep > 180.0;
+                        ctx.ArcTo(endPoint, new System.Windows.Size(radius, radius), 0.0, isLarge, System.Windows.Media.SweepDirection.Clockwise, true, true);
+                        ctx.LineTo(center, true, true);
+                    }
+                    geom.Freeze();
+
+                    var path = new System.Windows.Shapes.Path
+                    {
+                        Data = geom,
+                        Fill = brushes[i % brushes.Length],
+                        Stroke = System.Windows.Media.Brushes.Black,
+                        StrokeThickness = 0.5
+                    };
+                    pie.Children.Add(path);
+
+                    legendItems.Add(new { Color = brushes[i % brushes.Length], Label = kvp.Key, Value = ((decimal)kvp.Value).ToString("N2") + $" ({((double)kvp.Value/total*100):F1}% )" });
+
+                    startAngle += sweep;
+                    i++;
+                }
+
+                if (legend != null) legend.ItemsSource = legendItems;
+
+                // also refresh income/expense pie to keep UI consistent
+                DrawIncomeExpensePie(year, month);
+            }
+            catch { }
+        }
+
+        private void DrawIncomeExpensePie(int year, int? month)
+        {
+            if (_currentUser == null) return;
+            try
+            {
+                var pie = FindName("IncomeExpenseCanvas") as Canvas;
+                var legend = FindName("IncomeExpenseLegend") as ItemsControl;
+                if (pie == null) return;
+                pie.Children.Clear();
+                if (legend != null) legend.ItemsSource = null;
+
+                decimal totalIncome = 0m;
+                decimal totalExpense = 0m;
+
+                if (month.HasValue)
+                {
+                    var daily = _chartService.GetDailyStatistics(_currentUser.UserId, year, month.Value);
+                    foreach (var d in daily)
+                    {
+                        totalIncome += d.Value.Income;
+                        totalExpense += d.Value.Expense;
+                    }
+                }
+                else
+                {
+                    var monthly = _chartService.GetMonthlyStatistics(_currentUser.UserId, year);
+                    foreach (var m in monthly)
+                    {
+                        totalIncome += m.Value.Income;
+                        totalExpense += m.Value.Expense;
+                    }
+                }
+
+                double income = (double)totalIncome;
+                double expense = (double)totalExpense;
+                double total = income + expense;
+                if (total <= 0) return;
+
+                double width = pie.ActualWidth > 0 ? pie.ActualWidth : pie.Width;
+                double height = pie.ActualHeight > 0 ? pie.ActualHeight : pie.Height;
+                if (double.IsNaN(width) || width <= 0) width = 320;
+                if (double.IsNaN(height) || height <= 0) height = 160;
+                var center = new System.Windows.Point(width / 2, height / 2);
+                double radius = Math.Min(width, height) * 0.4;
+
+                var items = new List<(string Label, double Value, System.Windows.Media.Brush Brush)>
+                {
+                    ("Доходи", income, System.Windows.Media.Brushes.Green),
+                    ("Витрати", expense, System.Windows.Media.Brushes.Red)
+                };
+
+                double startAngle = -90;
+                var legendItems = new List<object>();
+                foreach (var it in items)
+                {
+                    double sweep = it.Value / total * 360.0;
+                    double sRad = (startAngle) * Math.PI / 180.0;
+                    double eRad = (startAngle + sweep) * Math.PI / 180.0;
+                    var startPoint = new System.Windows.Point(center.X + Math.Cos(sRad) * radius, center.Y + Math.Sin(sRad) * radius);
+                    var endPoint = new System.Windows.Point(center.X + Math.Cos(eRad) * radius, center.Y + Math.Sin(eRad) * radius);
+
+                    var geom = new System.Windows.Media.StreamGeometry();
+                    using (var ctx = geom.Open())
+                    {
+                        ctx.BeginFigure(center, true, true);
+                        ctx.LineTo(startPoint, true, true);
+                        bool isLarge = sweep > 180.0;
+                        ctx.ArcTo(endPoint, new System.Windows.Size(radius, radius), 0.0, isLarge, System.Windows.Media.SweepDirection.Clockwise, true, true);
+                        ctx.LineTo(center, true, true);
+                    }
+                    geom.Freeze();
+
+                    var path = new System.Windows.Shapes.Path
+                    {
+                        Data = geom,
+                        Fill = it.Brush,
+                        Stroke = System.Windows.Media.Brushes.Black,
+                        StrokeThickness = 0.5
+                    };
+                    pie.Children.Add(path);
+
+                    legendItems.Add(new { Color = it.Brush, Label = it.Label, Value = ((decimal)it.Value).ToString("N2") + $" ({(it.Value/total*100):F1}% )" });
+
+                    startAngle += sweep;
+                }
+
+                if (legend != null) legend.ItemsSource = legendItems;
+            }
+            catch { }
         }
 
         private void ChkMonthlyView_CheckedChanged(object sender, RoutedEventArgs e)
