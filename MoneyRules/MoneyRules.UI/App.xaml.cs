@@ -7,7 +7,7 @@ using MoneyRules.Infrastructure.Persistence;
 using MoneyRules.Application.Services;
 using MoneyRules.UI.Windows;
 using MoneyRules.Application.Interfaces;
-using MoneyRules.UI.Utils; // <-- Додано для ThemeManager
+using MoneyRules.UI.Utils; 
 using System.Threading.Tasks;
 using System;
 using MoneyRules.Domain.Entities;
@@ -53,6 +53,11 @@ namespace MoneyRules.UI
                 services.AddScoped<ICurrencyService, CurrencyService>();
                 services.AddScoped<IFileUploadService, FileUploadService>();
                 services.AddScoped<IScheduledPaymentService, ScheduledPaymentService>();
+                
+                // =======================================================
+                // ДОДАНО: Реєстрація сервісу сповіщень
+                services.AddScoped<IPlannedPaymentNotificationService, PlannedPaymentNotificationService>();
+                // =======================================================
 
                 // Вікна
                 services.AddTransient<WelcomeWindow>();
@@ -61,13 +66,18 @@ namespace MoneyRules.UI
                 services.AddTransient<RegisterWindow>();
                 services.AddTransient<AddTransactionWindow>();
                 services.AddTransient<ScheduledPaymentsWindow>();
+                
+                // =======================================================
+                // ВИДАЛЕНО: Реєстрація неіснуючої DataEditingPage
+                // =======================================================
+
 
                 ServiceProvider = services.BuildServiceProvider();
                 Log.Debug("OnStartup: ServiceProvider створено.");
 
                 //
                 // =================================================================
-                //  ВИПРАВЛЕННЯ: СПОЧАТКУ МІГРАЦІЯ, ПОТІМ ВХІД
+                //  ВИПРАВЛЕННЯ: СПОЧАТКУ МІГРАЦІЯ, ПОТІМ ВХІД
                 // =================================================================
                 //
 
@@ -76,7 +86,7 @@ namespace MoneyRules.UI
                 {
                     Log.Debug("OnStartup: Застосування міграцій бази даних...");
                     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                    db.Database.Migrate(); // <-- ЦЕЙ РЯДОК МАЄ БУТИ ТУТ
+                    db.Database.Migrate(); 
                     Log.Debug("OnStartup: Міграції застосовано.");
                 }
 
@@ -154,6 +164,12 @@ namespace MoneyRules.UI
             Log.Information("--- Завершення роботи програми ---");
             Log.CloseAndFlush();
             base.OnExit(e);
+        }
+        
+        // Додаємо Helper-метод для отримання сервісів
+        public static T GetService<T>() where T : class
+        {
+            return (System.Windows.Application.Current as App)?.ServiceProvider?.GetService(typeof(T)) as T;
         }
     }
 }

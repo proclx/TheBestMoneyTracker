@@ -8,12 +8,14 @@ using Microsoft.Win32;
 using System.IO;
 using System.Linq;
 using System.Windows.Media.Imaging;
-using MoneyRules.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection; 
 using System;
 using System.Collections.Generic;
 using MoneyRules.UI.Utils;
 using MoneyRules.UI;
+using System.Text; 
+using System.Windows.Controls.Primitives;
+using System.Windows.Media;
 
 namespace MoneyRules.UI.Windows
 {
@@ -26,6 +28,7 @@ namespace MoneyRules.UI.Windows
         private readonly IChartService _chartService;
         private readonly ICurrencyService _currencyService;
         private readonly IFileUploadService _fileUploadService;
+        private readonly IPlannedPaymentNotificationService _notificationService;
         private User? _currentUser;
         
 
@@ -36,7 +39,8 @@ namespace MoneyRules.UI.Windows
             IAdviceService adviceService,
             IChartService chartService,
             ICurrencyService currencyService,
-            IFileUploadService fileUploadService)
+            IFileUploadService fileUploadService,
+            IPlannedPaymentNotificationService notificationService)
         {
             InitializeComponent();
 
@@ -47,6 +51,7 @@ namespace MoneyRules.UI.Windows
             _chartService = chartService;
             _currencyService = currencyService;
             _fileUploadService = fileUploadService;
+            _notificationService = notificationService; 
 
             _currentUser = System.Windows.Application.Current.Properties["CurrentUser"] as User;
             if (_currentUser == null)
@@ -60,10 +65,69 @@ namespace MoneyRules.UI.Windows
             LoadAdvice();
             LoadExchangeRates();
             PopulateChartMonths();
+            
+            CheckForUpcomingPayments();
 
             if (FindName("ChartCanvas") is Canvas _chart)
                 _chart.SizeChanged += (s, e) => DrawChartForSelectedYear();
         }
+
+        // =======================================================
+        // ДОДАНО: Метод для перевірки та відображення сповіщень
+        // =======================================================
+        private void CheckForUpcomingPayments()
+        {
+            // Використовуємо Border, який має ім'я NotificationPanelBorder в XAML
+            if (FindName("NotificationPanelBorder") is not Border border)
+            {
+                return; // Елемент не знайдено, виходимо
+            }
+            
+            // Якщо користувач не увійшов або сповіщення вимкнено, приховуємо панель
+            if (_currentUser == null || _currentUser.Settings?.NotificationEnabled != true)
+            {
+                border.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            try
+            {
+                // Використовуємо коректну логіку фільтрації
+                var upcoming = _notificationService.GetUpcomingPayments(_currentUser.UserId, daysAhead: 7);
+                // ----------------------------------------------------
+
+                if (upcoming.Any())
+                {
+                    
+                    var sb = new StringBuilder();
+                    sb.AppendLine($"Знайдено {upcoming.Count} запланованих платежів:");
+                    
+                    foreach (var payment in upcoming)
+                    {
+                        string categoryName = payment.Category != null ? payment.Category.Name : "Без категорії";
+                        
+                        sb.AppendLine($"- {payment.Amount:N2} ({categoryName}) до {payment.StartDate.Date:dd.MM.yyyy}"); 
+                    }
+
+                    if (FindName("NotificationText") is TextBlock textBlock)
+                    {
+                        textBlock.Text = sb.ToString();
+                    }
+                    border.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    border.Visibility = Visibility.Collapsed;
+                }
+            }
+            catch (Exception ex)
+            {
+                // ОБРОБКА ПОМИЛКИ: Приховуємо панель і виводимо повідомлення
+                border.Visibility = Visibility.Collapsed;
+                MessageBox.Show($"Критична помилка при завантаженні сповіщень: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        // =======================================================
 
         private void OpenHistory_Click(object sender, RoutedEventArgs e)
         {
@@ -86,19 +150,16 @@ namespace MoneyRules.UI.Windows
             {
                 MessageBox.Show("Транзакція успішно додана!");
                 LoadAdvice();
+                CheckForUpcomingPayments(); 
             }
         }
 
-        // --- ПОЧАТОК НОВОГО КОДУ ---
-        /* * * * Це новий метод, який відкриває НОВЕ вікно для дублювання.
-         */
         private void OpenDuplicatePaymentWindow_Click(object sender, RoutedEventArgs e)
         {
             DuplicatePaymentWindow duplicateWindow = new DuplicatePaymentWindow();
             duplicateWindow.Owner = this; 
             duplicateWindow.ShowDialog();
         }
-        // --- КІНЕЦЬ НОВОГО КОДУ ---
 
         private void LoadAdvice()
         {
@@ -195,6 +256,8 @@ namespace MoneyRules.UI.Windows
             
             PopulateChartYears();
             DrawChartForSelectedYear();
+
+            CheckForUpcomingPayments();
         }
 
         private void BtnSetBudget_Click(object sender, RoutedEventArgs e)
@@ -467,13 +530,13 @@ namespace MoneyRules.UI.Windows
             {
                 byte[] imageData = File.ReadAllBytes(dlg.FileName);
                 _profileService.ChangeProfilePhoto(_currentUser!, imageData);
-                using var ms = new MemoryStream(imageData);
+                using var ms = new MemoryStream(_currentUser.ProfilePhoto);
                 var bitmap = new BitmapImage();
                 bitmap.BeginInit();
                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
                 bitmap.StreamSource = ms;
                 bitmap.EndInit();
-                var profileImg = FindName("ProfileImage") as System.Windows.Controls.Image;
+                    var profileImg = FindName("ProfileImage") as System.Windows.Controls.Image;
                 if (profileImg != null) profileImg.Source = bitmap;
             }
         }
@@ -505,8 +568,10 @@ namespace MoneyRules.UI.Windows
             
             _profileService.UpdateUser(_currentUser);
             MessageBox.Show("Profile updated successfully.");
+
+            // ОНОВЛЕННЯ СПОВІЩЕНЬ: Якщо користувач увімкнув/вимкнув сповіщення
+            CheckForUpcomingPayments();
         }
-        
 
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
@@ -542,8 +607,8 @@ namespace MoneyRules.UI.Windows
                                 decimal.TryParse(rate.SaleRate.Replace(',', '.'), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal sellRate))
                             {
                                 ratesList.Add($"💱 {rate.Currency}/{rate.BaseCurrency}\n" +
-                                                $"▪ Купівля:  {buyRate:N2}\n" +
-                                                $"▪ Продаж:   {sellRate:N2}");
+                                                      $"▪ Купівля:  {buyRate:N2}\n" +
+                                                      $"▪ Продаж:   {sellRate:N2}");
                             }
                         }
                     }
@@ -609,6 +674,8 @@ namespace MoneyRules.UI.Windows
             if (window == null) { MessageBox.Show("Служба вікна не зареєстрована.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error); return; }
             window.Owner = this;
             window.ShowDialog();
+            
+            CheckForUpcomingPayments();
         }
 
         private void BtnDeleteAccount_Click(object sender, RoutedEventArgs e)
