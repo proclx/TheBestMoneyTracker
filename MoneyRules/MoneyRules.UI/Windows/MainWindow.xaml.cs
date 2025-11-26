@@ -16,6 +16,7 @@ using MoneyRules.UI;
 using System.Text; 
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using MoneyRules.UI.ViewModels;
 
 namespace MoneyRules.UI.Windows
 {
@@ -30,7 +31,8 @@ namespace MoneyRules.UI.Windows
         private readonly IFileUploadService _fileUploadService;
         private readonly IPlannedPaymentNotificationService _notificationService;
         private User? _currentUser;
-        
+        public DashboardViewModel ViewModel { get; set; }
+
 
         public MainWindow(
             ITransactionService transactionService,
@@ -51,7 +53,8 @@ namespace MoneyRules.UI.Windows
             _chartService = chartService;
             _currencyService = currencyService;
             _fileUploadService = fileUploadService;
-            _notificationService = notificationService; 
+            _notificationService = notificationService;
+            
 
             _currentUser = System.Windows.Application.Current.Properties["CurrentUser"] as User;
             if (_currentUser == null)
@@ -60,6 +63,9 @@ namespace MoneyRules.UI.Windows
                 this.Close();
                 return;
             }
+
+            ViewModel = new DashboardViewModel(_profileService, _currentUser);
+            this.DataContext = ViewModel;
 
             LoadUserProfile();
             LoadAdvice();
@@ -72,12 +78,8 @@ namespace MoneyRules.UI.Windows
                 _chart.SizeChanged += (s, e) => DrawChartForSelectedYear();
         }
 
-        // =======================================================
-        // ДОДАНО: Метод для перевірки та відображення сповіщень
-        // =======================================================
         private void CheckForUpcomingPayments()
         {
-            // Використовуємо Border, який має ім'я NotificationPanelBorder в XAML
             if (FindName("NotificationPanelBorder") is not Border border)
             {
                 return; // Елемент не знайдено, виходимо
@@ -94,7 +96,6 @@ namespace MoneyRules.UI.Windows
             {
                 // Використовуємо коректну логіку фільтрації
                 var upcoming = _notificationService.GetUpcomingPayments(_currentUser.UserId, daysAhead: 7);
-                // ----------------------------------------------------
 
                 if (upcoming.Any())
                 {
@@ -258,41 +259,6 @@ namespace MoneyRules.UI.Windows
             DrawChartForSelectedYear();
 
             CheckForUpcomingPayments();
-        }
-
-        private void BtnSetBudget_Click(object sender, RoutedEventArgs e)
-        {
-            if (_currentUser == null)
-            {
-                MessageBox.Show("Користувач не завантажений.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            var txtMonthlyBudget = FindName("TxtMonthlyBudget") as TextBox;
-            if (txtMonthlyBudget == null) return;
-
-            if (decimal.TryParse(txtMonthlyBudget.Text, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.CurrentCulture, out decimal newBudget))
-            {
-                try
-                {
-                    _profileService.UpdateUserBudget(_currentUser.UserId, newBudget);
-                    if (_currentUser.Settings == null)
-                    {
-                        _currentUser.Settings = new Settings { UserId = _currentUser.UserId };
-                    }
-                    _currentUser.Settings.MonthlyBudget = newBudget;
-                    MessageBox.Show("Бюджет успішно збережено.", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
-                    DrawChartForSelectedYear();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Помилка збереження бюджету: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            else
-            {
-                MessageBox.Show("Будь ласка, введіть коректне числове значення для бюджету (наприклад, 5000.50).", "Невірний формат", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
         }
 
         private void PopulateChartYears()
