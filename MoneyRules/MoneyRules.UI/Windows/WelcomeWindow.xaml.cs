@@ -28,7 +28,7 @@ namespace MoneyRules.UI.Windows
 
         private void Login_Click(object sender, RoutedEventArgs e)
         {
-            var loginWindow = new LoginWindow(_authService, _transactionService, _profileService, _adviceService, _currencyService);
+            var loginWindow = new LoginWindow(_authService);
             loginWindow.Show();
             Close();
         }
