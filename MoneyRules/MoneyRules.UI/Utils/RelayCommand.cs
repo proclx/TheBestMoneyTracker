@@ -1,31 +1,50 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace MoneyRules.UI.Utils
 {
+    // Клас, що реалізує інтерфейс ICommand для зв'язування UI-елементів з ViewModel
     public class RelayCommand : ICommand
     {
-        private readonly Action<object> _execute;
-        private readonly Predicate<object> _canExecute;
+        // Змінено на Action<object?> та Predicate<object?> для коректної обробки null
+        private readonly Action<object?> _execute;
+        private readonly Predicate<object?>? _canExecute; // Додано '?'
 
-        public RelayCommand(Action<object> execute, Predicate<object> canExecute = null)
+        /// <summary>
+        /// Створює нову команду з логікою виконання та перевірки активності.
+        /// </summary>
+        /// <param name="execute">Метод, який виконується при виклику команди.</param>
+        /// <param name="canExecute">Метод, який визначає, чи активна кнопка.</param>
+        public RelayCommand(Action<object?> execute, Predicate<object?>? canExecute = null) // Додано '?'
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
         }
 
-        public bool CanExecute(object parameter) => _canExecute == null || _canExecute(parameter);
-
-        public void Execute(object parameter) => _execute(parameter);
-
-        public event EventHandler CanExecuteChanged
+        /// <summary>
+        /// Повідомляє UI про можливу зміну стану активності команди.
+        /// </summary>
+        public event EventHandler? CanExecuteChanged // Додано '?'
         {
+            // Використовуємо CommandManager для автоматичної перевірки при зміні фокусу
             add { CommandManager.RequerySuggested += value; }
             remove { CommandManager.RequerySuggested -= value; }
+        }
+
+        /// <summary>
+        /// Визначає, чи може команда виконуватись.
+        /// </summary>
+        public bool CanExecute(object? parameter) // Додано '?'
+        {
+            return _canExecute == null || _canExecute(parameter);
+        }
+
+        /// <summary>
+        /// Виконує логіку команди.
+        /// </summary>
+        public void Execute(object? parameter) // Додано '?'
+        {
+            _execute(parameter);
         }
     }
 }

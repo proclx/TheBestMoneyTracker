@@ -1,15 +1,15 @@
 ﻿using System.Windows;
 using MoneyRules.Application.Interfaces;
+using MoneyRules.UI.ViewModel; // Додано
 
 namespace MoneyRules.UI.Windows
 {
     public partial class WelcomeWindow : Window
     {
-        private readonly IAuthService _authService;
-        private readonly ITransactionService _transactionService;
-        private readonly IUserProfileService _profileService;
-        private readonly IAdviceService _adviceService;
-        private readonly ICurrencyService _currencyService;
+        // Прибираємо поля лише якщо вони були потрібні тільки в обробниках Click
+        // Залишаємо поля, щоб передати їх у конструктор ViewModel
+        // private readonly IAuthService _authService; // ВИДАЛЕНІ, якщо вони не використовуються за межами конструктора
+        // ... та інші поля
 
         public WelcomeWindow(
             IAuthService authService,
@@ -19,26 +19,20 @@ namespace MoneyRules.UI.Windows
             ICurrencyService currencyService)
         {
             InitializeComponent();
-            _authService = authService;
-            _transactionService = transactionService;
-            _profileService = profileService;
-            _adviceService = adviceService;
-            _currencyService = currencyService;
+            
+            // Встановлення DataContext з новим ViewModel
+            this.DataContext = new WelcomeViewModel(
+                authService,
+                transactionService,
+                profileService,
+                adviceService,
+                currencyService);
         }
 
-        private void Login_Click(object sender, RoutedEventArgs e)
-        {
-            var loginWindow = new LoginWindow(_authService);
-            loginWindow.Show();
-            Close();
-        }
-
-        private void Register_Click(object sender, RoutedEventArgs e)
-        {
-            var registerWindow = new RegisterWindow(_authService, _transactionService, _profileService, _adviceService, _currencyService);
-            registerWindow.Show();
-            Close();
-        }
+        // *** ЦІ МЕТОДИ ПОВИННІ БУТИ ВИДАЛЕНІ! ***
+        /*
+        private void Login_Click(object sender, RoutedEventArgs e) { ... }
+        private void Register_Click(object sender, RoutedEventArgs e) { ... }
+        */
     }
 }
-
