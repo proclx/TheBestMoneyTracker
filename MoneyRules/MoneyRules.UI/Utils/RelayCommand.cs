@@ -46,5 +46,9 @@ namespace MoneyRules.UI.Utils
         {
             _execute(parameter);
         }
+        public void RaiseCanExecuteChanged()
+        {
+            CommandManager.InvalidateRequerySuggested();
+        }
     }
 }

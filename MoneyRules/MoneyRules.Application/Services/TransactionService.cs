@@ -14,6 +14,13 @@ namespace MoneyRules.Application.Services
             _context = context;
         }
 
+        public async Task<Transaction> AddTransactionAsync(Transaction transaction)
+        {
+            await _context.Transactions.AddAsync(transaction);
+            await _context.SaveChangesAsync();
+            return transaction;
+        }
+
         public async Task<bool> DeleteTransactionAsync(int transactionId)
         {
             var transaction = await _context.Transactions
@@ -69,20 +76,22 @@ namespace MoneyRules.Application.Services
 
             return date;
         }
+
         public async Task UpdateAsync(Transaction transaction)
         {
             _context.Transactions.Update(transaction);
             await _context.SaveChangesAsync();
         }
+
         public async Task<List<Category>> GetUserCategoriesAsync(int userId)
         {
             return await _context.Categories
                 .Where(c => c.UserId == userId)
                 .ToListAsync();
         }
+
         public async Task<Category> CreateCategoryAsync(Category category)
         {
-            // Перевірка, чи така категорія вже існує
             var existing = await _context.Categories
                 .FirstOrDefaultAsync(c =>
                     c.Name.ToLower() == category.Name.ToLower() &&
@@ -91,11 +100,9 @@ namespace MoneyRules.Application.Services
             if (existing != null)
                 return existing;
 
-            // Додаємо нову категорію
             await _context.Categories.AddAsync(category);
             await _context.SaveChangesAsync();
             return category;
         }
-
     }
 }
