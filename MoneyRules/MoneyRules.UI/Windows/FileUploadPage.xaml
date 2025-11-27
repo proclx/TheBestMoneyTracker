@@ -9,24 +9,24 @@
 
         <Button Content="Завантажити файл (Standard)"
                 Width="250" Height="30"
-                Click="UploadDefaultFile_Click"/>
+                Command="{Binding UploadDefaultCommand}" />
 
         <Button Content="Завантажити дані Monobank CSV"
                 Width="250" Height="30"
                 Background="Black"
                 Foreground="White"
                 Margin="0,10,0,0"
-                Click="UploadMonobankFile_Click"/>
+                Command="{Binding UploadMonobankCommand}" />
 
-        <Button Content="Завантажити дані ПриватБанк CSV"
+        <Button Content="Завантажити дані ПриватБанк XLSX"
                 Width="250" Height="30"
                 Background="#0056B3"
                 Foreground="White"
                 Margin="0,10,0,0"
-                Click="UploadPrivatBankFile_Click"/>
+                Command="{Binding UploadPrivatCommand}" />
 
         <TextBlock x:Name="StatusText" 
-                   Text="Оберіть файл для завантаження"
+                   Text="{Binding StatusText}"
                    Margin="0,15,0,0"
                    TextWrapping="Wrap"/>
 
