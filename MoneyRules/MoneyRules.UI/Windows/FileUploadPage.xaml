@@ -1,34 +1,34 @@
 <UserControl x:Class="MoneyRules.UI.Windows.FileUploadPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel Margin="10">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-        <Button Content="Завантажити файл (Standard)"
-                Width="250" Height="30"
-                Command="{Binding UploadDefaultCommand}" />
+    <Border Style="{StaticResource CardStyle}" Margin="20">
 
-        <Button Content="Завантажити дані Monobank CSV"
-                Width="250" Height="30"
-                Background="Black"
-                Foreground="White"
-                Margin="0,10,0,0"
-                Command="{Binding UploadMonobankCommand}" />
+        <StackPanel>
 
-        <Button Content="Завантажити дані ПриватБанк XLSX"
-                Width="250" Height="30"
-                Background="#0056B3"
-                Foreground="White"
-                Margin="0,10,0,0"
-                Command="{Binding UploadPrivatCommand}" />
+            <Button Content="Завантажити файл (Standard)"
+                    Width="260"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding UploadDefaultCommand}" />
 
-        <TextBlock x:Name="StatusText" 
-                   Text="{Binding StatusText}"
-                   Margin="0,15,0,0"
-                   TextWrapping="Wrap"/>
+            <Button Content="Завантажити Monobank CSV"
+                    Width="260"
+                    Margin="0,10,0,0"
+                    Style="{StaticResource {x:Type Button}}"
+                    Command="{Binding UploadMonobankCommand}" />
 
-    </StackPanel>
+            <Button Content="Завантажити ПриватБанк XLSX"
+                    Width="260"
+                    Margin="0,10,0,0"
+                    Style="{StaticResource AccentButton}"
+                    Command="{Binding UploadPrivatCommand}" />
+
+            <TextBlock x:Name="StatusText"
+                       Text="{Binding StatusText}"
+                       Margin="0,15,0,0"
+                       TextWrapping="Wrap"/>
+        </StackPanel>
+
+    </Border>
+
 </UserControl>

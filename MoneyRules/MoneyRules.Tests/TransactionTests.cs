@@ -23,7 +23,7 @@ namespace MoneyRules.Tests
                 UserId = 1,
                 Name = "Test User",
                 Email = "test@example.com",
-                PasswordHash = "hash"
+                Hash = "hash"
             };
             _context.Users.Add(_user);
             _context.SaveChanges();

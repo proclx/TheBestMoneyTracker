@@ -1,0 +1,20 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Основні кольори -->
+    <Color x:Key="PrimaryColor">#4CAF50</Color> <!-- Зелений -->
+    <Color x:Key="AccentColor">#1976D2</Color> <!-- Синій -->
+    <Color x:Key="DangerColor">#D32F2F</Color>
+    <Color x:Key="NeutralGray">#EEEEEE</Color>
+    <Color x:Key="BorderGray">#CCCCCC</Color>
+    <Color x:Key="TextDark">#222222</Color>
+
+    <!-- Кисті -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
+    <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}"/>
+    <SolidColorBrush x:Key="NeutralBrush" Color="{StaticResource NeutralGray}"/>
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderGray}"/>
+    <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextDark}"/>
+
+</ResourceDictionary>
