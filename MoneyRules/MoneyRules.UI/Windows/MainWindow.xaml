@@ -15,28 +15,31 @@
                 <!-- Використовуємо Grid для точного позиціонування панелі сповіщень унизу праворуч -->
                 <Grid>
                     <!-- Основний вміст вкладки "Редагування даних" -->
-                    <StackPanel Margin="-12,10,32,10">
-                        <TextBlock Text="Тут будуть транзакції та кнопки для редагування" Margin="5" Foreground="{DynamicResource SecondaryText}"/>
-                        
-                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                            
-                            <Button Content="Додати транзакцію" Width="150" Margin="0,0,5,0" Click="AddTransactionButton_Click" Background="{DynamicResource ButtonBackground}" Foreground="{DynamicResource ButtonForeground}"/>
-                            <Button Content="Видалити" Width="100" Margin="0,0,5,0" Background="{DynamicResource ButtonBackground}" Foreground="{DynamicResource ButtonForeground}"/>
-                            <Button Content="Переглянути історію" Width="160" Click="OpenHistory_Click" Background="{DynamicResource ButtonBackground}" Foreground="{DynamicResource ButtonForeground}"/>
-                            <Button x:Name="BtnScheduledPayments" Content="Заплановані платежі" Width="160" Margin="8,0,0,0" Click="BtnScheduledPayments_Click" Background="{DynamicResource ButtonBackground}" Foreground="{DynamicResource ButtonForeground}"/>
-                            
-                            <Button x:Name="OpenDuplicatePaymentWindowButton" 
-                                    Content="Дублювати платіж" 
-                                    Click="OpenDuplicatePaymentWindow_Click" 
-                                    Width="160" Margin="8,0,0,0" 
-                                    Background="{DynamicResource ButtonBackground}" 
-                                    Foreground="{DynamicResource ButtonForeground}"/>
-                        
-                        </StackPanel>
-                        
-                        <StackPanel HorizontalAlignment="Center" Margin="0,12,0,0">
-                            <Button x:Name="BtnExportPdf" Content="Експорт PDF" Width="180" Height="36" FontWeight="SemiBold" Click="BtnExportPdf_Click" Background="{DynamicResource ButtonBackground}" Foreground="{DynamicResource ButtonForeground}"/>
-                        </StackPanel>
+                    <StackPanel Margin="0,10,32,10">
+                        <Border Style="{StaticResource CardStyle}" Margin="0,0,0,0" Width="280" HorizontalAlignment="Left">
+                            <StackPanel Margin="6">
+                                <TextBlock Text="Дії" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryText}" Margin="0,0,0,8"/>
+                                <Button Margin="0,4,0,0" MinHeight="42" Click="AddTransactionButton_Click" Style="{StaticResource PrimaryButton}">
+                                    <TextBlock Text="Додати транзакцію" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                                </Button>
+                                <Button Margin="0,4,0,0" MinHeight="42" Style="{StaticResource {x:Type Button}}">
+                                    <TextBlock Text="Видалити" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                                </Button>
+                                <Button Margin="0,4,0,0" MinHeight="42" Click="OpenHistory_Click" Style="{StaticResource {x:Type Button}}">
+                                    <TextBlock Text="Переглянути історію" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                                </Button>
+                                <Button x:Name="BtnScheduledPayments" Margin="0,4,0,0" MinHeight="42" Click="BtnScheduledPayments_Click" Style="{StaticResource {x:Type Button}}">
+                                    <TextBlock Text="Заплановані платежі" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                                </Button>
+                                <Button x:Name="OpenDuplicatePaymentWindowButton" Margin="0,4,0,0" MinHeight="42" Click="OpenDuplicatePaymentWindow_Click" Style="{StaticResource {x:Type Button}}">
+                                    <TextBlock Text="Дублювати платіж" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                                </Button>
+                                <Separator Margin="0,8,0,8"/>
+                                <Button x:Name="BtnExportPdf" MinHeight="42" FontWeight="SemiBold" Click="BtnExportPdf_Click" Style="{StaticResource AccentButton}">
+                                    <TextBlock Text="Експорт PDF" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                                </Button>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
 
                     <!-- ======================================================= -->
@@ -75,133 +78,156 @@
             </TabItem>
 
             <TabItem Header="Візуалізація" Background="{DynamicResource AppBackground}">
-                <!-- Додаємо вертикальну прокрутку для вмісту з діаграмами -->
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel Margin="10">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="Рік:" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="{DynamicResource PrimaryText}"/>
-                        <ComboBox x:Name="CmbChartYear" Width="100" SelectionChanged="CmbChartYear_SelectionChanged" />
-                        <TextBlock Text="Місяць:" VerticalAlignment="Center" Margin="8,0,4,0" Foreground="{DynamicResource PrimaryText}"/>
-                        <ComboBox x:Name="CmbChartMonth" Width="120" SelectionChanged="CmbChartYear_SelectionChanged" />
-                        <CheckBox x:Name="ChkMonthlyView" Content="Показати по днях" VerticalAlignment="Center" Margin="8,0,0,0" Checked="ChkMonthlyView_CheckedChanged" Unchecked="ChkMonthlyView_CheckedChanged" Foreground="{DynamicResource PrimaryText}" />
-                        <Button Content="Оновити" Margin="8,0,0,0" Click="BtnRefreshChart_Click" Background="{DynamicResource ButtonBackground}" Foreground="{DynamicResource ButtonForeground}"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                        <TextBlock Text="Місячний бюджет:" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="{DynamicResource PrimaryText}"/>
-
-                        <TextBox Width="120" 
-                            Background="{DynamicResource WindowBackground}" 
-                            Foreground="{DynamicResource PrimaryText}" 
-                            BorderBrush="{DynamicResource BorderColor}"
-                            Text="{Binding MonthlyBudget, StringFormat=N2, UpdateSourceTrigger=PropertyChanged}"/>
-
-                        <Button Content="Зберегти бюджет" 
-                             Margin="8,0,0,0" 
-                             Background="{DynamicResource ButtonBackground}" 
-                             Foreground="{DynamicResource ButtonForeground}" 
-                             Command="{Binding SaveBudgetCommand}"/>
-                        </StackPanel>
-
-                        <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" Margin="0,10,0,0" Padding="8" Background="{DynamicResource WindowBackground}">
-                        <StackPanel>
-                            <Canvas x:Name="ChartCanvas" Height="260" Background="{DynamicResource AppBackground}" />
-                            <TextBlock x:Name="TxtChartStatus" Margin="0,8,0,0" FontStyle="Italic" Foreground="{DynamicResource SecondaryText}"/>
-                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                                <Rectangle Width="16" Height="12" Fill="Green" Stroke="Black" />
-                                <TextBlock Text=" Income" Margin="6,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryText}" />
-                                <Rectangle Width="16" Height="12" Fill="Red" Stroke="Black" />
-                                <TextBlock Text=" Expense" Margin="6,0,0,0" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryText}" />
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="10">
+                    <StackPanel>
+                        <!-- Фільтри в картці -->
+                        <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
+                            <StackPanel Margin="6">
+                                <TextBlock Text="Фільтри" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryText}" Margin="0,0,0,8" FontSize="14"/>
+                                
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Text="Рік:" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource PrimaryText}"/>
+                                    <ComboBox x:Name="CmbChartYear" Grid.Column="1" SelectionChanged="CmbChartYear_SelectionChanged" />
+                                    
+                                    <TextBlock Text="Місяць:" Grid.Column="2" VerticalAlignment="Center" Margin="8,0,6,0" Foreground="{DynamicResource PrimaryText}"/>
+                                    <ComboBox x:Name="CmbChartMonth" Grid.Column="3" SelectionChanged="CmbChartYear_SelectionChanged" />
+                                    
+                                    <StackPanel Grid.Column="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="8,0,0,0">
+                                        <CheckBox x:Name="ChkMonthlyView" Content="По днях" VerticalAlignment="Center" Margin="0,0,8,0" Checked="ChkMonthlyView_CheckedChanged" Unchecked="ChkMonthlyView_CheckedChanged" Foreground="{DynamicResource PrimaryText}" />
+                                        <Button Content="Оновити" Click="BtnRefreshChart_Click" Style="{StaticResource PrimaryButton}" Width="100"/>
+                                    </StackPanel>
+                                </Grid>
+                                
+                                <Separator Margin="0,8,0,8"/>
+                                
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                                    <TextBlock Text="Місячний бюджет:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource PrimaryText}"/>
+                                    <TextBox Width="140" 
+                                        Background="{DynamicResource WindowBackground}" 
+                                        Foreground="{DynamicResource PrimaryText}" 
+                                        BorderBrush="{DynamicResource BorderColor}"
+                                        Text="{Binding MonthlyBudget, StringFormat=N2, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <Button Content="Зберегти" 
+                                         Margin="8,0,0,0" 
+                                         Background="{DynamicResource ButtonBackground}" 
+                                         Foreground="{DynamicResource ButtonForeground}" 
+                                         Command="{Binding SaveBudgetCommand}"
+                                         Width="100"/>
+                                </StackPanel>
                             </StackPanel>
+                        </Border>
 
-                            <Separator Margin="0,12,0,12" />
-                            <TextBlock Text="Деталі за категоріями" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryText}" />
-                            <Grid Margin="0,8,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <!-- Поле для кругових діаграм: топ-5 зверху, вибрані категорії під ним. -->
-                                <StackPanel Grid.Column="0" Orientation="Vertical">
-                                    <!-- Перший: Top-5 (незмінний) -->
-                                    <Canvas x:Name="PieTop5Canvas" Height="220" Background="{DynamicResource AppBackground}" Margin="0,0,0,8" />
-                                    <!-- Другий: вибрані категорії (через чекбокси) -->
-                                    <Canvas x:Name="PieSelectedCanvas" Height="220" Background="{DynamicResource AppBackground}" Margin="0,8,0,0" />
+                        <!-- Діаграма Дохід/Витрати -->
+                        <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
+                            <StackPanel Margin="6">
+                                <TextBlock Text="Дохід / Витрати" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryText}" Margin="0,0,0,8" FontSize="14"/>
+                                <Canvas x:Name="ChartCanvas" Height="280" Background="{DynamicResource AppBackground}" />
+                                <TextBlock x:Name="TxtChartStatus" Margin="0,6,0,0" FontStyle="Italic" Foreground="{DynamicResource SecondaryText}"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                    <Rectangle Width="14" Height="10" Fill="Green" Stroke="Black" StrokeThickness="0.5"/>
+                                    <TextBlock Text=" Доходи" Margin="4,0,12,0" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryText}" FontSize="12"/>
+                                    <Rectangle Width="14" Height="10" Fill="Red" Stroke="Black" StrokeThickness="0.5"/>
+                                    <TextBlock Text=" Витрати" Margin="4,0,0,0" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryText}" FontSize="12"/>
                                 </StackPanel>
+                            </StackPanel>
+                        </Border>
 
-                                <!-- Легенда для Top-5 -->
-                                <StackPanel Grid.Column="1" Margin="12,0,0,0">
-                                    <TextBlock Text="Легенда (Top-5)" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}" />
-                                    <ItemsControl x:Name="PieTop5Legend" Margin="0,6,0,0">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,4">
-                                                    <Rectangle Width="16" Height="12" Fill="{Binding Color}" Stroke="Black" />
-                                                    <TextBlock Text=" " />
-                                                    <TextBlock Text="{Binding Label}" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryText}"/>
-                                                    <TextBlock Text=" - " VerticalAlignment="Center" Foreground="{DynamicResource SecondaryText}" />
-                                                    <TextBlock Text="{Binding Value}" VerticalAlignment="Center" Foreground="{DynamicResource SecondaryText}" />
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
+                        <!-- Категорії: Top-5 + Вибрані -->
+                        <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
+                            <StackPanel Margin="6">
+                                <TextBlock Text="Деталі по категоріях" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryText}" Margin="0,0,0,8" FontSize="14"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="240"/>
+                                    </Grid.ColumnDefinitions>
 
-                                    <Separator Margin="0,8,0,8" />
+                                    <StackPanel Grid.Column="0" Orientation="Vertical" Margin="0,0,12,0">
+                                        <TextBlock Text="Top-5 категорій" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryText}" Margin="0,0,0,6" FontSize="12"/>
+                                        <Canvas x:Name="PieTop5Canvas" Height="200" Background="{DynamicResource AppBackground}" Margin="0,0,0,12" />
+                                        
+                                        <TextBlock Text="Вибрані категорії" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryText}" Margin="0,0,0,6" FontSize="12"/>
+                                        <Canvas x:Name="PieSelectedCanvas" Height="200" Background="{DynamicResource AppBackground}" />
+                                    </StackPanel>
 
-                                    <TextBlock Text="Легенда (Вибрані)" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}" />
-                                    <ItemsControl x:Name="PieSelectedLegend" Margin="0,6,0,0">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,4">
-                                                    <Rectangle Width="16" Height="12" Fill="{Binding Color}" Stroke="Black" />
-                                                    <TextBlock Text=" " />
-                                                    <TextBlock Text="{Binding Label}" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryText}"/>
-                                                    <TextBlock Text=" - " VerticalAlignment="Center" Foreground="{DynamicResource SecondaryText}" />
-                                                    <TextBlock Text="{Binding Value}" VerticalAlignment="Center" Foreground="{DynamicResource SecondaryText}" />
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </StackPanel>
-                            </Grid>
-                            
-                            <!-- Селектор категорій (чекбокси). Якщо нічого не вибрано, користувачу показується підказка.
-                                 Користувач може обрати від 2 до 10 категорій. -->
-                            <TextBlock Text="Виберіть категорії для показу (2–10):" Margin="0,12,0,4" Foreground="{DynamicResource PrimaryText}" />
-                            <ScrollViewer Height="120" VerticalScrollBarVisibility="Auto">
-                                <StackPanel x:Name="CategoryCheckboxes" />
-                            </ScrollViewer>
-                            <TextBlock x:Name="CategoryHintText" Text="Оберіть від 2 до 10 категорій для аналізу." Foreground="{DynamicResource SecondaryText}" Visibility="Collapsed" Margin="0,6,0,0" />
+                                    <StackPanel Grid.Column="1" Margin="0,0,0,0">
+                                        <TextBlock Text="Легенда (Top-5)" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}" FontSize="11" Margin="0,0,0,6"/>
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="100">
+                                            <ItemsControl x:Name="PieTop5Legend">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                                                            <Rectangle Width="12" Height="10" Fill="{Binding Color}" Stroke="Black" StrokeThickness="0.5"/>
+                                                            <TextBlock Text="{Binding Label}" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryText}" FontSize="10" Margin="4,0,0,0" MaxWidth="160" TextTrimming="CharacterEllipsis"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </ScrollViewer>
 
-                            <Separator Margin="0,12,0,12" />
-                            <TextBlock Text="Доходи vs Витрати" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryText}" />
-                            <Grid Margin="0,8,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Canvas x:Name="IncomeExpenseCanvas" Grid.Column="0" Height="160" Background="{DynamicResource AppBackground}" />
-                                <StackPanel Grid.Column="1" Margin="12,0,0,0">
-                                    <TextBlock Text="Легенда" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}" />
-                                    <ItemsControl x:Name="IncomeExpenseLegend" Margin="0,6,0,0">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,4">
-                                                    <Rectangle Width="16" Height="12" Fill="{Binding Color}" Stroke="Black" />
-                                                    <TextBlock Text=" " />
-                                                    <TextBlock Text="{Binding Label}" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryText}"/>
-                                                    <TextBlock Text=" - " VerticalAlignment="Center" Foreground="{DynamicResource SecondaryText}" />
-                                                    <TextBlock Text="{Binding Value}" VerticalAlignment="Center" Foreground="{DynamicResource SecondaryText}" />
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
-                </StackPanel>
+                                        <Separator Margin="0,8,0,8" />
+
+                                        <TextBlock Text="Легенда (Вибрані)" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}" FontSize="11" Margin="0,0,0,6"/>
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="100">
+                                            <ItemsControl x:Name="PieSelectedLegend">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                                                            <Rectangle Width="12" Height="10" Fill="{Binding Color}" Stroke="Black" StrokeThickness="0.5"/>
+                                                            <TextBlock Text="{Binding Label}" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryText}" FontSize="10" Margin="4,0,0,0" MaxWidth="160" TextTrimming="CharacterEllipsis"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </ScrollViewer>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Separator Margin="0,12,0,12" />
+                                
+                                <TextBlock Text="Виберіть категорії (2–10):" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryText}" Margin="0,0,0,6" FontSize="12"/>
+                                <ScrollViewer Height="100" VerticalScrollBarVisibility="Auto" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" Padding="4">
+                                    <StackPanel x:Name="CategoryCheckboxes" />
+                                </ScrollViewer>
+                                <TextBlock x:Name="CategoryHintText" Text="Оберіть від 2 до 10 категорій для аналізу." Foreground="{DynamicResource SecondaryText}" Visibility="Collapsed" Margin="0,6,0,0" FontSize="11"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Доходи vs Витрати -->
+                        <Border Style="{StaticResource CardStyle}" Margin="0,0,0,0">
+                            <StackPanel Margin="6">
+                                <TextBlock Text="Доходи vs Витрати" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryText}" Margin="0,0,0,8" FontSize="14"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="200"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Canvas x:Name="IncomeExpenseCanvas" Grid.Column="0" Height="180" Background="{DynamicResource AppBackground}" />
+                                    <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                        <TextBlock Text="Легенда" FontWeight="Bold" Foreground="{DynamicResource PrimaryText}" FontSize="11" Margin="0,0,0,6"/>
+                                        <ItemsControl x:Name="IncomeExpenseLegend">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,4">
+                                                        <Rectangle Width="12" Height="10" Fill="{Binding Color}" Stroke="Black" StrokeThickness="0.5"/>
+                                                        <TextBlock Text="{Binding Label}" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryText}" FontSize="11" Margin="4,0,0,0"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
                 </ScrollViewer>
             </TabItem>
 
@@ -218,8 +244,21 @@
                     <TextBlock Text="Персональні поради на основі ваших транзакцій" FontStyle="Italic" Foreground="{DynamicResource SecondaryText}"/>
                     <GroupBox Header="Поради щодо економії" Margin="0,10,0,0" Foreground="{DynamicResource PrimaryText}">
                         <StackPanel>
-                            <ItemsControl x:Name="AdviceList" />
-                            <Button x:Name="RefreshAdviceButton" Content="Оновити поради" Width="150" Margin="0,8,0,0" Click="RefreshAdviceButton_Click" Background="{DynamicResource ButtonBackground}" Foreground="{DynamicResource ButtonForeground}" />
+                            <ItemsControl x:Name="AdviceList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{StaticResource CardStyle}" Margin="0,6,0,0">
+                                            <TextBlock Text="{Binding}" TextWrapping="Wrap" Foreground="{DynamicResource PrimaryText}" Margin="6"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                            <Button x:Name="RefreshAdviceButton" Content="Оновити поради" Width="150" Margin="0,8,0,0" Click="RefreshAdviceButton_Click" Style="{StaticResource PrimaryButton}" />
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
