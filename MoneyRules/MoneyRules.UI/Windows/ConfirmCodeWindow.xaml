@@ -2,54 +2,129 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Підтвердження коду"
-        Height="250" Width="400"
+        Height="300" Width="450"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Background="#f6f8fb">
+        Background="#F0F2F5">
 
-    <Border CornerRadius="10" Background="White" Padding="0" Margin="0">
-        <Border.Effect>
-            <DropShadowEffect BlurRadius="10" ShadowDepth="3" Opacity="0.4"/>
-        </Border.Effect>
+    <Window.Resources>
 
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+        <SolidColorBrush x:Key="PrimaryColor" Color="#4CAF50"/>
+        <SolidColorBrush x:Key="PrimaryHoverColor" Color="#43A047"/>
+        <SolidColorBrush x:Key="PrimaryPressColor" Color="#2E7D32"/>
 
-            <TextBlock Text="Введіть код підтвердження"
-                       FontSize="18"
-                       FontWeight="Bold"
-                       Margin="0,0,0,15"
-                       HorizontalAlignment="Center"/>
+        <Style x:Key="TitleTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+        </Style>
 
-            <Border CornerRadius="6" Background="#f0f3f8" BorderBrush="#ccc" BorderThickness="1" Margin="0,0,0,20">
-                <TextBox x:Name="CodeTextBox"
-                         Height="35"
-                         Padding="8"
-                         BorderThickness="0"
-                         Background="Transparent"
-                         FontSize="14"
-                         HorizontalContentAlignment="Center"/>
-            </Border>
-
-            <Button Content="Підтвердити"
-                    Height="40"
-                    FontSize="16"
-                    Background="#4CAF50"
-                    Foreground="White"
-                    BorderThickness="0"
-                    Cursor="Hand"
-                    Click="Confirm_Click">
-                <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <Border CornerRadius="8"
-                                Background="{TemplateBinding Background}">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="border"
+                                CornerRadius="8"
+                                Background="White"
+                                BorderBrush="#D1D5DB"
+                                BorderThickness="1.5">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
                         </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#A0A0A0"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryColor}"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                                <Setter TargetName="border" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#4CAF50" BlurRadius="8" ShadowDepth="0" Opacity="0.3"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
-                </Button.Template>
-            </Button>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-        </StackPanel>
-    </Border>
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryColor}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                CornerRadius="8"
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryHoverColor}"/>
+                            </Trigger>
+                            
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryPressColor}"/>
+                                
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.98" ScaleY="0.98" CenterX="100" CenterY="22"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#CCCCCC"/>
+                                <Setter Property="Foreground" Value="#888888"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid>
+        <Border Background="White" CornerRadius="15" 
+                VerticalAlignment="Center" HorizontalAlignment="Center"
+                Width="380" Padding="30">
+
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="20" ShadowDepth="5" Opacity="0.1" Color="Black"/>
+            </Border.Effect>
+
+            <StackPanel>
+                <TextBlock Text="Введіть код з SMS" Style="{StaticResource TitleTextStyle}"/>
+                <TextBlock Text="Ми відправили 4-значний код на ваш номер." 
+                           Foreground="#777" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,15"/>
+
+                <TextBox x:Name="CodeTextBox" 
+                         Style="{StaticResource ModernTextBoxStyle}"
+                         MaxLength="6"
+                         Margin="0,0,0,20"/>
+
+                <Button Content="ПІДТВЕРДИТИ" 
+                        Style="{StaticResource ModernButtonStyle}"
+                        Click="Confirm_Click"/>
+            </StackPanel>
+        </Border>
+    </Grid>
 </Window>
-

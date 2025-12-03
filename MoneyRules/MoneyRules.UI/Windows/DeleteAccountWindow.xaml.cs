@@ -44,6 +44,11 @@ namespace MoneyRules.UI.Windows
                 MessageBox.Show("Invalid email or password. Account not deleted.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }
 

@@ -33,7 +33,6 @@ namespace MoneyRules.UI.Windows
                 return;
             }
 
-            // Якщо код правильний — відкриваємо вікно для нового паролю
             var resetWindow = new ResetPasswordWindow(_authService, _email);
             resetWindow.Show();
             this.Close();

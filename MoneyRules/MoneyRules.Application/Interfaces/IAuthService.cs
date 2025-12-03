@@ -18,7 +18,6 @@ namespace MoneyRules.Application.Interfaces
 
         Task<bool> DeleteUserAccountAsync(string email, string password);
 
-        // --- Нові методи для локальної 2FA ---
         string GenerateTwoFactorCode(string email);
         bool VerifyTwoFactorCode(string email, string code);
         void RemoveTwoFactorCode(string email);

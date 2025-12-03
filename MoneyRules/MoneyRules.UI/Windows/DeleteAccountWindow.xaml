@@ -1,18 +1,204 @@
 ﻿<Window x:Class="MoneyRules.UI.Windows.DeleteAccountWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Delete Account" Height="250" Width="350" WindowStartupLocation="CenterScreen">
-    <StackPanel Margin="20">
-        <TextBlock Text="Введіть email:"/>
-        <TextBox x:Name="EmailTextBox" Margin="0,5,0,10"/>
+        Title="Видалення акаунту"
+        Height="440" Width="400"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="#F0F2F5">
 
-        <TextBlock Text="Введіть пароль:"/>
-        <PasswordBox x:Name="PasswordBox" Margin="0,5,0,20"/>
+    <Window.Resources>
+        <!-- КОЛЬОРИ НЕБЕЗПЕКИ (Червона палітра) -->
+        <SolidColorBrush x:Key="DangerColor" Color="#E53935"/>
+        <!-- Червоний -->
+        <SolidColorBrush x:Key="DangerHoverColor" Color="#D32F2F"/>
+        <!-- Темніший червоний -->
+        <SolidColorBrush x:Key="DangerPressColor" Color="#B71C1C"/>
+        <!-- Найтемніший червоний -->
+        <SolidColorBrush x:Key="FocusColor" Color="#4CAF50"/>
+        <!-- Зелений фокус -->
 
-        <Button Content="Видалити акаунт" 
-                Width="150" HorizontalAlignment="Center" 
-                                Background="red" 
-                                Foreground="White"
-                Click="ConfirmDeleteButton_Click"/>
-    </StackPanel>
+        <!-- Стиль для заголовків полів (Label) -->
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#555"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+        </Style>
+
+        <!-- ШАБЛОН ДЛЯ TEXTBOX (Email) -->
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="border"
+                                CornerRadius="6"
+                                Background="White"
+                                BorderBrush="#D1D5DB"
+                                BorderThickness="1.5">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#A0A0A0"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource FocusColor}"/>
+                                <Setter TargetName="border" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#4CAF50" BlurRadius="5" ShadowDepth="0" Opacity="0.2"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ШАБЛОН ДЛЯ PASSWORDBOX (Пароль) -->
+        <Style x:Key="ModernPasswordBoxStyle" TargetType="PasswordBox">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="PasswordChar" Value="●"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border x:Name="border"
+                                CornerRadius="6"
+                                Background="White"
+                                BorderBrush="#D1D5DB"
+                                BorderThickness="1.5">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#A0A0A0"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource FocusColor}"/>
+                                <Setter TargetName="border" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#4CAF50" BlurRadius="5" ShadowDepth="0" Opacity="0.2"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- СТИЛЬ ДЛЯ ЧЕРВОНОЇ КНОПКИ (Danger Button) -->
+        <Style x:Key="DangerButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="{StaticResource DangerColor}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                CornerRadius="8"
+                                Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource DangerHoverColor}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource DangerPressColor}"/>
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.98" ScaleY="0.98" CenterX="100" CenterY="22"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- НОВИЙ СТИЛЬ ДЛЯ КНОПКИ-ПОСИЛАННЯ (Link Button) -->
+        <Style x:Key="LinkButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#777"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,15,0,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <!-- TextDecorations="Underline" робить вигляд посилання -->
+                            <TextBlock Text="{TemplateBinding Content}" 
+                                       TextDecorations="Underline"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- При наведенні змінюємо колір на темніший -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="#333"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <!-- Основний контейнер -->
+    <Grid>
+        <Border Background="White" CornerRadius="12" Width="340" VerticalAlignment="Center" Padding="25">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="15" ShadowDepth="4" Opacity="0.1"/>
+            </Border.Effect>
+
+            <StackPanel>
+                <!-- Заголовок -->
+                <TextBlock Text="Видалення акаунту" 
+                           FontSize="22" FontWeight="Bold" Foreground="#333" 
+                           HorizontalAlignment="Center" Margin="0,0,0,5"/>
+
+                <!-- Попередження -->
+                <TextBlock Text="Ця дія незворотна. Всі ваші дані будуть втрачені." 
+                           FontSize="12" Foreground="#E53935" TextWrapping="Wrap" TextAlignment="Center"
+                           Margin="0,0,0,20"/>
+
+                <!-- Поле Email -->
+                <TextBlock Text="Введіть email:" Style="{StaticResource LabelStyle}"/>
+                <TextBox x:Name="EmailTextBox" Style="{StaticResource ModernTextBoxStyle}" Margin="0,0,0,15"/>
+
+                <!-- Поле Пароль -->
+                <TextBlock Text="Введіть пароль:" Style="{StaticResource LabelStyle}"/>
+                <PasswordBox x:Name="PasswordBox" Style="{StaticResource ModernPasswordBoxStyle}" Margin="0,0,0,25"/>
+
+                <!-- Кнопка Видалення -->
+                <Button Content="ВИДАЛИТИ АКАУНТ" 
+                        Style="{StaticResource DangerButtonStyle}"
+                        Click="ConfirmDeleteButton_Click"/>
+
+                <!-- 
+                    ВИПРАВЛЕНО: Кнопка скасування тепер є повноцінною кнопкою 
+                    зі стилем посилання та подією Click.
+                -->
+                <Button Content="Скасувати" 
+                        Style="{StaticResource LinkButtonStyle}"
+                        IsCancel="True"
+                        Click="CancelButton_Click"/>
+
+            </StackPanel>
+        </Border>
+    </Grid>
 </Window>
