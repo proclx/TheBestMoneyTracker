@@ -11,5 +11,6 @@ namespace MoneyRules.Application.Interfaces
         Task<bool> DeleteTransactionAsync(int transactionId);
         Task<Category> CreateCategoryAsync(Category category);
 
+        Task<Transaction> AddTransactionAsync(Transaction transaction);
     }
 }
